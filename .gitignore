@@ -1,0 +1,5 @@
+# directories
+.venv
+.env
+
+# file types
