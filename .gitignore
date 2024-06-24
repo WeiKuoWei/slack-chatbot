@@ -1,5 +1,10 @@
 # directories
+dumps 
+
+# files
 .venv
 .env
+
+test.py
 
 # file types
