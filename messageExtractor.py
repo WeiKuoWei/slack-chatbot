@@ -38,6 +38,7 @@ def extract_messages(channel_id):
         return []
 
     extracted_messages = []
+    total_messages = len(messages)
     for i, message in enumerate(messages, start=1):
         user_info = client.users_info(user=message['user'])
         user_name = user_info['user']['real_name']
@@ -54,7 +55,7 @@ def extract_messages(channel_id):
         formatted_datetime = dt_object.strftime('%Y-%m-%d %I:%M %p')
 
         extracted_messages.append({
-            "id": i,
+            "id": total_messages - i,
             "person": user_name,
             "datetime": formatted_datetime,
             "message": message['text'],
