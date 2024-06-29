@@ -29,7 +29,11 @@ def findFileBFS(
                 elif entry.is_dir():
                     q.put(entry.path)
     
-    with open('files.json', 'w') as f:
+    # save the files to the current directory
+    path = os.path.join(root, "files.json")
+    os.makedirs(root, exist_ok=True)
+
+    with open(f'{path}', 'w') as f:
         json.dump(files, f, indent=4)
 
     return files

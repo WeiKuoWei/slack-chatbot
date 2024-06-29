@@ -9,7 +9,7 @@ import argparse
 
 # Load environment variables from .env file
 load_dotenv()
-SLACK_USER_TOKEN = os.getenv("ELON_USER_TOKEN")
+SLACK_USER_TOKEN = os.getenv("ZUCKER_USER_TOKEN")
 
 # Set your Slack API token
 client = WebClient(token=SLACK_USER_TOKEN)
