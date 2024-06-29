@@ -9,7 +9,7 @@ import argparse
 
 # Load environment variables from .env file
 load_dotenv()
-SLACK_USER_TOKEN = os.getenv("SLACK_USER_TOKEN")
+SLACK_USER_TOKEN = os.getenv("ELON_USER_TOKEN")
 
 # Set your Slack API token
 client = WebClient(token=SLACK_USER_TOKEN)
@@ -23,7 +23,16 @@ def extract_reactions(reactions):
         })
     return extracted_reactions
 
-def extract_messages(channel_id):
+def get_workspace_name():
+    try:
+        response = client.auth_test()
+        team_name = response['team']
+        return team_name
+    except SlackApiError as e:
+        print(f"Error fetching workspace name: {e.response['error']}")
+        return None
+
+def extract_messages(client, channel_id):
     try:
         response = client.conversations_history(channel=channel_id)
         messages = response['messages']
@@ -38,24 +47,25 @@ def extract_messages(channel_id):
         return []
 
     extracted_messages = []
-    total_messages = len(messages)
     for i, message in enumerate(messages, start=1):
         user_info = client.users_info(user=message['user'])
-        user_name = user_info['user']['real_name']
+        user_name = user_info['user'].get('real_name', user_info['user'].get('name', 'Unknown'))
 
         # Replace user IDs with real names in the message
         tagged_users = re.findall(r'<@(.*?)>', message['text'])
         for user_id in tagged_users:
             user_info = client.users_info(user=user_id)
-            user_name = user_info['user']['real_name']
+            user_name = user_info['user'].get('real_name', user_info['user'].get('name', 'Unknown'))
             message['text'] = message['text'].replace(f'<@{user_id}>', user_name)
 
-        timestamp = float(message['ts'])
+        # Extract and use the unique timestamp as the key
+        unique_timestamp = message['ts']
+        timestamp = float(unique_timestamp)
         dt_object = dt.fromtimestamp(timestamp)
         formatted_datetime = dt_object.strftime('%Y-%m-%d %I:%M %p')
 
         extracted_messages.append({
-            "id": total_messages - i,
+            "id": unique_timestamp,
             "person": user_name,
             "datetime": formatted_datetime,
             "message": message['text'],
@@ -103,23 +113,30 @@ def list_all_channels():
     return channel_names
 
 def main():
+    workspace_name = get_workspace_name()
     channel_names = list_all_channels()
-    channel_ids = []
+    channel_ids = {}
     print("List of all channels:")
     for name in channel_names:
         print(name)
         id = get_channel_id(name)
-        channel_ids.append(id)
+        # channel_ids.append(id)
+        channel_ids[id] = name
 
-    # file path
-    path = "dumps/conversations/"
+    # File path
+    # Create directory for the workspace
+    path = os.path.join("dumps", workspace_name)
+    os.makedirs(path, exist_ok=True)
 
     # Extract the messages from the channel
-    for i, channel_id in enumerate(channel_ids):
-        messages = extract_messages(channel_id)
+    for channel_id, _ in channel_ids.items():
+        messages = extract_messages(client, channel_id)
 
         # Save the messages to a JSON file
-        save_to_json(messages, f'{channel_names[i]}.json', path)
+        save_to_json(messages, f'{channel_id}.json', path)
+
+    # save channel names and ids to a json file
+    save_to_json(channel_ids, f'channel_list.json', path)
 
 if __name__ == '__main__':
     main()

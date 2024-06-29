@@ -5,6 +5,7 @@ dumps
 .venv
 .env
 
+files.json
 test.py
 
 # file types

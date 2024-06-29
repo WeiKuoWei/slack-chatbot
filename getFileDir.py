@@ -4,7 +4,7 @@ import fire
 from queue import Queue
 
 def findFileBFS(
-        root: str = "./data/articles", 
+        root: str = "", 
         file_type: str = ".json"
     ):
     
@@ -23,7 +23,7 @@ def findFileBFS(
                 continue
             for entry in entries:
                 if entry.is_file() and entry.name.endswith(file_type):
-                    files[entry.name] = entry.path
+                    files[entry.path] = entry.name
                     # print(entry.path)
                 
                 elif entry.is_dir():
