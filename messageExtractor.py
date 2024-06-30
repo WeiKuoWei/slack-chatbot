@@ -1,6 +1,7 @@
 import json
 import re
 import os
+import fire
 from datetime import datetime as dt
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
@@ -9,10 +10,6 @@ import argparse
 
 # Load environment variables from .env file
 load_dotenv()
-SLACK_USER_TOKEN = os.getenv("ZUCKER_USER_TOKEN")
-
-# Set your Slack API token
-client = WebClient(token=SLACK_USER_TOKEN)
 
 def extract_reactions(reactions):
     extracted_reactions = []
@@ -23,11 +20,13 @@ def extract_reactions(reactions):
         })
     return extracted_reactions
 
-def get_workspace_name():
+def get_workspace_info(client):
     try:
         response = client.auth_test()
         team_name = response['team']
-        return team_name
+        team_id = response['team_id']
+        return team_name, team_id
+    
     except SlackApiError as e:
         print(f"Error fetching workspace name: {e.response['error']}")
         return None
@@ -79,7 +78,7 @@ def save_to_json(data, name, path):
     with open(file_path, 'w') as json_file:
         json.dump(data, json_file, indent=4)
 
-def get_channel_id(channel_name):
+def get_channel_id(client, channel_name):
     cursor = None
     try:
         while True:
@@ -95,7 +94,7 @@ def get_channel_id(channel_name):
     except SlackApiError as e:
         print(f"Error: {e.response['error']}")
 
-def list_all_channels():
+def list_all_channels(client):
     cursor = None
     channels = []
     try:
@@ -112,20 +111,36 @@ def list_all_channels():
     channel_names = [channel['name'] for channel in channels]
     return channel_names
 
-def main():
-    workspace_name = get_workspace_name()
-    channel_names = list_all_channels()
+def main(
+        token_name: str = "ZUCKER"
+):
+    # Set your Slack API token
+    SLACK_USER_TOKEN = os.getenv(f"{token_name}_USER_TOKEN")
+    client = WebClient(token=SLACK_USER_TOKEN)
+    
+    workspace_name, workspace_id = get_workspace_info(client)
+    channel_names = list_all_channels(client)
     channel_ids = {}
     print("List of all channels:")
     for name in channel_names:
         print(name)
-        id = get_channel_id(name)
-        # channel_ids.append(id)
+        id = get_channel_id(client, name)
         channel_ids[id] = name
 
     # File path
+    # Append the workspace name and workspace id pair to a json file
+    path = os.path.join("data", "workspace_list.json")
+
+    # import the dictionary from the json file
+    with open(path, 'r') as f:
+        data = json.load(f)
+    data[workspace_id] = workspace_name
+
+    with open(path, 'w') as f:
+        json.dump(data, f, indent=4)
+
     # Create directory for the workspace
-    path = os.path.join("dumps", workspace_name)
+    path = os.path.join("data", workspace_id)
     os.makedirs(path, exist_ok=True)
 
     # Extract the messages from the channel
@@ -139,4 +154,4 @@ def main():
     save_to_json(channel_ids, f'channel_list.json', path)
 
 if __name__ == '__main__':
-    main()
+    fire.Fire(main)
