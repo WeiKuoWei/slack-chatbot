@@ -4,7 +4,7 @@ import fire
 from queue import Queue
 
 def findFileBFS(
-        root: str = "", 
+        root: str = "data", 
         file_type: str = ".json"
     ):
     

@@ -22,6 +22,6 @@ pip install --upgrade pip
 
 # Install required packages
 echo "Installing required packages..."
-pip install requirements.txt
+pip install -r requirements.txt
 
 echo "Setup complete!"
