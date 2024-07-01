@@ -1,6 +1,7 @@
 # directories
 data
 dumps
+local_chromadb
 __pycache__ 
 
 # files
