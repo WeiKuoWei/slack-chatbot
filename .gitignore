@@ -1,6 +1,7 @@
 # directories
 data
-dumps 
+dumps
+__pycache__ 
 
 # files
 .venv

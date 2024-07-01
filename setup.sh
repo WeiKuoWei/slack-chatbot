@@ -5,8 +5,9 @@ echo "Removing existing virtual environment..."
 rm -rf .venv
 
 # Verify Python installation
-echo "Checking Python version..."
+echo "Checking Python & pip version..."
 python3 --version
+pip --version
 
 # Create new virtual environment
 echo "Creating new virtual environment..."
