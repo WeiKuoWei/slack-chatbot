@@ -1,5 +1,4 @@
-import chromadb
-import os
+import chromadb, os
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -12,6 +11,8 @@ def main():
     client = chromadb.PersistentClient(path=DB_PATH)
     client.get_or_create_collection(name = "team_ids")
     print("team_ids collection created in ChromaDB")
+
+    # load the current workspace_list.json file into the team_ids collection
 
     # if we have to reset the database, all other collections will be
     # initialized here in the future
