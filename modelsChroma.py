@@ -1,16 +1,24 @@
 from langchain.schema import Document
+from langchain_openai import OpenAIEmbeddings
 from transformers import AutoTokenizer, AutoModel
 import torch
 
-# Load pre-trained model and tokenizer from Hugging Face
-tokenizer = AutoTokenizer.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
-model = AutoModel.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
+# # Load pre-trained model and tokenizer from Hugging Face
+# tokenizer = AutoTokenizer.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
+# model = AutoModel.from_pretrained("sentence-transformers/all-MiniLM-L6-v2")
+
+# def generate_embedding(text):
+#     inputs = tokenizer(text, return_tensors='pt', padding=True, truncation=True, max_length=512)
+#     with torch.no_grad():
+#         outputs = model(**inputs)
+#     return outputs.last_hidden_state.mean(dim=1).squeeze().tolist()
+
+# embedding_model = OpenAIEmbedding(model = "get-3.5-turbo")
+# embedding_model = OpenAIEmbeddings(model="text-embedding-ada-002", openai_api_key=OPENAI_API_KEY)
+embedding_model = OpenAIEmbeddings(model="text-embedding-ada-002")
 
 def generate_embedding(text):
-    inputs = tokenizer(text, return_tensors='pt', padding=True, truncation=True, max_length=512)
-    with torch.no_grad():
-        outputs = model(**inputs)
-    return outputs.last_hidden_state.mean(dim=1).squeeze().tolist()
+    return embedding_model.embed_query(text)
 
 class Team_ids:
     def __init__(self, team_id, name_of_workspace, number_of_channels, number_of_members):
@@ -81,13 +89,14 @@ class Channel_id:
             'person': self.person,
             'datetime': self.datetime,
             # 'reactions': self.reactions, 
-            '''
-            reactions is not added since it is a list; metadata has to be either
-            type str, int, float, or bool to be added to the document
-            '''
             'replies': self.replies
             }
         ), embedding
+    
+    '''
+    reactions is not added since it is a list; metadata has to be either
+    type str, int, float, or bool to be added to the document
+    '''
     
 
 '''

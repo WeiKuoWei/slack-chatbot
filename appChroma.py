@@ -1,13 +1,6 @@
 import json, fire, os, chromadb
 
 from slack_sdk import WebClient
-# from langchain.embeddings.openai import OpenAIEmbeddings
-# from langchain.vectorstores import Chroma
-# from langchain.document_loaders import JSONLoader
-# from langchain.text_splitter import CharacterTextSplitter
-# from langchain.vectorstores import Chroma
-# from langchain.document_loaders import JSONLoader
-# from langchain.schema import Document
 from dotenv import load_dotenv
 
 # import functions
