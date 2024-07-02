@@ -17,6 +17,10 @@ from modelsChroma import Team_ids, Team_id, Channel_id
 
 load_dotenv()
 crud = CRUD()
+'''
+Not sure if this might be become a single breakpoint for the entire app.
+Still considering initializing crud in each function
+'''
 
 # for the team_ids collection
 def save_to_team_ids(workspace_id, workspace_name, channel_ids, n_members):
@@ -34,28 +38,29 @@ def save_to_team_ids(workspace_id, workspace_name, channel_ids, n_members):
     crud.create_document(f"{workspace_id}", document, embedding)
 
 # for team_id collections
-def save_to_team_id(channel_ids, workspace_id, n_members, n_messages):
+def save_to_team_id(channel_id, channel_name, workspace_id, n_members, n_messages):
     '''
     number of members, number of messages 
     are yet to be retrieved and saved to team_id
     '''
-    for channel_id, channel_name in channel_ids.items():
-        channel_info = Team_id(
-            channel_id=channel_id, 
-            team_id=workspace_id, 
-            name_of_channel=channel_name, 
-            number_of_members=0, 
-            number_of_messages=0
-            )
-        
-        crud.create_collection(f"{channel_id}")
-        document, embedding = channel_info.to_document()
-        crud.create_document(f"{channel_id}", document, embedding)
+    channel_info = Team_id(
+        channel_id=channel_id, 
+        team_id=workspace_id, 
+        name_of_channel=channel_name, 
+        number_of_members=0, 
+        number_of_messages=0
+        )
+    
+    crud.create_collection(f"{workspace_id}")
+    document, embedding = channel_info.to_document()
+    crud.create_document(f"{workspace_id}", document, embedding)
 
 # for channel_id collections
-def save_to_channel_id(channel_id, channel_name, data):
-    pass
-        
+def save_to_channel_id(channel_id, data):
+    for message in data:
+        message_info = Channel_id(message)
+        document, embedding = message_info.to_document()
+        crud.create_document(f"{channel_id}", document, embedding)
 
 # data file comparison
 def compare_data(new_data, current_data):
@@ -65,7 +70,7 @@ def compare_data(new_data, current_data):
 
 # Main function
 def main(
-        token_name: str = "ZUCKER"
+        token_name: str = "ZUCKER" 
         ):
 
     # get workspace info
@@ -83,15 +88,17 @@ def main(
     # load the workspace data in ChromaDB
     save_to_team_ids(workspace_id, workspace_name, channel_ids, 0)
 
-    # load the list of channel_id into team_id
-    save_to_team_id(channel_ids, workspace_id, 0, 0)
-
-    # load the list of messages into channel_id 
+    # for team_id collections and channel_id collections
     for channel_id, channel_name in channel_ids.items():
+        # load the list of channel_id into team_id
+        save_to_team_id(channel_id, channel_name, workspace_id, 0, 0)
+
+        # load the channel_id data into channel_id collection
+        crud.create_collection(f"{channel_id}")
         path = os.path.join(f"data/{workspace_id}", f"{channel_id}.json")
         with open(path, 'r') as json_file:
             data = json.load(json_file)
-            save_to_channel_id(channel_id, channel_name, data)
+            save_to_channel_id(channel_id, data)
             '''
             the old/ new data comparison logic will be implemented here
             to insert only new data into the channel_id collection

@@ -23,7 +23,7 @@ class Team_ids:
         self.number_of_members = number_of_members
 
     def to_document(self):
-        embedding = generate_embedding(self.name_of_workspace)
+        embedding = generate_embedding(self.team_id)
         return Document(
             page_content=self.name_of_workspace, 
             metadata={
@@ -46,7 +46,7 @@ class Team_id:
         self.number_of_messages = number_of_messages
 
     def to_document(self):
-        embedding = generate_embedding(self.name_of_channel)
+        embedding = generate_embedding(self.channel_id)
         return Document(
             page_content=self.name_of_channel, 
             metadata={
@@ -59,18 +59,18 @@ class Team_id:
         ), embedding
 
 class Channel_id:
-    def __init__(self, message_id, person, datetime, message, reactions, replies):
+    def __init__(self, data):
         # id
-        self.message_id = message_id
+        self.message_id = data['id']
         
         # document
-        self.message = message
+        self.message = data['message']
 
         # metadata
-        self.person = person
-        self.datetime = datetime
-        self.reactions = reactions
-        self.replies = replies
+        self.person = data['person']
+        self.datetime = data['datetime']
+        self.reactions = data['reactions']
+        self.replies = data['replies']
 
     def to_document(self):
         embedding = generate_embedding(self.message)
@@ -80,13 +80,24 @@ class Channel_id:
             'id': self.message_id,
             'person': self.person,
             'datetime': self.datetime,
-            'reactions': self.reactions,
+            # 'reactions': self.reactions, 
+            '''
+            reactions is not added since it is a list; metadata has to be either
+            type str, int, float, or bool to be added to the document
+            '''
             'replies': self.replies
             }
         ), embedding
+    
 
 '''
-For each class, will need to decide what the metadata will be
-and what the document will be.
-At the moment, team_ids and team_id don't seem to have metadata
+For each class, will need to decide what the metadata will be and what the
+document will be. At the moment, team_ids and team_id don't seem to have
+metadata
+
+Moreover, team_ids and team_id takes the parameters directly, while channel_id
+takes a data dictionary and unpack the necessary parameters. This is temporary
+as the json file for teams_ids and team_id will need to be updated to include
+other necessary parameters for the metadata. This should be done as soon as the
+information retrieval functions are implemented.
 '''

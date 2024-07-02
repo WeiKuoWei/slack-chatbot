@@ -8,7 +8,7 @@ DB_PATH = os.getenv("DB_PATH")
 
 class CRUD():
     def __init__(self):
-        # self.client = chromadb.PersistentClient(path = DB_PATH)
+        self.client = chromadb.PersistentClient(path = DB_PATH)
         
         '''
         self.client = chromadb.Client(
