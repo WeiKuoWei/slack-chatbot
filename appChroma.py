@@ -10,18 +10,52 @@ from slack_sdk import WebClient
 # from langchain.schema import Document
 from dotenv import load_dotenv
 
-load_dotenv()
-
 # import functions
 from messageExtractor import extract_messages, extract_reactions, get_workspace_info, get_channel_id, list_all_channels
 from crudChroma import CRUD
 from modelsChroma import Team_ids, Team_id, Channel_id
 
+load_dotenv()
+crud = CRUD()
+
 # for the team_ids collection
+def save_to_team_ids(workspace_id, workspace_name, channel_ids, n_members):
+    '''
+    number of members
+    are yet to be retrieved and saved to team_ids
+    '''
+    team_info = Team_ids(team_id=workspace_id, 
+                         name_of_workspace=workspace_name, 
+                         number_of_channels=len(channel_ids), 
+                         number_of_members=n_members
+                        )
+    crud.create_collection(f"{workspace_id}")
+    document, embedding = team_info.to_document()
+    crud.create_document(f"{workspace_id}", document, embedding)
 
 # for team_id collections
+def save_to_team_id(channel_ids, workspace_id, n_members, n_messages):
+    '''
+    number of members, number of messages 
+    are yet to be retrieved and saved to team_id
+    '''
+    for channel_id, channel_name in channel_ids.items():
+        channel_info = Team_id(
+            channel_id=channel_id, 
+            team_id=workspace_id, 
+            name_of_channel=channel_name, 
+            number_of_members=0, 
+            number_of_messages=0
+            )
+        
+        crud.create_collection(f"{channel_id}")
+        document, embedding = channel_info.to_document()
+        crud.create_document(f"{channel_id}", document, embedding)
 
 # for channel_id collections
+def save_to_channel_id(channel_id, channel_name, data):
+    pass
+        
 
 # data file comparison
 def compare_data(new_data, current_data):
@@ -33,9 +67,6 @@ def compare_data(new_data, current_data):
 def main(
         token_name: str = "ZUCKER"
         ):
-
-    # Initialize and connect to ChromaDB
-    crud = CRUD()
 
     # get workspace info
     SLACK_USER_TOKEN = os.getenv(f"{token_name}_USER_TOKEN")
@@ -50,31 +81,21 @@ def main(
         channel_ids[id] = name
 
     # load the workspace data in ChromaDB
-    '''
-    number of members
-    are yet to be retrieved and saved to team_ids
-    '''
-    team_info = Team_ids(team_id=workspace_id, name_of_workspace=workspace_name, number_of_channels=len(channel_ids), number_of_members=0)
-    crud.create_collection(f"{workspace_id}")
-    document, embedding = team_info.to_document()
-    crud.create_document(f"{workspace_id}", document, embedding)
+    save_to_team_ids(workspace_id, workspace_name, channel_ids, 0)
 
     # load the list of channel_id into team_id
-    '''
-    number of members, number of messages 
-    are yet to be retrieved and saved to team_id
-    '''
-    for channel_id, channel_name in channel_ids.items():
-        channel_info = Team_id(channel_id=channel_id, team_id=workspace_id, name_of_channel=channel_name, number_of_members=0, number_of_messages=0)
-        crud.create_collection(f"{channel_id}")
-        document, embedding = channel_info.to_document()
-        crud.create_document(f"{channel_id}", document, embedding)
+    save_to_team_id(channel_ids, workspace_id, 0, 0)
 
-
-    # load the list of messages into channel_id
+    # load the list of messages into channel_id 
     for channel_id, channel_name in channel_ids.items():
-        # still need to be implemented
-        continue
+        path = os.path.join(f"data/{workspace_id}", f"{channel_id}.json")
+        with open(path, 'r') as json_file:
+            data = json.load(json_file)
+            save_to_channel_id(channel_id, channel_name, data)
+            '''
+            the old/ new data comparison logic will be implemented here
+            to insert only new data into the channel_id collection
+            '''
 
 
 if __name__ == '__main__':

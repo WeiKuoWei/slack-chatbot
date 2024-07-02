@@ -14,23 +14,32 @@ def generate_embedding(text):
 
 class Team_ids:
     def __init__(self, team_id, name_of_workspace, number_of_channels, number_of_members):
+        # id
         self.team_id = team_id
+        
+        # metadata
         self.name_of_workspace = name_of_workspace
         self.number_of_channels = number_of_channels
         self.number_of_members = number_of_members
 
     def to_document(self):
         embedding = generate_embedding(self.name_of_workspace)
-        return Document(page_content=self.name_of_workspace, metadata={
+        return Document(
+            page_content=self.name_of_workspace, 
+            metadata={
             'id': self.team_id,
             'name_of_workspace': self.name_of_workspace,
             'number_of_channels': self.number_of_channels,
             'number_of_members': self.number_of_members
-        }), embedding
+            }
+        ), embedding
 
 class Team_id:
     def __init__(self, channel_id, team_id, name_of_channel, number_of_members, number_of_messages):
+        # id        
         self.channel_id = channel_id
+
+        # metadata
         self.team_id = team_id
         self.name_of_channel = name_of_channel
         self.number_of_members = number_of_members
@@ -38,30 +47,46 @@ class Team_id:
 
     def to_document(self):
         embedding = generate_embedding(self.name_of_channel)
-        return Document(page_content=self.name_of_channel, metadata={
+        return Document(
+            page_content=self.name_of_channel, 
+            metadata={
             'id': self.channel_id,
             'team_id': self.team_id,
             'name_of_channel': self.name_of_channel,
             'number_of_members': self.number_of_members,
             'number_of_messages': self.number_of_messages
-        }), embedding
+            }
+        ), embedding
 
 class Channel_id:
     def __init__(self, message_id, person, datetime, message, reactions, replies):
+        # id
         self.message_id = message_id
+        
+        # document
+        self.message = message
+
+        # metadata
         self.person = person
         self.datetime = datetime
-        self.message = message
         self.reactions = reactions
         self.replies = replies
 
     def to_document(self):
         embedding = generate_embedding(self.message)
-        return Document(page_content=self.message, metadata={
+        return Document(
+            page_content=self.message, 
+            metadata={
             'id': self.message_id,
             'person': self.person,
             'datetime': self.datetime,
-            'message': self.message,
             'reactions': self.reactions,
             'replies': self.replies
-        }), embedding
+            }
+        ), embedding
+
+'''
+For each class, will need to decide what the metadata will be
+and what the document will be.
+At the moment, team_ids and team_id don't seem to have metadata
+'''

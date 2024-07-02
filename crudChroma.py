@@ -1,5 +1,6 @@
 import chromadb, os
 from langchain.schema import Document
+from chromadb.config import Settings
 from dotenv import load_dotenv
 
 
@@ -7,7 +8,16 @@ DB_PATH = os.getenv("DB_PATH")
 
 class CRUD():
     def __init__(self):
-        self.client = chromadb.PersistentClient(path = DB_PATH)
+        # self.client = chromadb.PersistentClient(path = DB_PATH)
+        
+        '''
+        self.client = chromadb.Client(
+            Settings(
+                chroma_db_impl="duckdb+parquet",
+                persist_directory="duckdb"  
+            )
+        )
+        '''
 
     def create_collection(self, collection_name):
         collection = self.client.get_or_create_collection(collection_name)
@@ -16,11 +26,15 @@ class CRUD():
     def create_document(self, collection_name, document, embedding):
         collection = self.client.get_collection(collection_name)
         collection.add(
-            ids=[document.metadata['id']],  # Ensure IDs are passed as a list
+            ids=[document.metadata['id']], 
+            documents=[document.page_content],
             embeddings=[embedding], 
-            # here will need to update the embeddings in the future
             metadatas=[document.metadata]
         )
+        '''
+            seems to be missing the document itself
+            would need to differentiate between the metadata and the document
+        '''
 
     def read(self, collection_name, query):
         collection = self.client.get_collection(collection_name)
