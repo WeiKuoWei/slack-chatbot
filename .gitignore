@@ -1,5 +1,14 @@
 # directories
+data
+dumps
+local_chromadb
+__pycache__ 
+
+# files
 .venv
 .env
+
+files.json
+test.py
 
 # file types
