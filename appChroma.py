@@ -4,9 +4,9 @@ from slack_sdk import WebClient
 from dotenv import load_dotenv
 
 # import functions
-from messageExtractor import extract_messages, extract_reactions, get_workspace_info, get_channel_id, list_all_channels
+from getMessageSlack import extract_messages, extract_reactions, get_workspace_info, get_channel_id, list_all_channels
 from crudChroma import CRUD
-from modelsChroma import Team_ids, Team_id, Channel_id
+from dumps.modelsChroma import Team_ids, Team_id, Channel_id
 
 load_dotenv()
 crud = CRUD()
