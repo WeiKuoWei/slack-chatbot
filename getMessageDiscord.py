@@ -17,7 +17,8 @@ class getMessage(discord.Client):
         print(f'We have logged in as {self.user}')
         channel = self.get_channel(CHANNEL_ID)
         messages = await self.fetch_messages(channel)
-        self.save_messages(messages, f'{FILE_NAME}.json')
+        guild_id = channel.guild.id
+        self.save_messages(messages, f'{FILE_NAME}.json', guild_id, CHANNEL_ID)
         await self.close()
 
     async def fetch_messages(self, channel):
@@ -52,10 +53,15 @@ class getMessage(discord.Client):
             })
     '''
 
-    async def save_messages(self, messages, filename):
+    def save_messages(self, messages, filename, guild_id, channel_id):
         os.makedirs(DATA_PATH, exist_ok=True)
-        with open(f"{DATA_PATH}{filename}", 'w') as f:
-            await json.dump(messages, f, indent=4)
+        data_path = f"{DATA_PATH}{guild_id}/{channel_id}/"
+
+        if not os.path.exists(data_path):
+            os.makedirs(data_path)
+
+        with open(f"{data_path}{filename}", 'w') as f:
+            json.dump(messages, f, indent=4)
         print(f'Saved {len(messages)} messages to {filename}')
 
 class GetIds(discord.Client):
