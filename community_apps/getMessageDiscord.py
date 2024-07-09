@@ -1,7 +1,4 @@
-import json
-import os
-import fire
-import discord
+import json, os, fire, discord
 from dotenv import load_dotenv
 
 # Load environment variables from .env file

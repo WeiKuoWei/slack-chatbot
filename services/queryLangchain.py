@@ -5,7 +5,7 @@ from langchain.chains import RetrievalQA
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_community.vectorstores import Chroma
 from langchain.chains.question_answering import load_qa_chain
-from crudChroma import CRUD
+from database.crudChroma import CRUD
 
 # Load environment variables
 load_dotenv()

@@ -1,7 +1,5 @@
 from langchain.schema import Document
 from langchain_openai import OpenAIEmbeddings
-from transformers import AutoTokenizer, AutoModel
-import torch
 
 embedding_model = OpenAIEmbeddings(model="text-embedding-ada-002")
 
