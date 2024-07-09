@@ -1,10 +1,15 @@
-import json, os, fire, discord
-from dotenv import load_dotenv
+import json, os, discord
+from 
 
 # Load environment variables from .env file
 load_dotenv()
 TOKEN = os.getenv("BEZOS_BOT_TOKEN")
 CHANNEL_ID = int(os.getenv("CHANNEL_ID"))
+
+intents = discord.Intents.default()
+intents.message_content = True
+
+client = discord.Client(intents=intents)
 
 DATA_PATH = "data/discord/"
 FILE_NAME = "messages"
@@ -84,8 +89,7 @@ class GetIds(discord.Client):
             await message.channel.send(f'This channel ID is: {channel_id}')
 
 # Define the intents
-intents = discord.Intents.default()
-intents.message_content = True
+
 
 # Instantiate the getMessage client with intents
 client = getMessage(intents=intents)
