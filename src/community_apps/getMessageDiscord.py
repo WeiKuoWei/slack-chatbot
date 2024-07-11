@@ -1,100 +1,98 @@
-import json, os, discord
-from 
+# getMessageDiscord.py
+import json, os, discord, requests, logging, httpx
+from discord.ext import commands
 
-# Load environment variables from .env file
-load_dotenv()
-TOKEN = os.getenv("BEZOS_BOT_TOKEN")
-CHANNEL_ID = int(os.getenv("CHANNEL_ID"))
-
-intents = discord.Intents.default()
-intents.message_content = True
-
-client = discord.Client(intents=intents)
-
-DATA_PATH = "data/discord/"
-FILE_NAME = "messages"
-
-class getMessage(discord.Client):
-    async def on_ready(self):
-        print(f'We have logged in as {self.user}')
-        channel = self.get_channel(CHANNEL_ID)
-        messages = await self.fetch_messages(channel)
-        guild_id = channel.guild.id
-        self.save_messages(messages, f'{FILE_NAME}.json', guild_id, CHANNEL_ID)
-        await self.close()
-
-    async def fetch_messages(self, channel):
-        messages = []
-        async for message in channel.history(limit=None):
-            messages.append({
-                "id": message.id,
-                "author": message.author.name,
-                "content": message.content,
-                "timestamp": message.created_at.isoformat()
-            })
-        return messages
-
-    '''
-    messages.append({
-                "id": message.id,
-                "author_id": message.author.id,
-                "author_name": message.author.name,
-                "content": message.content,
-                "created_at": message.created_at.isoformat(),
-                "edited_at": message.edited_at.isoformat() if message.edited_at else None,
-                "channel_id": message.channel.id,
-                "guild_id": message.guild.id if message.guild else None,
-                "attachments": [attachment.url for attachment in message.attachments],
-                "embeds": [embed.to_dict() for embed in message.embeds],
-                "reactions": [{"emoji": str(reaction.emoji), "count": reaction.count} for reaction in message.reactions],
-                "mentions": [user.id for user in message.mentions],
-                "mention_roles": [role.id for role in message.mention_roles],
-                "mention_everyone": message.mention_everyone,
-                "pinned": message.pinned,
-                "type": str(message.type)
-            })
-    '''
-
-    def save_messages(self, messages, filename, guild_id, channel_id):
-        os.makedirs(DATA_PATH, exist_ok=True)
-        data_path = f"{DATA_PATH}{guild_id}/{channel_id}/"
-
-        if not os.path.exists(data_path):
-            os.makedirs(data_path)
-
-        with open(f"{data_path}{filename}", 'w') as f:
-            json.dump(messages, f, indent=4)
-        print(f'Saved {len(messages)} messages to {filename}')
-
-class GetIds(discord.Client):
-    async def on_ready(self):
-        print(f'Logged in as {self.user}')
-        for guild in self.guilds:
-            print(f'Connected to guild: {guild.name}, ID: {guild.id}')
-            for channel in guild.text_channels:
-                print(f'Channel: {channel.name}, ID: {channel.id}')
-
-        await self.close()
-    
-    async def on_message(self, message):
-        if message.author == self.user:
-            return
-        
-        if message.content.startswith('!serverid'):
-            guild_id = message.guild.id
-            await message.channel.send(f'This server ID is: {guild_id}')
-        
-        if message.content.startswith('!channelid'):
-            channel_id = message.channel.id
-            await message.channel.send(f'This channel ID is: {channel_id}')
-
-# Define the intents
+from utlis.config import DISCORD_TOKEN
 
 
-# Instantiate the getMessage client with intents
-client = getMessage(intents=intents)
-client.run(TOKEN)
+class DiscordBot:
+    def __init__(self, bot):
+        self.bot = bot
+        self.setup_bot()
 
-# Instantiate the GetIds client with intents
-client = GetIds(intents=intents)
-client.run(TOKEN)
+    def setup_bot(self):
+        # Event: Bot is ready
+        @self.bot.event
+        async def on_ready():
+            print(f'We have logged in as {self.bot.user}')
+
+        # Event: Message received
+        @self.bot.event
+        async def on_message(message):
+            logging.info(f"Message received: {message.content}")
+            print(f"Message received: {message.content}")
+
+            # Check if content is directly accessible
+            if message.content:
+                print(f"Direct content access: {message.content}")
+            else:
+                print("No content in message.content")
+
+
+            # prevent bot from answering to itself
+            if message.author == self.bot.user:
+                return
+            
+            # Process commands
+            await self.bot.process_commands(message)
+
+            # Handle general messages
+            if not message.content.startswith('!'):
+                print(f"General message: {message.content}")
+
+        # Command: Update chat history
+        @self.bot.command(name='update')
+        async def update(ctx):
+            user = ctx.author
+            guild = ctx.guild
+
+            if not guild:
+                print("This command can only be used in a server.")
+                await ctx.send("This command can only be used in a server.")
+                return
+            else:
+                print(f"Updating chat history for {guild.name}")
+                await ctx.send("Updating chat history...")
+
+            channels = [
+                {
+                    "id": channel.id,
+                    "name": channel.name,
+                    "type": channel.type.name
+                }
+                for channel in guild.channels if isinstance(channel, discord.TextChannel)
+            ]
+
+            all_messages = []
+            for channel in channels:
+                if channel['type'] == 'text':
+                    discord_channel = guild.get_channel(channel['id'])
+                    async for message in discord_channel.history(limit=100):
+                        all_messages.append({
+                            "channel_id": discord_channel.id,
+                            "channel_name": discord_channel.name,
+                            "message_id": message.id, # is a int in the data
+                            "author": message.author.name,
+                            "content": message.content,
+                            "timestamp": message.created_at.isoformat()
+                        })
+
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
+                    'http://localhost:8000/update',
+                    json={'guild_id': guild.id, 'channels': channels, 'messages': all_messages}
+                )
+
+            if response.status_code == 200:
+                await ctx.send("Update complete.")
+            else:
+                await ctx.send("Failed to update chat history.")
+
+'''
+
+if message.content.startswith('!ask'):
+                query = message.content[len('!ask '):]
+                response = requests.post('http://localhost:8000/query', json={'query': query, 'channel': message.channel.id})
+                await message.channel.send(response.json()['answer'])
+
+'''

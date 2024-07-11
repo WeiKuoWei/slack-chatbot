@@ -1,35 +1,34 @@
+# modelsChroma.py
 from langchain.schema import Document
 from langchain_openai import OpenAIEmbeddings
 
 embedding_model = OpenAIEmbeddings(model="text-embedding-ada-002")
 
-def generate_embedding(text):
+async def generate_embedding(text):
     return embedding_model.embed_query(text)
 
-class Channel_info:
+class ChatHistory:
     def __init__(self, data):
-        # id
-        self.message_id = data['id']
+        # id 
+        self.message_id = data['message_id']
         
         # document
-        self.message = data['message']
+        self.content = data['content']
 
         # metadata
-        self.person = data['person']
-        self.datetime = data['datetime']
-        self.reactions = data['reactions']
-        self.replies = data['replies']
+        self.channel_name = data['channel_name']
+        self.author = data['author']
+        self.timestamp = data['timestamp']
 
-    def to_document(self):
-        embedding = generate_embedding(self.message)
+    async def to_document(self):
+        embedding = await generate_embedding(self.content)
         return Document(
-            page_content=self.message, 
+            page_content=self.content, 
             metadata={
-            'id': self.message_id,
-            'person': self.person,
-            'datetime': self.datetime,
-            # 'reactions': self.reactions, 
-            'replies': self.replies
+                'channel_name': self.channel_name,
+                'id': self.message_id,
+                'author': self.author,
+                'timestamp': self.timestamp
             }
         ), embedding
     
