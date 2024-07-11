@@ -19,26 +19,27 @@ class DiscordBot:
         # Event: Message received
         @self.bot.event
         async def on_message(message):
-            logging.info(f"Message received: {message.content}")
-            print(f"Message received: {message.content}")
-
-            # Check if content is directly accessible
-            if message.content:
-                print(f"Direct content access: {message.content}")
-            else:
-                print("No content in message.content")
-
-
             # prevent bot from answering to itself
             if message.author == self.bot.user:
                 return
-            
+            else:
+                # Check if content is directly accessible
+                if message.content:
+                    print(f"Direct content access: {message.content}")
+                else:
+                    print("No content in message.content")
+
             # Process commands
             await self.bot.process_commands(message)
 
-            # Handle general messages
+            # Send to app and get gpt response if message is not a command
             if not message.content.startswith('!'):
-                print(f"General message: {message.content}")
+                response = await self.send_to_app('general', {'query': message.content})
+                if response.status_code == 200:
+                    await message.channel.send(response.json()['answer'])
+
+                else:
+                    await message.channel.send("Failed to get response from LLM.")
 
         # Command: Update chat history
         @self.bot.command(name='update')
@@ -76,23 +77,24 @@ class DiscordBot:
                             "content": message.content,
                             "timestamp": message.created_at.isoformat()
                         })
+            
+            data = {
+                "guild_id": guild.id,
+                "channels": channels,
+                'messages': all_messages
+            }
 
-            async with httpx.AsyncClient() as client:
-                response = await client.post(
-                    'http://localhost:8000/update',
-                    json={'guild_id': guild.id, 'channels': channels, 'messages': all_messages}
-                )
+            response = await self.send_to_app('update', data)
 
             if response.status_code == 200:
                 await ctx.send("Update complete.")
             else:
                 await ctx.send("Failed to update chat history.")
 
-'''
-
-if message.content.startswith('!ask'):
-                query = message.content[len('!ask '):]
-                response = requests.post('http://localhost:8000/query', json={'query': query, 'channel': message.channel.id})
-                await message.channel.send(response.json()['answer'])
-
-'''
+    async def send_to_app(self, route, data):
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                f'http://localhost:8000/{route}',
+                json=data
+            )
+        return response

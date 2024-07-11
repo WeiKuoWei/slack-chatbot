@@ -2,7 +2,10 @@
 import httpx, uvicorn, chromadb
 from fastapi import FastAPI, HTTPException
 
-from backend.modelsPydantic import QueryRequest, UpdateRequest
+from backend.modelsPydantic import (
+    QueryRequest, UpdateRequest, GeneralQuestion
+)
+
 from services.queryLangchain import fetchGptResponse
 from database.crudChroma import CRUD
 from database.modelsChroma import ChatHistory
@@ -11,6 +14,12 @@ from utlis.config import DB_PATH
 app = FastAPI()
 crud = CRUD()
 chromadb_client = chromadb.PersistentClient(path=DB_PATH)
+
+
+@app.post('/general')
+async def general_question(request: GeneralQuestion):
+    answer = await fetchGptResponse(request.query, False)
+    return {'answer': answer}
 
 @app.post('/query')
 async def query_chat_data(request: QueryRequest):
@@ -27,8 +36,9 @@ async def query_chat_data(request: QueryRequest):
 
 @app.post('/update')
 async def update_chat_history(request: UpdateRequest):
-    guild_id = request.guild_id
-    channels = request.channels
+    '''
+    at the moment, guild_id and channel_id are passed but not used
+    '''
     messages = request.messages
 
     chat_history = []

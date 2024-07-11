@@ -18,3 +18,6 @@ class UpdateRequest(BaseModel):
     guild_id: int
     channels: List[Dict]
     messages: List[Message]
+
+class GeneralQuestion(BaseModel):
+    query: str

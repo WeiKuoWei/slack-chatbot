@@ -1,12 +1,7 @@
 # crudChroma.py
-import chromadb, os
-from langchain.schema import Document
-from chromadb.config import Settings
-from langchain_openai import OpenAIEmbeddings
+import chromadb
 
 from utlis.config import DB_PATH
-
-embedding_model = OpenAIEmbeddings(model="text-embedding-ada-002")
 
 class CRUD():
     def __init__(self):
