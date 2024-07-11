@@ -51,9 +51,9 @@ async def update_chat_history(request: UpdateRequest):
             "embedding": embedding
         })
 
-        # Save chat history to Chromadb
-        crud.save_chat_history(chat_history)
-
+    # Save chat history to Chromadb
+    crud.save_chat_history(chat_history)
+    print(f"Update complete, {len(chat_history)} channels with {len(messages)} messages loaded.")
     return {"status": "Update complete"}
 
 async def get_channel_history(channel_id):

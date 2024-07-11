@@ -1,10 +1,10 @@
 # modelsChroma.py
+import asyncio
 from langchain.schema import Document
 from langchain_openai import OpenAIEmbeddings
 
-embedding_model = OpenAIEmbeddings(model="text-embedding-ada-002")
-
 async def generate_embedding(text):
+    embedding_model = OpenAIEmbeddings(model="text-embedding-ada-002")
     return embedding_model.embed_query(text)
 
 class ChatHistory:
