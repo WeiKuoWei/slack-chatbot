@@ -2,10 +2,6 @@
 from pydantic import BaseModel
 from typing import List, Dict
 
-class QueryRequest(BaseModel):
-    query: str
-    channel: str
-
 class Message(BaseModel):
     channel_id: int
     channel_name: str
@@ -19,5 +15,9 @@ class UpdateRequest(BaseModel):
     channels: List[Dict]
     messages: List[Message]
 
-class GeneralQuestion(BaseModel):
+class QueryRequest(BaseModel):
     query: str
+    channel_id: int
+
+class QueryResponse(BaseModel):
+    answer: str

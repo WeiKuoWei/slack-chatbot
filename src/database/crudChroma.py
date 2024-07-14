@@ -2,6 +2,7 @@
 import chromadb
 
 from utlis.config import DB_PATH
+from database.modelsChroma import generate_embedding
 
 class CRUD():
     def __init__(self):
@@ -28,3 +29,30 @@ class CRUD():
         here might consider checking if the collection exists before using
         get_or_create_collection
         '''
+
+    async def retrieve_relevant_history(self, channel_id, query_embedding, top_k=10):
+        try:
+            # Generate the embedding for the query
+            collection_name = str(channel_id)  # Change from int to str
+            print(f"Retrieving collection for channel ID: {collection_name}")
+
+            # Get the collection
+            collection = self.client.get_collection(collection_name)
+            print(f"Collection retrieved: {collection}")
+
+            # Query the collection
+            results =  collection.query(
+                query_embeddings=[query_embedding],
+                n_results=top_k
+            )
+
+            for document in results["documents"]:
+                print(f"Result: {document}")
+
+            return results
+
+        except Exception as e:
+            print(f"Error with retrieving relevant history: {e}")
+            return []
+
+    

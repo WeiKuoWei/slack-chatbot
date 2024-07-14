@@ -3,12 +3,12 @@ import httpx, uvicorn, chromadb
 from fastapi import FastAPI, HTTPException
 
 from backend.modelsPydantic import (
-    QueryRequest, UpdateRequest, GeneralQuestion
+    QueryRequest, UpdateRequest, QueryResponse
 )
 
 from services.queryLangchain import fetchGptResponse
 from database.crudChroma import CRUD
-from database.modelsChroma import ChatHistory
+from database.modelsChroma import ChatHistory, generate_embedding
 from utlis.config import DB_PATH
 
 app = FastAPI()
@@ -16,19 +16,28 @@ crud = CRUD()
 chromadb_client = chromadb.PersistentClient(path=DB_PATH)
 
 
-@app.post('/general')
-async def general_question(request: GeneralQuestion):
-    answer = await fetchGptResponse(request.query, False)
-    return {'answer': answer}
+@app.post('/general', response_model=QueryResponse)
+async def general_question(request: QueryRequest):
+    try:
+        # retrieve chat data from Chromadb here
+        query_embedding = await generate_embedding(request.query)
+        relevant_docs = await crud.retrieve_relevant_history(request.channel_id, query_embedding)
+        print("answer")
+        answer = await fetchGptResponse(request.query, False, relevant_docs)
+        return {'answer': answer}  
+    
+    except Exception as e:
+        print(f"Error with general question: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
-@app.post('/query')
+@app.post('/query', response_model=QueryResponse)
 async def query_chat_data(request: QueryRequest):
     # Fetch relevant chat data from Chromadb
-    matching_docs = chromadb_client.query(request.query, request.channel)
+    relevant_docs = chromadb_client.query(request.query, request.channel)
     
     # Send chat data to ChatGPT API
     try:
-        answer = await fetchGptResponse(request.query, matching_docs)
+        answer = await fetchGptResponse(request.query, relevant_docs)
     except httpx.HTTPStatusError as e:
         raise HTTPException(status_code=e.response.status_code, detail="Error with ChatGPT API")
     

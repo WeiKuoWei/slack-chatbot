@@ -34,8 +34,12 @@ class DiscordBot:
 
             # Send to app and get gpt response if message is not a command
             if not message.content.startswith('!'):
-                response = await self.send_to_app('general', {'query': message.content})
+                response = await self.send_to_app('general', {'query': message.content, 'channel_id': message.channel.id})
+
                 if response.status_code == 200:
+                    # if received response from LLM
+                    if response.json()['answer']:
+                        print("Receive LLM response from FastAPI")
                     await message.channel.send(response.json()['answer'])
 
                 else:
@@ -92,9 +96,12 @@ class DiscordBot:
                 await ctx.send("Failed to update chat history.")
 
     async def send_to_app(self, route, data):
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout = 60.0) as client:
             response = await client.post(
                 f'http://localhost:8000/{route}',
                 json=data
             )
         return response
+
+    def split_message(message, max_length=1000):
+        return [message[i:i + max_length] for i in range(0, len(message), max_length)]

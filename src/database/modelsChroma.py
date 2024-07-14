@@ -7,6 +7,10 @@ async def generate_embedding(text):
     embedding_model = OpenAIEmbeddings(model="text-embedding-ada-002")
     return embedding_model.embed_query(text)
 
+'''
+consider using text-embedding-3-large as an embedding alternative
+'''
+
 class ChatHistory:
     def __init__(self, data):
         # id 
