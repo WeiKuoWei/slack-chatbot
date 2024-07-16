@@ -16,8 +16,10 @@ class UpdateRequest(BaseModel):
     messages: List[Message]
 
 class QueryRequest(BaseModel):
-    query: str
+    guild_id: int
     channel_id: int
+    query: str
+
 
 class QueryResponse(BaseModel):
     answer: str

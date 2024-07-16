@@ -6,6 +6,7 @@ from backend.modelsPydantic import (
     QueryRequest, UpdateRequest, QueryResponse
 )
 
+from services.gptAssistant import fetchAssistanceResponse
 from services.queryLangchain import fetchGptResponse
 from database.crudChroma import CRUD
 from database.modelsChroma import ChatHistory, generate_embedding
@@ -30,14 +31,17 @@ async def general_question(request: QueryRequest):
         print(f"Error with general question: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post('/query', response_model=QueryResponse)
+@app.post('/query_channel', response_model=QueryResponse)
 async def query_chat_data(request: QueryRequest):
-    # Fetch relevant chat data from Chromadb
-    relevant_docs = chromadb_client.query(request.query, request.channel)
-    
+    print("query_channel")
     # Send chat data to ChatGPT API
     try:
-        answer = await fetchGptResponse(request.query, relevant_docs)
+        answer = fetchAssistanceResponse(
+            request.guild_id,
+            request.channel_id, 
+            request.query,            
+        )
+
     except httpx.HTTPStatusError as e:
         raise HTTPException(status_code=e.response.status_code, detail="Error with ChatGPT API")
     

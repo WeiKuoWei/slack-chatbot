@@ -61,6 +61,10 @@ class ChannelChatSummaryAssistant:
         print(self.thread.tool_resources.file_search)
 
     class EventHandler(AssistantEventHandler):
+        '''
+        for some reason, adding the constructor to the class causes an error;
+        will need to be fixed later on
+        '''
         # def __init__(self, client):
         #     self.client = client
             
@@ -116,17 +120,25 @@ class ChannelChatSummaryAssistant:
         # return self.response
 
 # Usage example:
-def getAssistanceResponse():
+def fetchAssistanceResponse(guild_id, channel_id, query):
+    print(f"fetching response for guild_id: {guild_id}, channel_id: {channel_id}, query: {query}")
     assistant = ChannelChatSummaryAssistant()
-    file_paths = ["data/discord/1081204064194404392/1260948752471167016/messages.json"]
-    content = "Get me the most recent 3 messages from the channel history along with their timestamps."
+    file_path = f"data/discord/{guild_id}/{channel_id}/messages.json"
     instructions = "Please address the user as Wei Kuo. The user has a premium account."
-    # response = assistant.process(file_paths, content, instructions)
-    # print(response)
-    assistant.process(file_paths, content, instructions)
+    try: 
+        print(f"{type(query)}")
+        assistant.process([file_path], query, instructions)
+
+    except Exception as e:
+        print(f"Error with general question: {e}")
+
     return response
 
+'''
+only for testing purpose; will be removed later
 
 if __name__ == "__main__":
-    response = getAssistanceResponse()
+    response = fetchAssistanceResponse()
     print(response)
+
+'''

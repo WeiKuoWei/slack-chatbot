@@ -25,6 +25,9 @@ class CRUD():
                 embeddings=[embedding], 
                 metadatas=[document.metadata]
             )
+
+            print(f"Here is the page content {document.page_content}")
+        
         '''
         here might consider checking if the collection exists before using
         get_or_create_collection

@@ -1,5 +1,5 @@
 # getMessageDiscord.py
-import json, os, discord, requests, logging, httpx
+import json, os, discord, logging, httpx, time
 from discord.ext import commands
 
 from utlis.config import DISCORD_TOKEN
@@ -14,6 +14,7 @@ class DiscordBot:
         will instead update the permission to allow the bot to read messages; bot should only response to uses if added to the channel
         '''
         self.setup_bot()
+        self.message_global = None
 
     def setup_bot(self):
         # Event: Bot is ready
@@ -22,6 +23,10 @@ class DiscordBot:
             print(f'We have logged in as {self.bot.user}')
 
         # Event: Message received
+        '''
+        messages should be sent to the database for storage
+        '''
+
         @self.bot.event
         async def on_message(message):
             # prevent bot from answering to itself
@@ -32,36 +37,57 @@ class DiscordBot:
                 # Check if content is directly accessible
                 if message.content:
                     print(f"Direct content access: {message.content}")
+                    self.message_global = message       
+
+                    response = await self.update_parameters()   
+                    if response.status_code == 200:
+                        print("Message updated to ChromaDB")
+                    else:
+                        print("Failed to update message to ChromaDB")
+
+
                 else:
                     print("No content in message.content")
 
-            # Process commands
-            await self.bot.process_commands(message)
+            # EXCEPTION: Received bot invitation from user 
+            if message.content.startswith('!invite'):
+                await self.bot.process_commands(message)
 
-            # Check if message is from an approved channel
-            if message.channel.id not in self.approved_channels:
-                return
-
-            # Send to app and get gpt response if message is not a command
-            if not message.content.startswith('!'):
-                response = await self.send_to_app('general', {'query': message.content, 'channel_id': message.channel.id})
-
-                if response.status_code == 200:
-                    # if received response from LLM
-                    if response.json()['answer']:
-                        print("Receive LLM response from FastAPI")
-                    await message.channel.send(response.json()['answer'])
-
+            # For other commands
+            elif message.content.startswith('!'): 
+                if message.channel.id not in self.approved_channels:
+                    print("Received commands from an unapproved channel")
+                    await message.channel.send("Invite bot with << !invite >> to use commands.")
+                    return
+                
                 else:
-                    await message.channel.send("Failed to get response from LLM.")
+                    print("Received commands from an approved channel")
+                    await self.bot.process_commands(message)
+            
+            else:
+                if message.channel.id in self.approved_channels:
+                    # Send to app and get gpt response if message is not a command
+                    print("Received message with no commands")
+                    response = await self.send_to_app(
+                        'general', 
+                        {'query': message.content, 'channel_id': message.channel.id, 'guild_id': message.guild.id}
+                    )
+
+                    if response.status_code == 200:
+                        # if received response from LLM
+                        if response.json()['answer']:
+                            print("Receive LLM response from FastAPI")
+                        await message.channel.send(response.json()['answer'])
+
+                    else:
+                        await message.channel.send("Failed to get response from LLM.")
+                else:
+                    print("Received message from an unapproved channel")
 
         # Command: Update chat history
         @self.bot.command(name='update')
         async def update(ctx):
-            # Check if message is from an approved channel
-            if message.channel.id not in self.approved_channels:
-                return
-
+            print("Updating chat history to ChromaDB...")
             user = ctx.author
             guild = ctx.guild
 
@@ -103,19 +129,19 @@ class DiscordBot:
             }
 
             response = await self.send_to_app('update', data)
-
             if response.status_code == 200:
-                await ctx.send("Update complete.")
+                print("Chat history updated.")
+                await ctx.send("Chat history updated.")
+                
             else:
+                print("Failed to update chat history.")
                 await ctx.send("Failed to update chat history.")
 
-        # save the message to local # temporary use
+        # Command: Save the message to local # temporary use
         @self.bot.command(name='save')
         async def save(ctx):
-            # Check if message is from an approved channel
-            if message.channel.id not in self.approved_channels:
-                return
-            
+            print("Saving messages...")
+
             guild_id = ctx.guild.id
             guild = ctx.guild
 
@@ -157,22 +183,75 @@ class DiscordBot:
             await ctx.send("Messages saved.")
             print("Messages saved.")
 
+        # Command: Return a list of available commands
+        @self.bot.command(name='info')
+        async def info(ctx):
+            print("Provide users with available commands")
+                
+            await ctx.send(
+                "Available commands:\n"
+                "!invite - Invite bot to channel\n"
+                "!remove - Remove bot from channel\n"
+                "!channel - Query channel related information\n"
+                "!save - Save chat history to local\n"
+                "!info - List available commands"
+            )
+            '''
+            update should be triggered upon invitation
+            '''
+
+        # Command: Invite bot to channel
         @self.bot.command(name='invite')
         async def invite(ctx):
-            if ctx.channel.id not in self.approved_channels:
-                self.approved_channels.add(ctx.channel.id)
-                await ctx.send(f"Bot invited to this channel: {ctx.channel.name}")
-            else:
-                await ctx.send(f"Bot is already invited to this channel: {ctx.channel.name}")
+            print(f"Bot invited to this channel: {ctx.channel.name}")
+
+            self.approved_channels.add(ctx.channel.id)
+            await ctx.send(f"Bot invited to this channel: {ctx.channel.name}")
+            await ctx.send(
+                "Available commands:\n"
+                "!invite - Invite bot to channel\n"
+                "!remove - Remove bot from channel\n"
+                "!channel - Query channel related information\n"
+                "!save - Save chat history to local\n"
+                "!info - List available commands"
+            )
 
         # Command: Remove channel from approved list
         @self.bot.command(name='remove')
         async def remove(ctx):
-            if ctx.channel.id in self.approved_channels:
-                self.approved_channels.remove(ctx.channel.id)
-                await ctx.send(f"Bot removed from this channel: {ctx.channel.name}")
+            print(f"Bot removed from this channel: {ctx.channel.name}")
+
+            self.approved_channels.remove(ctx.channel.id)
+            await ctx.send(
+                "Bot removed from this channel. \n" 
+                "Type << !invite >> to add the bot back."
+            )
+            
+        # Command: Respond to user with professor provided resources
+        @self.bot.command(name='resource')
+        async def resource(ctx):
+            pass
+
+        # Command: Respond to user with channel related query 
+        @self.bot.command(name='channel')
+        async def channel(ctx):
+            print("Received channel command for channel related query")
+            print(f"Query: {self.message_global.content} ")
+
+            data = {
+                'guild_id': ctx.guild.id,
+                'channel_id': ctx.channel.id, 
+                'query': self.message_global.content
+            }
+
+            response = await self.send_to_app('query_channel', data)
+            if response.status_code == 200:
+                await ctx.send(response.json()['answer'])
             else:
-                await ctx.send(f"Bot was not in this channel: {ctx.channel.name}")
+                await ctx.send("Failed to get response from LLM.")
+    
+
+    # ----------------- Helper Functions ----------------- # 
 
     async def send_to_app(self, route, data):
         async with httpx.AsyncClient(timeout = 60.0) as client:
@@ -181,6 +260,49 @@ class DiscordBot:
                 json=data
             )
         return response
+    
+    # Update user's response to ChromeDB
+    async def update_parameters(self):
+        # save message to database
+        channel = {
+            "id": self.message_global.channel.id,
+            "name": self.message_global.channel.name,
+            "type": self.message_global.channel.type.name
+        }
 
-    def split_message(message, max_length=1000):
-        return [message[i:i + max_length] for i in range(0, len(message), max_length)]
+        message_info = {
+            "channel_id": self.message_global.channel.id,
+            "channel_name": self.message_global.channel.name,
+            "message_id": self.message_global.id,
+            "author": self.message_global.author.name,
+            "content": self.message_global.content,
+            "timestamp": self.message_global.created_at.isoformat()
+        }
+
+        data = {
+            "guild_id": self.message_global.guild.id,
+            "channels": [channel],
+            'messages': [message_info]
+        }
+
+        response = await self.send_to_app('update', data)
+        return response
+
+    # filter out meaningless messages
+    async def message_filter(self, message):
+        # if message is a command and only a command
+        if message.content.startswith('!') and len(message.content) <= 1:
+            return False
+
+        # if message is for listing info
+        if message.content.contains('Available Commands:'):
+            return False
+        
+        # if message owner is the bot and less than 30 chars,
+        
+        # if none of the above conditions are met, return True
+        return True
+
+
+    # def split_message(message, max_length=1000):
+    #     return [message[i:i + max_length] for i in range(0, len(message), max_length)]
