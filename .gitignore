@@ -10,5 +10,6 @@ __pycache__
 
 files.json
 test.py
+auto_reload.py
 
 # file types

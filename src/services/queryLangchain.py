@@ -1,56 +1,74 @@
-import os
-from dotenv import load_dotenv
+import os, asyncio
+from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain.prompts import PromptTemplate
 from langchain.chains import RetrievalQA
-from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_community.vectorstores import Chroma
-from langchain.chains.question_answering import load_qa_chain
-from database.crudChroma import CRUD
 
-# Load environment variables
-load_dotenv()
+from utlis.config import OPENAI_API_KEY, DB_PATH
 
-# Set up OpenAI API key
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+async def fetchGptResponse(query, data=[]):
+    llm = ChatOpenAI(
+        temperature=0,
+        model_name="gpt-3.5-turbo",
+        max_tokens=500,
+        openai_api_key=OPENAI_API_KEY
+    )
 
-# Initialize the OpenAI embeddings model
-embedding_model = OpenAIEmbeddings(model="text-embedding-ada-002")
+    response = await asyncio.to_thread(
+        llm.invoke,
+        [
+            ("system", f"You are a channel messages summarizer. You will be given 10 most relevant messages to the user query {str(data)}. Answer the user as detail as possible."),
+            ("user", query)
+        ]
+    )
+    print(response)
+    return response.content
 
-# Initialize the ChromaDB client and retriever
-chroma_client = Chroma(
-    embedding_function=embedding_model,
-    persist_directory="./local_chromadb",  # Adjust this to your actual DB_PATH if needed
-    collection_name="C073U7920TZ"
-)
+async def fetchLangchainResponse(query, channel_id):
 
-# Initialize the language model
-llm = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo", max_tokens=500, openai_api_key=OPENAI_API_KEY)
-chain = load_qa_chain(llm, chain_type="stuff", verbose=True)
+    embedding_model = OpenAIEmbeddings(model="text-embedding-ada-002")
 
-# query = "What are the people in this research group trying to achieve?"
-query = "What is going on in the channel recently?"
-# query = "How are the team members feeling recently?"
-# query = "Give me an update on the project progress recently."
-# query = "How the team members in the project collaborate with each other?"
+    # Initialize the ChromaDB client and retriever
+    client = Chroma(
+        embedding_function=embedding_model,
+        persist_directory=DB_PATH,  # Adjust this to your actual DB_PATH if needed
+        collection_name=str(channel_id)
+    )
 
-prompt = f'''
-    {query} Write at least 100 words to answer the question. 
-'''
+    llm = ChatOpenAI(
+        temperature=0,
+        model_name="gpt-3.5-turbo",
+        max_tokens=500,
+        openai_api_key=OPENAI_API_KEY
+    )
 
-matching_docs = chroma_client.similarity_search(query, k=10)
-answer = chain.run(input_documents=matching_docs, question=prompt)
-print(answer)
+    try:
+        # Initialize the RetrievalQA chain
+        chatbot_chain = RetrievalQA.from_chain_type(
+            llm=llm,
+            chain_type="stuff",
+            retriever=client.as_retriever(search_kwargs={"k": 10}),
+            verbose=True, 
+            return_source_documents=True,
 
-''' Here is an alternative way to run the query, which I have not seen apparent difference in the results.
+        )
 
-# Initialize the RetrievalQA chain
-chatbot_chain = RetrievalQA.from_chain_type(
-    llm=llm,
-    chain_type="stuff",
-    retriever=chroma_client.as_retriever(search_kwargs={"k": 10}), 
-    verbose=True,
-)
+        # Define the prompt template
+        template = """
+        respond as clearly as possible {query}?
+        """
 
-answer = chatbot_chain.run(query)
-print(answer)
- '''
+        prompt = PromptTemplate(
+            input_variables=["query"],
+            template=template,
+        )
+
+        # Run the query through the chatbot chain
+        response = chatbot_chain.invoke(prompt.format(query=query))
+
+        # print(response)
+        return response
+
+    except Exception as e:
+        print(f"Error with fetching Langchain response: {e}")
+        return "I'm sorry, I couldn't find an answer to that question."

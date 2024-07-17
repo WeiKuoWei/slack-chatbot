@@ -1,61 +1,61 @@
-import chromadb, os
-from langchain.schema import Document
-from chromadb.config import Settings
-from dotenv import load_dotenv
-from langchain_openai import OpenAIEmbeddings
+# crudChroma.py
+import chromadb
 
-load_dotenv()
-
-DB_PATH = os.getenv("DB_PATH")
-embedding_model = OpenAIEmbeddings(model="text-embedding-ada-002")
+from utlis.config import DB_PATH
+from database.modelsChroma import generate_embedding
 
 class CRUD():
     def __init__(self):
         self.client = chromadb.PersistentClient(path = DB_PATH)
         
+    def save_chat_history(self, chat_history):
+        for chat in chat_history:
+            collection_name, document, embedding= chat['channel_id'], chat['document'], chat['embedding']
+
+            # change collection_name to type str since it was an int, but has to
+            # be a str in order to be used as a collection name
+            collection_name = str(collection_name)
+
+            # note that collection_name is equivalent to channel_id
+            collection = self.client.get_or_create_collection(collection_name)
+            collection.add(
+                # same for id, has to be a str
+                ids=[str(document.metadata['id'])], 
+                documents=[document.page_content],
+                embeddings=[embedding], 
+                metadatas=[document.metadata]
+            )
+
+            print(f"Here is the page content {document.page_content}")
+        
         '''
-        self.client = Chroma(
-            embedding_function=embedding_model,
-            persist_directory="./local_chromadb",  # Adjust this to your actual DB_PATH if needed
-            collection_name="C073U7920TZ"
-        )
+        here might consider checking if the collection exists before using
+        get_or_create_collection
         '''
-    def get_client(self):
-        return self.client
 
-    def create_collection(self, collection_name):
-        collection = self.client.get_or_create_collection(collection_name)
-        return collection
+    async def retrieve_relevant_history(self, channel_id, query_embedding, top_k=10):
+        try:
+            # Generate the embedding for the query
+            collection_name = str(channel_id)  # Change from int to str
+            print(f"Retrieving collection for channel ID: {collection_name}")
 
-    def create_document(self, collection_name, document, embedding):
-        collection = self.client.get_collection(collection_name)
-        collection.add(
-            ids=[document.metadata['id']], 
-            documents=[document.page_content],
-            embeddings=[embedding], 
-            metadatas=[document.metadata]
-        )
-        '''
-            seems to be missing the document itself
-            would need to differentiate between the metadata and the document
-        '''
-    def retrieve_collection(self, collection_name):  
-        return self.client.get_collection(collection_name)
+            # Get the collection
+            collection = self.client.get_collection(collection_name)
+            print(f"Collection retrieved: {collection}")
 
-    def query_collection(self, collection_name, embedded_query, n_results=1):
-        collection = self.client.get_collection(collection_name)
-        return collection.query(
-                    query_embeddings = embedded_query,
-                    n_results = n_results
-                )
+            # Query the collection
+            results =  collection.query(
+                query_embeddings=[query_embedding],
+                n_results=top_k
+            )
 
-    # def update(self, collection_name, query, new_values):
-    #     # Update logic for ChromaDB
-    #     pass
+            for document in results["documents"]:
+                print(f"Result: {document}")
 
-    # def delete_document(self, collection_name, query):
-    #     collection = self.client.get_collection(collection_name)
-    #     collection.delete(query)
+            return results
 
-    # def delete_collection(self, collection_name):
-    #     self.client.delete_collection(collection_name)
+        except Exception as e:
+            print(f"Error with retrieving relevant history: {e}")
+            return []
+
+    
