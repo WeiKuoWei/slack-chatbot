@@ -192,8 +192,9 @@ class DiscordBot:
                 "Available commands:\n"
                 "!invite - Invite bot to channel\n"
                 "!remove - Remove bot from channel\n"
-                "!channel - Query channel related information\n"
-                "!save - Save chat history to local\n"
+                # "!channel - Query channel related information\n"
+                # "!save - Save chat history to local\n"
+                "!update - Update the entire ChromaDB with chat history (use once only) \n"
                 "!info - List available commands"
             )
             '''
@@ -211,8 +212,9 @@ class DiscordBot:
                 "Available commands:\n"
                 "!invite - Invite bot to channel\n"
                 "!remove - Remove bot from channel\n"
-                "!channel - Query channel related information\n"
-                "!save - Save chat history to local\n"
+                # "!channel - Query channel related information\n"
+                # "!save - Save chat history to local\n"
+                "!update - Update the entire ChromaDB with chat history (use once only) \n"
                 "!info - List available commands"
             )
 

@@ -7,24 +7,56 @@ from backend.modelsPydantic import (
 )
 
 from services.gptAssistant import fetchAssistanceResponse
-from services.queryLangchain import fetchGptResponse
+from services.queryLangchain import fetchGptResponse, fetchLangchainResponse
 from database.crudChroma import CRUD
 from database.modelsChroma import ChatHistory, generate_embedding
 from utlis.config import DB_PATH
 
 app = FastAPI()
 crud = CRUD()
-chromadb_client = chromadb.PersistentClient(path=DB_PATH)
 
-
-@app.post('/general', response_model=QueryResponse)
+@app.post('/general') #, response_model=QueryResponse
 async def general_question(request: QueryRequest):
     try:
         # retrieve chat data from Chromadb here
-        query_embedding = await generate_embedding(request.query)
-        relevant_docs = await crud.retrieve_relevant_history(request.channel_id, query_embedding)
-        print("answer")
-        answer = await fetchGptResponse(request.query, False, relevant_docs)
+        try:
+            query_embedding = await generate_embedding(request.query)
+            relevant_docs = await crud.retrieve_relevant_history(request.channel_id, query_embedding)
+            
+            for key, value in relevant_docs.items():
+                print(f"Key: {key}, Value: {value}")
+
+            formatted_messages = []
+            unique_authors = set()
+
+            for metadata, document in zip(relevant_docs['metadatas'][0], relevant_docs['documents'][0]):
+                author = metadata['author']
+                timestamp = metadata['timestamp']
+                content = document
+                unique_authors.add(author)
+                
+                formatted_messages.append(f"Author: {author}\nTimestamp: {timestamp}\nMessage: {content}\n")
+
+            channel_name = relevant_docs['metadatas'][0][0]['channel_name']
+
+            data = {
+                "channel_name": channel_name,
+                "authors": unique_authors,
+                "number_of_unique_authors": len(unique_authors),
+                "messages": formatted_messages
+            }
+
+            answer = await fetchGptResponse(request.query, data)
+            print(f"Answer: {answer}")
+
+        except Exception as e:
+            print(f"Error with GPT response: {e}")
+
+        # try:
+        #     answer = await fetchLangchainResponse(request.query, request.channel_id)
+        # except Exception as e:
+        #     print(f"Error with Langchain response: {e}")
+                    
         return {'answer': answer}  
     
     except Exception as e:
