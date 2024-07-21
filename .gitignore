@@ -13,3 +13,5 @@ test.py
 auto_reload.py
 
 # file types
+
+src/chromadb

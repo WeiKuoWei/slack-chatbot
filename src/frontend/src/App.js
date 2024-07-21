@@ -186,10 +186,7 @@ function App() {
         </div>
         <div className="right-half">
           <ChatBox onRestart={() => {}} guildsChannels={guildsChannels} />
-          <div>
-            <h2>Messages</h2>
-            <pre>{JSON.stringify(messages, null, 2)}</pre>
-          </div>
+         
         </div>
       </div>
     </div>

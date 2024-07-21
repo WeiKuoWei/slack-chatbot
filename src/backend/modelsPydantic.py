@@ -17,7 +17,7 @@ class UpdateRequest(BaseModel):
 
 class QueryRequest(BaseModel):
     guild_id: int
-    channel_id: int
+    channel_id: str
     query: str
 
 

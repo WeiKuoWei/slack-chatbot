@@ -53,9 +53,15 @@ namedir = defaultdict(str)
 for entry in metadata:
     if not namedir[str(entry['topic'])]:
         namedir[str(entry['topic'])] = str(entry['channel_name'])
+print(namedir)  
+
+iddir = defaultdict(str)
+collections = crud.client.list_collections()
+for collection in collections:
+    if not iddir[str(collection.id)]:
+        iddir[str(collection.id)]=(collection.name)
 
 
-print(namedir)
 class TimeQueryRequest(BaseModel):
     channel_id: str
     start_time: datetime
@@ -64,7 +70,7 @@ class TimeQueryRequest(BaseModel):
 async def fetch_guilds_and_channels():
     try:
         collections = crud.client.list_collections()
-        
+        # print(collections)
         return collections
     except Exception as e:
         logger.error(f"Error fetching collections: {e}")
@@ -77,7 +83,10 @@ async def get_guilds_and_channels():
         collections = await fetch_guilds_and_channels()
         guilds_channels = {'main': {'guild_name': 'main', 'channels': []}}
         for collection in collections:
+            print(collection.name)
             channel_id = crud.client.get_collection(collection.name).get_model()['id']
+            # print(channel_id)
+            # print(crud.client.get_collection(collection.name).get_model()['name'])
             channel_name = namedir[str(channel_id)]
             guilds_channels['main']['channels'].append({'channel_id': channel_id, 'channel_name': channel_name})
         # print(guilds_channels)
@@ -132,13 +141,16 @@ async def general_question(request: QueryRequest):
 
 @app.post('/super') # , response_model=QueryResponse
 async def super_question(request: QueryRequest):
+    print(iddir)
     try:
         logger.info(f"Received payload: {request.dict()}")  # Log received payload
         # retrieve chat data from Chromadb here
         try:
             query_embedding = await generate_embedding(request.query)
-            relevant_docs = await crud.retrieve_relevant_history(request.channel_id, query_embedding)
+            # print(query_embedding)
             
+            relevant_docs = await crud.retrieve_relevant_history(iddir[request.channel_id], query_embedding)
+       
             for key, value in relevant_docs.items():
                 logger.info(f"Key: {key}, Value: {value}")
 

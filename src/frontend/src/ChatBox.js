@@ -281,8 +281,9 @@ const ChatBox = ({ onRestart, guildsChannels }) => {
     setInputValue(''); // Clear the input field
 
     const payload = {
-      guild_id: parseInt(selectedGuild, 10),
-      channel_id: parseInt(selectedChannel, 10),
+      // guild_id: parseInt(selectedGuild, 10),
+      guild_id: 1,
+      channel_id: selectedChannel,
       query: inputValue,
     };
 
