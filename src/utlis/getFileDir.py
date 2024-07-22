@@ -33,8 +33,11 @@ def findFileBFS(
     path = os.path.join(root, "files.json")
     os.makedirs(root, exist_ok=True)
 
-    with open(f'{path}', 'w') as f:
-        json.dump(files, f, indent=4)
+    # with open(f'{path}', 'w') as f:
+    #     json.dump(files, f, indent=4)
+
+    for key, value in files.items():
+        print(f"{key} : {value}")
 
     return files
 
