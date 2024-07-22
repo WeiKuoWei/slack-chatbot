@@ -2,6 +2,8 @@
 data
 dumps
 local_chromadb
+pdf_files
+pptx_files
 __pycache__ 
 
 # files
@@ -11,5 +13,7 @@ __pycache__
 files.json
 test.py
 auto_reload.py
+hyperlinks.csv
 
 # file types
+.DS_Store
