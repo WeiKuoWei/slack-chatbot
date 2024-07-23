@@ -5,11 +5,11 @@ from fastapi import FastAPI, HTTPException
 from backend.modelsPydantic import (
     QueryRequest, UpdateRequest, QueryResponse
 )
-
-from services.gptAssistant import fetchAssistanceResponse
 from services.queryLangchain import fetchGptResponse, fetchLangchainResponse
 from database.crudChroma import CRUD
-from database.modelsChroma import ChatHistory, generate_embedding
+from database.modelsChroma import (
+    generate_embedding, ChatHistory
+)
 from utlis.config import DB_PATH
 
 app = FastAPI()
@@ -97,18 +97,18 @@ async def update_chat_history(request: UpdateRequest):
         document, embedding = await chat_info.to_document()
         
         chat_history.append({
-            "channel_id": message_info["channel_id"],
+            "collection_name": f"chat_history_{message_info["channel_id"]}",
             "document": document,
             "embedding": embedding
         })
 
     # Save chat history to Chromadb
-    crud.save_chat_history(chat_history)
+    crud.save_to_db(chat_history)
 
     '''
     also need to implement saving general information
     '''
-    print(f"Update complete, {len(chat_history)} channels with {len(messages)} messages loaded.")
+    print(f"Update complete, {len(messages)} messages are loaded to the database.")
     return {"status": "Update complete"}
 
 async def get_channel_history(channel_id):

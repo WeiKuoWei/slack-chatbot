@@ -16,9 +16,9 @@ class CRUD():
     def __init__(self):
         self.client = chromadb.PersistentClient(path = DB_PATH)
         
-    def save_chat_history(self, chat_history):
-        for chat in chat_history:
-            collection_name, document, embedding= chat['channel_id'], chat['document'], chat['embedding']
+    def save_to_db(self, data):
+        for item in data:
+            collection_name, document, embedding= item['collection_name'], item['document'], item['embedding']
 
             # change collection_name to type str since it was an int, but has to
             # be a str in order to be used as a collection name

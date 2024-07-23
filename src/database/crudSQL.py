@@ -33,7 +33,7 @@ class CRUD():
     def __init__(self):
         self.db = SessionLocal()
 
-    def save_chat_history(self, chat_history):
+    def save_to_db(self, chat_history):
         try:
             for chat in chat_history:
                 chat_record = ChatHistory(

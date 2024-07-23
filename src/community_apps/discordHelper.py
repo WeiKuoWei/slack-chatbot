@@ -70,7 +70,7 @@ async def fetch_channel_info(guild):
 
 async def message_filter(message, bot_user):
         # if message is a command and only a command
-        if message.content.startswith('!'):
+        if message.content.startswith('!') and len(message.content) < 10:
             print(f"Message is a command: {message.content}")
             return False
         
@@ -108,5 +108,14 @@ async def available_commands():
     )
     return commands
 
+# Calculate the profanity score of a message
 async def message_scanner():
+    pass
+
+# Create the summary of a channel
+async def channel_summary():
+    pass
+
+# Update profile of a specific user
+async def update_profile():
     pass
