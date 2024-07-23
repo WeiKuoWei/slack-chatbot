@@ -10,6 +10,9 @@ class Message(BaseModel):
     content: str
     timestamp: str
 
+class ChannelInfo(BaseModel):
+    pass
+
 class UpdateRequest(BaseModel):
     guild_id: int
     channels: List[Dict]

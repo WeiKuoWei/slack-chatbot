@@ -4,7 +4,7 @@ from discord.ext import commands
 
 from utlis.config import DISCORD_TOKEN
 from community_apps.discordHelper import (
-    send_to_app, update_parameters, fetch_channel_messages, message_filter
+    send_to_app, update_parameters, fetch_channel_messages, message_filter, available_commands
 )
 
 
@@ -75,19 +75,7 @@ class DiscordBot:
                 if message.channel.id in self.approved_channels:
                     # Send to app and get gpt response if message is not a command
                     print("Received message with no commands")
-                    response = await send_to_app(
-                        'general', 
-                        {'query': message.content, 'channel_id': message.channel.id, 'guild_id': message.guild.id}
-                    )
-
-                    if response.status_code == 200:
-                        # if received response from LLM
-                        if response.json()['answer']:
-                            print("Receive LLM response from FastAPI")
-                        await message.channel.send(response.json()['answer'])
-
-                    else:
-                        await message.channel.send("Failed to get response from LLM.")
+                    
                 else:
                     print("Received message from an unapproved channel")
 
@@ -135,18 +123,7 @@ class DiscordBot:
         async def info(ctx):
             print("Provide users with available commands")
                 
-            await ctx.send(
-                "Available commands:\n"
-                "!invite - Invite bot to channel\n"
-                "!remove - Remove bot from channel\n"
-                # "!channel - Query channel related information\n"
-                # "!save - Save chat history to local\n"
-                "!update - Update the entire ChromaDB with chat history (use once only) \n"
-                "!info - List available commands"
-            )
-            '''
-            update should be triggered upon invitation
-            '''
+            await ctx.send(await available_commands())
 
         # Command: Invite bot to channel
         @self.bot.command(name='invite')
@@ -155,15 +132,7 @@ class DiscordBot:
 
             self.approved_channels.add(ctx.channel.id)
             await ctx.send(f"Bot invited to this channel: {ctx.channel.name}")
-            await ctx.send(
-                "Available commands:\n"
-                "!invite - Invite bot to channel\n"
-                "!remove - Remove bot from channel\n"
-                # "!channel - Query channel related information\n"
-                # "!save - Save chat history to local\n"
-                "!update - Update the entire ChromaDB with chat history (use once only) \n"
-                "!info - List available commands"
-            )
+            await ctx.send(await available_commands())
 
         # Command: Remove channel from approved list
         @self.bot.command(name='remove')
@@ -177,15 +146,10 @@ class DiscordBot:
             )
             
         # Command: Respond to user with professor provided resources
-        @self.bot.command(name='resource')
+        @self.bot.command(name='g')
         async def resource(ctx):
-            pass
-
-        # Command: Respond to user with channel related query 
-        @self.bot.command(name='channel')
-        async def channel(ctx):
-            print("Received channel command for channel related query")
-            print(f"Query: {self.message_global.content} ")
+            print("Received resource command for professor provided resources")
+            print(f"Query: {self.message_global.content}")
 
             data = {
                 'guild_id': ctx.guild.id,
@@ -193,7 +157,29 @@ class DiscordBot:
                 'query': self.message_global.content
             }
 
-            response = await send_to_app('query_channel', data)
+            response = await send_to_app('resource_query', data)
+            print(f"Response: {response.json()['answer']['result']}")
+            print(f"Sources: {response.json()['answer']['sources']}")
+            if response.status_code == 200:
+                await ctx.send(response.json()['answer']['result'])
+                await ctx.send(f"Sources: {response.json()['answer']['sources']}")
+
+            else:
+                await ctx.send("Failed to get response from LLM.")
+
+        # Command: Respond to user with channel related query 
+        @self.bot.command(name='c')
+        async def channel(ctx):
+            print("Received channel command for channel related query")
+            print(f"Query: {self.message_global.content}")
+
+            data = {
+                'guild_id': ctx.guild.id,
+                'channel_id': ctx.channel.id, 
+                'query': self.message_global.content
+            }
+
+            response = await send_to_app('channel_query', data)
             if response.status_code == 200:
                 await ctx.send(response.json()['answer'])
             else:

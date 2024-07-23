@@ -68,8 +68,6 @@ async def fetch_channel_info(guild):
         for channel in guild.channels if isinstance(channel, discord.TextChannel)
     ]
 
-    # 
-
 async def message_filter(message, bot_user):
         # if message is a command and only a command
         if message.content.startswith('!'):
@@ -82,18 +80,33 @@ async def message_filter(message, bot_user):
             return False
 
         # if message is for listing info
-        if 'Available Commands:' in message.content:
+        if 'Available commands:' in message.content:
             print(f"Message is a command list: {message.content}")
             return False
         
-        # if message owner is the bot and less than 30 chars,
-        if message.author == bot_user and len(message.content) < 30:
+        # if message owner is the bot and less than 50 chars,
+        if message.author == bot_user and len(message.content) < 50:
             print(f"Message is from bot and too short: {message.content}")
             return False
         
         # if none of the above conditions are met, return True
         return True
 
+'''
+also need to implement a profanity check logic that returns a score between [0,1]
+'''
+
+async def available_commands():
+    commands = (
+        "Use the following commands to interact with the TheRealJeffBezos:\n"
+        "   1. !invite - Invite bot to channel\n"
+        "2. !remove - Remove bot from channel\n"
+        "3. !c - Query 'c'hannel related information\n"
+        "4. !g - Query 'g'eneral information that are course related\n"
+        "5. !update - Update the entire ChromaDB with chat history (use once only)\n"
+        "6. !info - List available commands"
+    )
+    return commands
 
 async def message_scanner():
     pass

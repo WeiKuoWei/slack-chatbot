@@ -34,7 +34,7 @@ class CRUD():
                 metadatas=[document.metadata]
             )
 
-            print(f"Here is the page content {document.page_content}")
+            print(f"'{document.page_content}' is added to the collection {collection_name}")
         
         '''
         here might consider checking if the collection exists before using

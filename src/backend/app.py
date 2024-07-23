@@ -15,8 +15,8 @@ from utlis.config import DB_PATH
 app = FastAPI()
 crud = CRUD()
 
-@app.post('/general') #, response_model=QueryResponse
-async def general_question(request: QueryRequest):
+@app.post('/channel_query') #, response_model=QueryResponse
+async def channel_query(request: QueryRequest):
     try:
         # retrieve chat data from Chromadb here
         try:
@@ -51,33 +51,29 @@ async def general_question(request: QueryRequest):
 
         except Exception as e:
             print(f"Error with GPT response: {e}")
-
-        # try:
-        #     answer = await fetchLangchainResponse(request.query, request.channel_id)
-        # except Exception as e:
-        #     print(f"Error with Langchain response: {e}")
                     
         return {'answer': answer}  
     
     except Exception as e:
-        print(f"Error with general question: {e}")
+        print(f"Error with channel related question: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post('/query_channel', response_model=QueryResponse)
-async def query_chat_data(request: QueryRequest):
-    print("query_channel")
-    # Send chat data to ChatGPT API
-    try:
-        answer = fetchAssistanceResponse(
-            request.guild_id,
-            request.channel_id, 
-            request.query,            
-        )
+@app.post('/resource_query') #, response_model=QueryResponse
+async def channel_query(request: QueryRequest):
 
-    except httpx.HTTPStatusError as e:
-        raise HTTPException(status_code=e.response.status_code, detail="Error with ChatGPT API")
+    try:
+        # retrieve chat data from Chromadb here
+        try:
+            collection_name = "course_materials"
+            answer = await fetchLangchainResponse(request.query, collection_name)
+
+        except Exception as e:
+            print(f"Error with Langchain response: {e}")
+        return {'answer': answer}  
     
-    return {'answer': answer}
+    except Exception as e:
+        print(f"Error with course material related question: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 @app.post('/update')
 async def update_chat_history(request: UpdateRequest):
@@ -108,6 +104,10 @@ async def update_chat_history(request: UpdateRequest):
 
     # Save chat history to Chromadb
     crud.save_chat_history(chat_history)
+
+    '''
+    also need to implement saving general information
+    '''
     print(f"Update complete, {len(chat_history)} channels with {len(messages)} messages loaded.")
     return {"status": "Update complete"}
 
