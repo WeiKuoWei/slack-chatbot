@@ -1,4 +1,7 @@
 import os, json, httpx, discord
+from database.modelsChroma import (
+    GuildInfo, ChannelInfo
+)
 
 async def send_to_app(route, data):
     async with httpx.AsyncClient(timeout=60.0) as client:
@@ -31,7 +34,7 @@ async def update_parameters(message):
     response = await send_to_app('update', data)
     return response
 
-async def fetch_channel_messages(guild, bot_user, limit=100):
+async def get_channels_and_messages(guild, bot_user, limit=100):
     channels = [
         {
             "id": channel.id,
@@ -41,13 +44,17 @@ async def fetch_channel_messages(guild, bot_user, limit=100):
         for channel in guild.channels if isinstance(channel, discord.TextChannel)
     ]
 
-    all_messages = []
+    all_messages = {}
+    all_text_channels = []
+    
     for channel in channels:
         if channel['type'] == 'text':
             discord_channel = guild.get_channel(channel['id'])
+            all_text_channels.append(discord_channel)
+            messages = []
             async for message in discord_channel.history(limit=limit):
                 if await message_filter(message, bot_user):
-                    all_messages.append({
+                    messages.append({
                         "channel_id": discord_channel.id,
                         "channel_name": discord_channel.name,
                         "message_id": message.id,
@@ -55,18 +62,9 @@ async def fetch_channel_messages(guild, bot_user, limit=100):
                         "content": message.content,
                         "timestamp": message.created_at.isoformat()
                     })
+            all_messages[discord_channel.id] = messages
 
-    return channels, all_messages
-
-async def fetch_channel_info(guild):
-    channels = [
-        {
-            "id": channel.id,
-            "name": channel.name,
-            "type": channel.type.name
-        }
-        for channel in guild.channels if isinstance(channel, discord.TextChannel)
-    ]
+    return all_text_channels, all_messages
 
 async def message_filter(message, bot_user):
         # if message is a command and only a command
@@ -92,10 +90,6 @@ async def message_filter(message, bot_user):
         # if none of the above conditions are met, return True
         return True
 
-'''
-also need to implement a profanity check logic that returns a score between [0,1]
-'''
-
 async def available_commands():
     commands = (
         "Use the following commands to interact with the TheRealJeffBezos:\n"
@@ -112,10 +106,75 @@ async def available_commands():
 async def message_scanner():
     pass
 
-# Create the summary of a channel
-async def channel_summary():
-    pass
+async def store_guild_info(guild):
+    guild_info = {
+        "guild_id": guild.id,
+        "guild_name": guild.name,
+        "number_of_channels": len(guild.channels),
+        "number_of_members": guild.member_count
+    }
+    '''
+    guild.description is not added since it is not one of the attributes of the
+    discord.Guild object. ChromaDB's page_content takes PyString as the type for
+    page_content, and null cannot be converted to PyString.
+    '''
+    return guild_info
 
-# Update profile of a specific user
-async def update_profile():
-    pass
+async def store_channel_info(channel, guild_id):
+    messages = await channel.history(limit=None).flatten()
+    try:
+        channel_info = ChannelInfo({
+            "channel_id": channel.id,
+            "guild_id": guild_id,
+            "channel_nme": channel.name,
+            "channel_purpose": channel.topic,
+            "number_of_messages": len(messages),
+            "number_of_members": len(channel.members),
+            "last_message_timestamp": messages[-1].created_at.isoformat() if messages else None,
+            "first_message_timestamp": messages[0].created_at.isoformat() if messages else None,
+            "profanity_score": 0  # Calculate this based on your criteria
+        })
+    except Exception as e:
+        print(f"Error with channel info: {e}")
+
+    try:
+        dir_path = f"data/discord/{guild_id}/{channel.id}"
+        os.makedirs(dir_path, exist_ok=True)
+        file_path = os.path.join(dir_path, 'channel_info.json')
+
+        with open(file_path, 'w') as f:
+            json.dump(channel_info.__dict__, f, indent=4)
+    except Exception as e:
+        print(f"Error with saving channel info: {e}")
+
+# async def store_member_info(channel, member):
+#     messages = [msg async for msg in channel.history(limit=None) if msg.author.id == member.id]
+#     member_info = MemberInfoChannel({
+#         "user_id": member.id,
+#         "channel_id": channel.id,
+#         "user_name": member.name,
+#         "user_description": member.nick,
+#         "message_sent": len(messages),
+#         "profanity_score": 0  # Calculate this based on your criteria
+#     })
+
+#     dir_path = f"data/discord/{channel.guild.id}/{channel.id}/{member.id}"
+#     os.makedirs(dir_path, exist_ok=True)
+#     file_path = os.path.join(dir_path, 'member_info.json')
+
+#     with open(file_path, 'w') as f:
+#         json.dump(member_info.__dict__, f, indent=4)
+
+# async def store_channel_list(member, guild):
+#     channel_list = [channel.id for channel in guild.channels if member in channel.members]
+#     channel_list_data = {
+#         "channel_list_id": f"{guild.id}_{member.id}",
+#         "channel_id": channel_list
+#     }
+
+#     dir_path = f"data/discord/{guild.id}/{member.id}"
+#     os.makedirs(dir_path, exist_ok=True)
+#     file_path = os.path.join(dir_path, 'channel_list.json')
+
+#     with open(file_path, 'w') as f:
+#         json.dump(channel_list_data, f, indent=4)
