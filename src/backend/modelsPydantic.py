@@ -10,12 +10,12 @@ class QueryRequest(BaseModel):
 class QueryResponse(BaseModel):
     answer: str
 
-
 class Message(BaseModel):
     channel_id: int
     channel_name: str
     message_id: int
     author: str
+    author_id: int
     content: str
     timestamp: str
 
@@ -40,23 +40,18 @@ class UpdateChannelInfo(BaseModel):
     first_message_timestamp: Optional[str] = "null"
     profanity_score: Optional[float] = 0.0
 
-class UpdateMemberInfoChannel(BaseModel):
+class UpdateMemberInfo(BaseModel):
     user_id: int
     channel_id: int
-    user_name: str
-    user_description: Optional[str] = "null"
-    message_sent: int
-    profanity_score: Optional[float] = 0.0
-
-class UpdateMemberInfoGuild(BaseModel):
-    user_id: int
-    channel_list_id: int
-    guild_id: int
+    channel_list_id: str
     user_name: str
     user_description: Optional[str] = "null"
     message_sent: int
     profanity_score: Optional[float] = 0.0
 
 class UpdateChannelList(BaseModel):
-    channel_id: int
-    channel_list_id: int
+    user_id: int
+    user_name: str
+    guild_id: int
+    channel_ids: List[int]
+    

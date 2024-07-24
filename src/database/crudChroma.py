@@ -46,7 +46,7 @@ class CRUD():
     async def retrieve_relevant_history(self, channel_id, query_embedding, top_k=10):
         try:
             # Generate the embedding for the query
-            collection_name = str(channel_id)  # Change from int to str
+            collection_name = f"chat_history_{channel_id}"  # Change from int to str
             print(f"Retrieving collection for channel ID: {collection_name}")
 
             # Get the collection
@@ -103,9 +103,4 @@ class CRUD():
 
             print(f"Saved {filename} to collection {collection_name}")
         
-'''
-something to consider in the future: each pdfs are chunked into 1000 characters
-with 200 characters overlap; thus many chunks will have the same metadata with
-the pdf file name.
-'''
 

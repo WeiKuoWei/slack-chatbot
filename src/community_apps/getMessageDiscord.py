@@ -1,12 +1,11 @@
 # getMessageDiscord.py
-import json, os, discord, logging, httpx, time
+import json, os, discord, logging, httpx, time, asyncio
 from discord.ext import commands
 
 from utlis.config import DISCORD_TOKEN
 from community_apps.discordHelper import (
-    send_to_app, update_parameters, get_channels_and_messages, message_filter, available_commands,
-    store_guild_info, store_channel_info
-    # , store_member_info, store_channel_list
+    send_to_app, update_message, get_channels_and_messages, message_filter, available_commands,
+    store_guild_info, store_channel_info, store_member_info, store_channel_list
 )
 
 from backend.modelsPydantic import Message, UpdateChatHistory
@@ -42,15 +41,7 @@ class DiscordBot:
                     self.message_global = message       
 
                     try:
-                        if await message_filter(message, self.bot.user):
-                            response = await update_parameters(message) 
-                            
-                            if response.status_code == 200:
-                                print("Message updated to ChromaDB")
-                            else:
-                                print("Failed to update message to ChromaDB")
-                        else:
-                            print(f"Message {message.content} is not updated to ChromaDB")
+                        asyncio.create_task(update_message(message, self.bot.user))
 
                     except Exception as e:
                         print(f"Error with updating parameters: {e}")
@@ -110,7 +101,7 @@ class DiscordBot:
             converted_messages = {channel_id: [Message(**msg) for msg in messages] for channel_id, messages in all_messages.items()}
             data = UpdateChatHistory(all_messages=converted_messages)
             print("Messages converted to Pydantic model.")
-            response = await send_to_app('update_chat_history', data.dict())
+            response = await send_to_app('update_chat_history', data.model_dump())
                 
             if response.status_code == 200:
                 print("Chat history updated.")
@@ -120,11 +111,11 @@ class DiscordBot:
                 print("Failed to update chat history.")
                 await ctx.send("Failed to update chat history.")
 
-        # Command: update server information, including guild_info,
+        # Command: update chat history server information, including guild_info,
         # channel_info, member_info, etc.
         @self.bot.command(name='setup')
         async def setup(ctx):
-            print("Updating server information to ChromaDB...")
+            print("Updating server information and chat history to ChromaDB...")
             guild = ctx.guild
 
             if not guild:
@@ -135,32 +126,62 @@ class DiscordBot:
                 print(f"Updating server information for {guild.name}")
                 await ctx.send("Updating server information...")
 
-            # # store server information to ChromaDB
-            # guild_info = await store_guild_info(guild)
-            # response = await send_to_app('update_guild_info', guild_info)
-
-            text_channels, messages = await get_channels_and_messages(guild, self.bot.user)
-
-            # for channel in guild.channels:
-            #     if isinstance(channel, discord.TextChannel):
-                    
-            #         print(f"Updating channel information for {channel.name}")
-            #         await store_channel_info(channel, guild.id)
-
-                    # for member in channel.members:
-                    #     await store_member_info(channel, member)
-                    #     await store_channel_list(member, guild)
-
-            await ctx.send("Server information updated.")
-
-            # if response.status_code == 200:
-            #     print("Server information updated.")
-            #     await ctx.send("Server information updated.")
+            try:
+                # get all channels and messages from the server
+                all_channels, all_messages = await get_channels_and_messages(guild, self.bot.user)
                 
-            # else:
-            #     print("Failed to update server information.")
-            #     await ctx.send("Failed to update server information.")
+                # add all messages to ChromaDB
+                converted_messages = {channel_id: [Message(**msg) for msg in messages] for channel_id, messages in all_messages.items()}
+                data = UpdateChatHistory(all_messages=converted_messages)
+                await send_to_app('update_chat_history', data.model_dump())
 
+                # store server information to ChromaDB
+                guild_info = await store_guild_info(guild)
+                await send_to_app('update_info', guild_info)
+
+                # save channel, member, and channel list information to the database
+                print(f"There are a total of {len(all_channels)} channels in {guild.name}")
+                member_channels = {}
+                for channel in all_channels:
+                    # get the messages for this specific channel
+                    channel_messages = all_messages[channel.id] 
+                    channel_info = await store_channel_info(channel, guild.id, channel_messages)
+                    await send_to_app('update_info', channel_info)
+
+                    print(f"There are a total of {len(channel.members)} members in {channel.name}")
+                    for member in channel.members:
+                        if member not in member_channels:
+                            member_channels[member] = []
+                        member_info = await store_member_info(channel, member, channel_messages, guild.id)
+                    
+                        # check if member is in this channel; if not, member_info will be None
+                        if member_info:
+                            member_channels[member].append(channel)
+                            await send_to_app('update_info', member_info)
+                
+                for member, channels in member_channels.items():
+                    print(f"Updating channel list for {member.name}")
+                    channel_list = await store_channel_list(member, guild, channels)
+                    await send_to_app('update_info', channel_list)
+
+                print("Server information updated.")
+                await ctx.send("Server information updated.")
+
+            except Exception as e:
+                print(f"Error with updating server information: {e}")
+                await ctx.send("Failed to update server information.")
+                
+                '''
+                at the moment, storing member info in guild level is not
+                implemented instead, guild level info will be calculated
+                based on channel level info a channel_list collection will
+                be created to store the list of channels a member is in, and
+                it will be used to compose guild level info
+                
+                however, will need to figure out a way to dynamically update
+                channel level member info and channel list will a new member
+                is added to a channel
+                '''
         # Command: Return a list of available commands
         @self.bot.command(name='info')
         async def info(ctx):

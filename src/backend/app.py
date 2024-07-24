@@ -1,16 +1,16 @@
 # app.py
 import httpx, uvicorn, chromadb
 from fastapi import FastAPI, HTTPException
+from typing import Union
 
 from backend.modelsPydantic import (
     QueryResponse, QueryRequest, UpdateChannelInfo, UpdateChatHistory, 
-    UpdateGuildInfo, UpdateMemberInfoChannel, UpdateMemberInfoGuild
+    UpdateGuildInfo, UpdateMemberInfo, UpdateChannelList
 )
 from services.queryLangchain import fetchGptResponse, fetchLangchainResponse
 from database.crudChroma import CRUD
 from database.modelsChroma import (
-    generate_embedding, ChatHistory, GuildInfo, ChannelInfo, MemberInfoGuild,
-    MemberInfoChannel, ChannelList
+    generate_embedding, ChatHistory, GuildInfo, ChannelInfo, MemberInfoChannel, ChannelList
 )
 
 from utlis.config import DB_PATH
@@ -90,6 +90,7 @@ async def update_chat_history(request: UpdateChatHistory):
                 "channel_name": message.channel_name,
                 "message_id": message.message_id,
                 "author": message.author,
+                "author_id": message.author_id,
                 "content": message.content,
                 "timestamp": message.timestamp
             }
@@ -112,19 +113,31 @@ async def update_chat_history(request: UpdateChatHistory):
     except Exception as e:
         print(f"Error with saving chat history: {e}")
 
-    '''
-    also need to implement saving general information
-    '''
     print(f"Update complete, {total_messages} messages from {len(all_messages)} channels are loaded to the database.")
     return {"status": "Update complete"}
 
-@app.post('/update_guild_info')
-async def update_guild_info(request: UpdateGuildInfo):
+@app.post('/update_info')
+async def update_info(request: Union[UpdateGuildInfo, UpdateChannelInfo, UpdateMemberInfo, UpdateChannelList]):
     try:
-        guild_info = GuildInfo(request.model_dump())
-        document, embedding = await guild_info.to_document()
+        if isinstance(request, UpdateGuildInfo):
+            collection_name = "guild_info"
+            info = GuildInfo(request.model_dump())
+
+        elif isinstance(request, UpdateChannelInfo):
+            collection_name = f"channel_info_{request.guild_id}"
+            info = ChannelInfo(request.model_dump())
+        
+        elif isinstance(request, UpdateMemberInfo):
+            collection_name = f"member_info_{request.channel_id}"
+            info = MemberInfoChannel(request.model_dump())
+        
+        elif isinstance(request, UpdateChannelList):
+            collection_name = f"channel_list_{request.guild_id}"
+            info = ChannelList(request.model_dump())
+        
+        document, embedding = await info.to_document()
         data = {
-            "collection_name": "guild_info",
+            "collection_name": collection_name,
             "document": document,
             "embedding": embedding
         }
@@ -133,8 +146,26 @@ async def update_guild_info(request: UpdateGuildInfo):
     except Exception as e:
         print(f"Error with updating guild info: {e}")
 
-    print(f"Guild info updated for {request.guild_name}")
+    print(f"Info updated for {collection_name}")
     return {"status": "Update complete"}
+
+# @app.post('/update_channel_info')
+# async def update_channel_info(request: UpdateChannelInfo):
+#     try:
+#         channel_info = ChannelInfo(request.model_dump())
+#         document, embedding = await channel_info.to_document()
+#         data = {
+#             "collection_name": "channel_info",
+#             "document": document,
+#             "embedding": embedding
+#         }
+#         crud.save_to_db([data])
+
+#     except Exception as e:
+#         print(f"Error with updating channel info: {e}")
+
+#     print(f"Channel info updated for {request.channel_name}")
+#     return {"status": "Update complete"}
 
 if __name__ == '__main__':
     uvicorn.run(app, host='0.0.0.0', port=8000)
