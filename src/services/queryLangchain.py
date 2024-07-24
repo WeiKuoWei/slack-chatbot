@@ -24,15 +24,15 @@ async def fetchGptResponse(query, data=[]):
     print(response)
     return response.content
 
-async def fetchLangchainResponse(query, channel_id):
+async def fetchLangchainResponse(query, collection_name):
 
     embedding_model = OpenAIEmbeddings(model="text-embedding-ada-002")
 
     # Initialize the ChromaDB client and retriever
     client = Chroma(
         embedding_function=embedding_model,
-        persist_directory=DB_PATH,  # Adjust this to your actual DB_PATH if needed
-        collection_name=str(channel_id)
+        persist_directory=DB_PATH, 
+        collection_name=str(collection_name)
     )
 
     llm = ChatOpenAI(
@@ -54,8 +54,8 @@ async def fetchLangchainResponse(query, channel_id):
         )
 
         # Define the prompt template
-        template = """
-        respond as clearly as possible {query}?
+        template = f"""
+        Respond as clearly as possible with more than 100 words {query}?
         """
 
         prompt = PromptTemplate(
@@ -66,7 +66,13 @@ async def fetchLangchainResponse(query, channel_id):
         # Run the query through the chatbot chain
         response = chatbot_chain.invoke(prompt.format(query=query))
 
-        # print(response)
+        # Extract and print source documents
+        source_documents = response.get('source_documents', [])
+        sources = [doc.metadata['source'] for doc in source_documents]
+        sources = list(set(sources))
+        
+        response["sources"] = sources
+
         return response
 
     except Exception as e:
