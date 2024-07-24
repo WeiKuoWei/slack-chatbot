@@ -4,6 +4,7 @@ import chromadb, uuid, os
 from utlis.config import DB_PATH
 from utlis.getFileDir import findFileBFS
 from database.modelsChroma import generate_embedding
+from services.getPdfs import read_hyperlinks, match_filenames_to_urls
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import DirectoryLoader
 from langchain_openai import OpenAIEmbeddings
@@ -88,17 +89,34 @@ class CRUD():
         # get docs, ids, and filenames (for metadata purposes)
         docs = text_splitter.split_documents(docs)
         ids = [str(uuid.uuid4()) for _ in range(len(docs))]
-        filenames = [doc.metadata['source'].split('/')[-1] for doc in docs]
-        
+
+        # remove the file path and extension from the source
+        filenames = [doc.metadata['source'].split('/')[-1].split('.')[0] for doc in docs]
+
+        # get the hyperlinks for the pdfs with filenames
+        hyperlinks_file = f"{file_path}/hyperlinks.csv"
+        urls = read_hyperlinks(hyperlinks_file)
+        matched_urls = match_filenames_to_urls(filenames, urls)
+
+        for filename, url in matched_urls.items():
+            print(f"{filename}: {url}")
+
         # save the docs in the collection with collection_name
         collection = self.client.get_or_create_collection(collection_name)
         for doc, id, filename in zip(docs, ids, filenames):
             embedding = await generate_embedding(doc.page_content)
+            url = matched_urls.get(filename, "URL not found")
+        
+            if url:
+                source = f"[{filename}]({url})"
+            else:
+                source = filename
+
             collection.add(
                 ids=[id],
                 documents=[doc.page_content],
                 embeddings=[embedding],
-                metadatas=[{"source": filename}]
+                metadatas=[{"source": source}]
             )
 
             print(f"Saved {filename} to collection {collection_name}")

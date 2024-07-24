@@ -73,44 +73,6 @@ class DiscordBot:
                 else:
                     print("Received message from an unapproved channel")
 
-        # Command: Update chat history
-        @self.bot.command(name='update')
-        async def update(ctx):
-            print("Updating chat history to ChromaDB...")
-            guild = ctx.guild
-
-            if not guild:
-                print("This command can only be used in a server.")
-                await ctx.send("This command can only be used in a server.")
-                return
-            else:
-                print(f"Updating chat history for {guild.name}")
-                await ctx.send("Updating chat history...")
-
-            # get channel and channel messages
-            try:
-                _, all_messages = await get_channels_and_messages(guild, self.bot.user)
-
-            except Exception as e:
-                print(f"Error with fetching channel messages: {e}")
-                all_messages = {}
-
-            # here, update_chat_history takes an instance of Dict[int,
-            # List[Message]]. Message is a Pydantic model, thus all_messages will need to be
-            # converted manually into a list of Message instances
-            converted_messages = {channel_id: [Message(**msg) for msg in messages] for channel_id, messages in all_messages.items()}
-            data = UpdateChatHistory(all_messages=converted_messages)
-            print("Messages converted to Pydantic model.")
-            response = await send_to_app('update_chat_history', data.model_dump())
-                
-            if response.status_code == 200:
-                print("Chat history updated.")
-                await ctx.send("Chat history updated.")
-                
-            else:
-                print("Failed to update chat history.")
-                await ctx.send("Failed to update chat history.")
-
         # Command: update chat history server information, including guild_info,
         # channel_info, member_info, etc.
         @self.bot.command(name='setup')

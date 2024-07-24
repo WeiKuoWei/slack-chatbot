@@ -1,11 +1,8 @@
-import requests
-import os
-import asyncio
+import requests, os, asyncio, logging, csv
 from aspose.slides import Presentation
 from aspose.slides.export import SaveFormat
 from pyppeteer import launch
 from bs4 import BeautifulSoup
-import logging
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
@@ -106,6 +103,26 @@ def create_folders(*folders):
         if not os.path.exists(folder):
             os.makedirs(folder)
 
+# ---------------------------- Other helper functions ----------------------------
+
+def read_hyperlinks(file_path):
+    with open(file_path, newline='') as csvfile:
+        reader = csv.reader(csvfile)
+        urls = [row[0] for row in reader]
+    return urls
+
+def match_filenames_to_urls(filenames, urls):
+    matched_urls = {}
+    for filename in filenames:
+        for url in urls:
+            if filename in url:
+                matched_urls[filename] = url
+                break
+        else:
+            matched_urls[filename] = None
+    return matched_urls
+
+# ---------------------------- Main function ----------------------------
 def main():
     url = 'https://manual.eg.poly.edu/index.php/Main_Page'
     base_link = 'https://manual.eg.poly.edu'

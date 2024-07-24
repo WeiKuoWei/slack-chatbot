@@ -149,23 +149,5 @@ async def update_info(request: Union[UpdateGuildInfo, UpdateChannelInfo, UpdateM
     print(f"Info updated for {collection_name}")
     return {"status": "Update complete"}
 
-# @app.post('/update_channel_info')
-# async def update_channel_info(request: UpdateChannelInfo):
-#     try:
-#         channel_info = ChannelInfo(request.model_dump())
-#         document, embedding = await channel_info.to_document()
-#         data = {
-#             "collection_name": "channel_info",
-#             "document": document,
-#             "embedding": embedding
-#         }
-#         crud.save_to_db([data])
-
-#     except Exception as e:
-#         print(f"Error with updating channel info: {e}")
-
-#     print(f"Channel info updated for {request.channel_name}")
-#     return {"status": "Update complete"}
-
 if __name__ == '__main__':
     uvicorn.run(app, host='0.0.0.0', port=8000)

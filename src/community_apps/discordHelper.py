@@ -94,7 +94,7 @@ async def message_filter(message, bot_user):
             return False
         
         # if none of the above conditions are met, return True
-        print(f"Message is valid: {message.content}")
+        # print(f"Message is valid: {message.content}")
         return True
 
 async def available_commands():
