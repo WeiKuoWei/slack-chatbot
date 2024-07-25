@@ -1,27 +1,83 @@
 [
     {
-        "channel_name": "test",
-        "id": 1264592131771727962,
+        "channel_name": "\u7efc\u5408",
+        "id": 1264755232546492507,
         "author": "guobuzai",
-        "timestamp": "2024-07-21T14:37:39.200000+00:00",
+        "timestamp": "2024-07-22T01:25:45.455000+00:00",
         "chroma:document": "!update",
-        "topic": "0e063811-ed48-4d65-a645-27c38c75ccf3"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
-        "channel_name": "test",
-        "id": 1264592157474295909,
+        "channel_name": "\u7efc\u5408",
+        "id": 1264755269758615582,
         "author": "guobuzai",
-        "timestamp": "2024-07-21T14:37:45.328000+00:00",
+        "timestamp": "2024-07-22T01:25:54.327000+00:00",
         "chroma:document": "!invite",
-        "topic": "0e063811-ed48-4d65-a645-27c38c75ccf3"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
-        "channel_name": "test",
-        "id": 1264592178127175751,
+        "channel_name": "\u7efc\u5408",
+        "id": 1264755284795064392,
         "author": "guobuzai",
-        "timestamp": "2024-07-21T14:37:50.252000+00:00",
+        "timestamp": "2024-07-22T01:25:57.912000+00:00",
         "chroma:document": "!update",
-        "topic": "0e063811-ed48-4d65-a645-27c38c75ccf3"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1264755286371995681,
+        "author": "TheRealJeffBezos",
+        "timestamp": "2024-07-22T01:25:58.288000+00:00",
+        "chroma:document": "Updating chat history...",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1264755284795064392,
+        "author": "guobuzai",
+        "timestamp": "2024-07-22T01:25:57.912000+00:00",
+        "chroma:document": "!update",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1264755272086192169,
+        "author": "TheRealJeffBezos",
+        "timestamp": "2024-07-22T01:25:54.882000+00:00",
+        "chroma:document": "Available commands:\n!invite - Invite bot to channel\n!remove - Remove bot from channel\n!update - Update the entire ChromaDB with chat history (use once only) \n!info - List available commands",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1264755271469764679,
+        "author": "TheRealJeffBezos",
+        "timestamp": "2024-07-22T01:25:54.735000+00:00",
+        "chroma:document": "Bot invited to this channel: \u7efc\u5408",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1264755269758615582,
+        "author": "guobuzai",
+        "timestamp": "2024-07-22T01:25:54.327000+00:00",
+        "chroma:document": "!invite",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1264755237537710235,
+        "author": "TheRealJeffBezos",
+        "timestamp": "2024-07-22T01:25:46.645000+00:00",
+        "chroma:document": "Invite bot with << !invite >> to use commands.",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1264755232546492507,
+        "author": "guobuzai",
+        "timestamp": "2024-07-22T01:25:45.455000+00:00",
+        "chroma:document": "!update",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -29,7 +85,7 @@
         "author": "TheRealJeffBezos",
         "timestamp": "2024-07-21T14:36:19.006000+00:00",
         "chroma:document": "Available commands:\n!invite - Invite bot to channel\n!remove - Remove bot from channel\n!update - Update the entire ChromaDB with chat history (use once only) \n!info - List available commands",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -37,7 +93,7 @@
         "author": "TheRealJeffBezos",
         "timestamp": "2024-07-21T14:36:18.828000+00:00",
         "chroma:document": "Bot invited to this channel: \u7efc\u5408",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -45,7 +101,7 @@
         "author": "guobuzai",
         "timestamp": "2024-07-21T14:36:17.827000+00:00",
         "chroma:document": "!invite",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -53,7 +109,7 @@
         "author": "TheRealJeffBezos",
         "timestamp": "2024-07-21T14:36:10.227000+00:00",
         "chroma:document": "",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -61,7 +117,7 @@
         "author": "guobuzai",
         "timestamp": "2024-07-02T21:23:50.232000+00:00",
         "chroma:document": "llo",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -69,7 +125,7 @@
         "author": "guobuzai",
         "timestamp": "2024-07-02T20:56:40.057000+00:00",
         "chroma:document": "<@860732344893440040> hi",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -77,7 +133,7 @@
         "author": "guobuzai",
         "timestamp": "2024-07-02T20:39:22.498000+00:00",
         "chroma:document": "test",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -85,7 +141,7 @@
         "author": "MessageLogger",
         "timestamp": "2024-07-02T20:19:36.917000+00:00",
         "chroma:document": "",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -93,7 +149,7 @@
         "author": "snowb1ng",
         "timestamp": "2024-04-14T18:22:48.032000+00:00",
         "chroma:document": "",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -101,7 +157,7 @@
         "author": "mashen6743",
         "timestamp": "2024-04-10T22:01:28.688000+00:00",
         "chroma:document": "",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -109,7 +165,7 @@
         "author": "yangyudelie",
         "timestamp": "2024-03-29T23:40:36.481000+00:00",
         "chroma:document": "",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -117,7 +173,7 @@
         "author": "ye9756",
         "timestamp": "2024-03-29T23:15:44.988000+00:00",
         "chroma:document": "",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -125,7 +181,7 @@
         "author": "mooncake3781",
         "timestamp": "2024-03-24T01:44:45.132000+00:00",
         "chroma:document": "",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -133,7 +189,7 @@
         "author": "mashen6743",
         "timestamp": "2024-03-05T20:39:44.715000+00:00",
         "chroma:document": "https://www.faceit.com/zh/r/uqhQ7g",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -141,7 +197,7 @@
         "author": "mashen6743",
         "timestamp": "2024-02-24T04:35:23.577000+00:00",
         "chroma:document": "",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -149,7 +205,7 @@
         "author": "siriuslzzzzz",
         "timestamp": "2024-02-24T04:34:47.935000+00:00",
         "chroma:document": "",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -157,7 +213,7 @@
         "author": "mashen6743",
         "timestamp": "2024-02-24T04:30:21.811000+00:00",
         "chroma:document": "",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -165,7 +221,7 @@
         "author": "siriuslzzzzz",
         "timestamp": "2024-02-22T04:03:49.903000+00:00",
         "chroma:document": "1317537431",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -173,7 +229,7 @@
         "author": "guobuzai",
         "timestamp": "2024-02-20T15:36:27.070000+00:00",
         "chroma:document": "https://tenor.com/view/donald-trump-xi-jinping-g20summit-osaka-japan-potus-gif-18553183",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -181,7 +237,7 @@
         "author": "mashen6743",
         "timestamp": "2024-02-17T03:24:26.401000+00:00",
         "chroma:document": "",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -189,7 +245,7 @@
         "author": "siriuslzzzzz",
         "timestamp": "2024-02-16T04:53:28.855000+00:00",
         "chroma:document": "YNPJ4U",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -197,7 +253,7 @@
         "author": "siriuslzzzzz",
         "timestamp": "2024-02-16T04:08:17.054000+00:00",
         "chroma:document": "4ACZYN",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -205,7 +261,7 @@
         "author": "mashen6743",
         "timestamp": "2024-02-14T23:24:54.896000+00:00",
         "chroma:document": "HGSmashen#NA1",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -213,7 +269,7 @@
         "author": "siriuslzzzzz",
         "timestamp": "2024-01-31T03:55:27.776000+00:00",
         "chroma:document": "R883LJ",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -221,7 +277,7 @@
         "author": "siriuslzzzzz",
         "timestamp": "2024-01-31T01:54:04.974000+00:00",
         "chroma:document": "6XEYEU",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -229,7 +285,7 @@
         "author": "mashen6743",
         "timestamp": "2024-01-12T19:21:29.871000+00:00",
         "chroma:document": "https://tenor.com/view/ching-cheng-hanji-gif-23996543",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -237,7 +293,7 @@
         "author": "siriuslzzzzz",
         "timestamp": "2023-12-15T19:32:09.666000+00:00",
         "chroma:document": "https://www.youtube.com/watch?v=byEQ_-0jH8M",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -245,7 +301,7 @@
         "author": "mashen6743",
         "timestamp": "2023-12-15T01:50:35.428000+00:00",
         "chroma:document": "https://tenor.com/view/baby-groot-dancing-guardians-of-the-galaxy-gif-23689132",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -253,7 +309,7 @@
         "author": "kris_bgk",
         "timestamp": "2023-12-11T03:57:38.997000+00:00",
         "chroma:document": "lawo",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -261,7 +317,7 @@
         "author": "kris_bgk",
         "timestamp": "2023-12-11T03:57:34.902000+00:00",
         "chroma:document": "lai",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -269,7 +325,7 @@
         "author": "mashen6743",
         "timestamp": "2023-12-07T03:41:21.212000+00:00",
         "chroma:document": "https://tenor.com/view/do-the-bartman-china-the-simpsons-chinese-gif-5442456632906865382",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -277,7 +333,7 @@
         "author": "mashen6743",
         "timestamp": "2023-12-07T03:40:45.282000+00:00",
         "chroma:document": "https://tenor.com/view/tom-ching-cheng-hanji-chinese-chinese-tom-tom-and-jerry-gif-18775286",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -285,7 +341,7 @@
         "author": "mashen6743",
         "timestamp": "2023-12-03T02:49:52.214000+00:00",
         "chroma:document": "ipad",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -293,7 +349,7 @@
         "author": "kris_bgk",
         "timestamp": "2023-12-03T02:49:27.992000+00:00",
         "chroma:document": "wyonghsouji",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -301,7 +357,7 @@
         "author": "kris_bgk",
         "timestamp": "2023-12-03T02:49:24.526000+00:00",
         "chroma:document": "xian bie kai",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -309,7 +365,7 @@
         "author": "kris_bgk",
         "timestamp": "2023-12-03T02:49:04.318000+00:00",
         "chroma:document": "erji huaile",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -317,7 +373,7 @@
         "author": "mashen6743",
         "timestamp": "2023-12-03T02:48:52.218000+00:00",
         "chroma:document": "\u4f60\u548b\u4e0d\u8bf4\u8bdd",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -325,7 +381,7 @@
         "author": "kris_bgk",
         "timestamp": "2023-12-03T02:48:43.071000+00:00",
         "chroma:document": "yaowo",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -333,7 +389,7 @@
         "author": "kris_bgk",
         "timestamp": "2023-12-03T02:48:41.699000+00:00",
         "chroma:document": "mashebn",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -341,7 +397,7 @@
         "author": "kris_bgk",
         "timestamp": "2023-12-03T02:40:57.723000+00:00",
         "chroma:document": "",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -349,7 +405,7 @@
         "author": "siriuslzzzzz",
         "timestamp": "2023-11-22T04:37:31.811000+00:00",
         "chroma:document": "L4D2 Model Animations Fix",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -357,7 +413,7 @@
         "author": "siriuslzzzzz",
         "timestamp": "2023-11-21T03:57:07.779000+00:00",
         "chroma:document": "",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -365,7 +421,7 @@
         "author": "mark_mark_uwu",
         "timestamp": "2023-11-21T03:56:31.274000+00:00",
         "chroma:document": "",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -373,7 +429,7 @@
         "author": "siriuslzzzzz",
         "timestamp": "2023-11-21T03:56:05.197000+00:00",
         "chroma:document": "",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -381,7 +437,7 @@
         "author": "mark_mark_uwu",
         "timestamp": "2023-11-21T03:22:23.272000+00:00",
         "chroma:document": "?",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -389,7 +445,7 @@
         "author": "siriuslzzzzz",
         "timestamp": "2023-11-21T03:21:59.507000+00:00",
         "chroma:document": "",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -397,7 +453,7 @@
         "author": "mark_mark_uwu",
         "timestamp": "2023-11-11T02:44:00.209000+00:00",
         "chroma:document": "\uff1f",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -405,7 +461,7 @@
         "author": "guobuzai",
         "timestamp": "2023-11-09T16:13:27.755000+00:00",
         "chroma:document": "nerd",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -413,7 +469,7 @@
         "author": "mark_mark_uwu",
         "timestamp": "2023-11-04T05:00:46.893000+00:00",
         "chroma:document": "",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -421,7 +477,7 @@
         "author": "mark_mark_uwu",
         "timestamp": "2023-11-04T04:59:14.652000+00:00",
         "chroma:document": "",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -429,7 +485,7 @@
         "author": "mashen6743",
         "timestamp": "2023-10-30T02:22:33.923000+00:00",
         "chroma:document": "",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -437,7 +493,7 @@
         "author": "clappyclam",
         "timestamp": "2023-10-29T19:29:33.429000+00:00",
         "chroma:document": "",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -445,7 +501,7 @@
         "author": "siriuslzzzzz",
         "timestamp": "2023-10-26T23:49:18.116000+00:00",
         "chroma:document": "457802653",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -453,7 +509,7 @@
         "author": "mashen6743",
         "timestamp": "2023-10-26T23:44:35.554000+00:00",
         "chroma:document": "AthleticRock#1197",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -461,7 +517,7 @@
         "author": "mashen6743",
         "timestamp": "2023-10-12T01:03:05.981000+00:00",
         "chroma:document": "",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -469,7 +525,7 @@
         "author": "siriuslzzzzz",
         "timestamp": "2023-08-27T22:02:32.584000+00:00",
         "chroma:document": "https://store.steampowered.com/app/2080690/_/",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -477,7 +533,7 @@
         "author": "tichy031006",
         "timestamp": "2023-08-26T02:51:56.699000+00:00",
         "chroma:document": "",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -485,7 +541,7 @@
         "author": "siriuslzzzzz",
         "timestamp": "2023-04-27T03:16:58.678000+00:00",
         "chroma:document": "https://tenor.com/view/dice-gif-23849661",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -493,7 +549,7 @@
         "author": "siriuslzzzzz",
         "timestamp": "2023-04-27T03:16:43.509000+00:00",
         "chroma:document": "https://tenor.com/view/dice-gif-18958117",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -501,7 +557,7 @@
         "author": "theonenonlycheez",
         "timestamp": "2023-04-25T03:40:45.833000+00:00",
         "chroma:document": "?",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -509,7 +565,7 @@
         "author": "mark_mark_uwu",
         "timestamp": "2023-04-25T03:40:34.822000+00:00",
         "chroma:document": "\u6a21\u7279\u79c0\uff1a\u6ee1\u5c4f\u5927\u957f\u817f\u8d85\u6a21\uff0c\u4e2d\u6b27\u5c0f\u59d0\u59d0\u8d70\u79c0\uff01\n\nhttps://b23.tv/agroPuC?share_source=more&share_medium=ipad&bbid=YB442DB65B2E17824B2C8FD7F54DABDCA29A&ts=1682394026",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -517,7 +573,7 @@
         "author": "1503090642",
         "timestamp": "2023-04-20T03:46:33.694000+00:00",
         "chroma:document": "\u3010\u3010\u52a8\u753bMV/\u7c73\u5c71\u821e/\u4e2d\u65e5\u6b4c\u8bcd\u3011\u97f3\u4e50\u52a8\u753b\u77ed\u7247\u300cCOLORs\u300dby\u6cfd\u91ce\u5f18\u4e4b&\u79e6\u57fa\u535a\u3010MCE\u6c49\u5316\u7ec4\u3011\u3011 https://www.bilibili.com/video/BV1px4y1A7WV/?share_source=copy_web&vd_source=cf97c1ab870559ce178579f635eac73f",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -525,7 +581,7 @@
         "author": "mashen6743",
         "timestamp": "2023-04-14T21:58:42.367000+00:00",
         "chroma:document": "https://utweb.rainberrytv.com/gui/share.html#link=magnet%3A%3Fxt%3Durn%3Abtih%3Adbef5dea789992fc174f245e1c4df4a1ef34d1f1%26dn%3DDark%2520and%2520Darker%2520A5%2520Installer%26tr%3Dudp%253a%252f%252ftracker.openbittorrent.com%253a80%252fannounce%26tr%3Dudp%253a%252f%252ftracker.opentrackr.org%253a1337%252fannounce",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -533,7 +589,7 @@
         "author": "guobuzai",
         "timestamp": "2023-04-13T02:06:09.036000+00:00",
         "chroma:document": "\u3010AI\u751f\u6210\u5185\u5bb9\u5e94\u5f53\u4f53\u73b0\u793e\u4f1a\u4e3b\u4e49\u6838\u5fc3\u4ef7\u503c\u89c2-\u54d4\u54e9\u54d4\u54e9\u3011 https://b23.tv/CSSIkJR",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -541,7 +597,7 @@
         "author": "mashen6743",
         "timestamp": "2023-04-13T01:09:45.980000+00:00",
         "chroma:document": "https://tenor.com/view/brindis-xi-jinping-gif-26069380",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -549,7 +605,7 @@
         "author": "1503090642",
         "timestamp": "2023-04-13T01:08:25.378000+00:00",
         "chroma:document": "Wheresmyorange",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -557,7 +613,7 @@
         "author": "mark_mark_uwu",
         "timestamp": "2023-04-11T21:14:55.279000+00:00",
         "chroma:document": "\u8dd1\u4e86\u5e72\u5565",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -565,7 +621,7 @@
         "author": "mark_mark_uwu",
         "timestamp": "2023-04-11T21:14:49.196000+00:00",
         "chroma:document": "<@664268068863606793>",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -573,7 +629,7 @@
         "author": "dancewithnight",
         "timestamp": "2023-03-19T18:52:37.940000+00:00",
         "chroma:document": "",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -581,7 +637,7 @@
         "author": "theonenonlycheez",
         "timestamp": "2023-03-17T02:04:17.786000+00:00",
         "chroma:document": "",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -589,7 +645,7 @@
         "author": "gavinzou",
         "timestamp": "2023-03-14T05:01:03.784000+00:00",
         "chroma:document": "",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -597,7 +653,7 @@
         "author": "siriuslzzzzz",
         "timestamp": "2023-02-20T04:08:54.906000+00:00",
         "chroma:document": "paper digest",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -605,7 +661,7 @@
         "author": "mashen6743",
         "timestamp": "2023-02-12T04:09:55.394000+00:00",
         "chroma:document": "<@664268068863606793> \u51fa\u6765",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -613,7 +669,7 @@
         "author": "mark_mark_uwu",
         "timestamp": "2023-02-11T02:08:04.011000+00:00",
         "chroma:document": "<@664268068863606793>  sbsbsbsbsbsbsbsbbssbsbsbsbsbsb",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -621,7 +677,7 @@
         "author": "guobuzai",
         "timestamp": "2023-02-08T22:11:10.681000+00:00",
         "chroma:document": "\ud83d\udc74",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -629,7 +685,7 @@
         "author": "siriuslzzzzz",
         "timestamp": "2023-02-04T04:48:59.774000+00:00",
         "chroma:document": "\u64a4\u9000\u4e86",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -637,7 +693,7 @@
         "author": "mashen6743",
         "timestamp": "2023-02-04T02:00:28.175000+00:00",
         "chroma:document": "\u4f60\u770b\u770b\u8bbe\u5907\u662f\u4e0d\u662f\u9009\u7684\u7535\u8111\u5587\u53ed",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -645,7 +701,7 @@
         "author": "mashen6743",
         "timestamp": "2023-02-04T02:00:08.817000+00:00",
         "chroma:document": "\u4e0d\u5e26\u7684\u8bdd",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -653,7 +709,7 @@
         "author": "mashen6743",
         "timestamp": "2023-02-04T02:00:06.012000+00:00",
         "chroma:document": "\u4f60\u5e26\u8033\u673a\u8bd5\u8bd5",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -661,7 +717,7 @@
         "author": "mashen6743",
         "timestamp": "2023-02-04T01:59:59.947000+00:00",
         "chroma:document": "\u5443\u5443",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -669,7 +725,7 @@
         "author": "siriuslzzzzz",
         "timestamp": "2023-02-04T01:59:56.956000+00:00",
         "chroma:document": "\u6211\u5c31\u6ca1\u5e26\u8033\u673a",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -677,7 +733,7 @@
         "author": "siriuslzzzzz",
         "timestamp": "2023-02-04T01:59:54.185000+00:00",
         "chroma:document": "\u58f0\u97f3\u6700\u5927\u4e5f\u6ca1\u6709\u58f0",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -685,7 +741,7 @@
         "author": "mashen6743",
         "timestamp": "2023-02-04T01:59:52.171000+00:00",
         "chroma:document": "\u4f60\u91cd\u63d2\u4e0b\u8033\u673a",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -693,7 +749,7 @@
         "author": "siriuslzzzzz",
         "timestamp": "2023-02-04T01:59:46.203000+00:00",
         "chroma:document": "\u6574\u4e2a\u7535\u8111",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -701,7 +757,7 @@
         "author": "siriuslzzzzz",
         "timestamp": "2023-02-04T01:59:43.786000+00:00",
         "chroma:document": "\u5bf9",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -709,7 +765,7 @@
         "author": "mashen6743",
         "timestamp": "2023-02-04T01:59:38.686000+00:00",
         "chroma:document": "\u8fd8\u662f\u53ea\u662fdiscord",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -717,7 +773,7 @@
         "author": "mashen6743",
         "timestamp": "2023-02-04T01:59:31.524000+00:00",
         "chroma:document": "\u6574\u4e2a\u7535\u8111\u90fd\u6ca1\u58f0\u5417",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -725,7 +781,7 @@
         "author": "mashen6743",
         "timestamp": "2023-02-04T01:59:23.209000+00:00",
         "chroma:document": "\u4f60\u662f\u4e0d\u662f\u8f93\u51fa\u8bbe\u5907\u8c03\u9519\u4e86",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -733,7 +789,7 @@
         "author": "siriuslzzzzz",
         "timestamp": "2023-02-04T01:59:13.987000+00:00",
         "chroma:document": "\u6211\u7535\u8111\u6ca1\u58f0",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -741,7 +797,7 @@
         "author": "mashen6743",
         "timestamp": "2023-02-04T01:59:04.047000+00:00",
         "chroma:document": "\u989d",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -749,7 +805,7 @@
         "author": "williamguan",
         "timestamp": "2022-12-31T19:53:51.491000+00:00",
         "chroma:document": "\u53d1\u6211tkf\u540d\u5b57\u554a",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -757,7 +813,7 @@
         "author": "guobuzai",
         "timestamp": "2022-12-31T19:49:35.811000+00:00",
         "chroma:document": "S1lv3rSm1l3#1844",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u7efc\u5408",
@@ -765,63 +821,7 @@
         "author": "mark_mark_uwu",
         "timestamp": "2022-12-25T20:24:56.092000+00:00",
         "chroma:document": "\uff1f",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
-    },
-    {
-        "channel_name": "\u7efc\u5408",
-        "id": 1056668889158795336,
-        "author": "mark_mark_uwu",
-        "timestamp": "2022-12-25T20:24:55.134000+00:00",
-        "chroma:document": "\uff1f",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
-    },
-    {
-        "channel_name": "\u7efc\u5408",
-        "id": 1056380322230583306,
-        "author": "1503090642",
-        "timestamp": "2022-12-25T01:18:15.417000+00:00",
-        "chroma:document": "\u91cd\u542f\u3001",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
-    },
-    {
-        "channel_name": "\u7efc\u5408",
-        "id": 1056380248683450388,
-        "author": "1503090642",
-        "timestamp": "2022-12-25T01:17:57.882000+00:00",
-        "chroma:document": "\u9ea6\u51fa\u95ee\u9898\u4e86",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
-    },
-    {
-        "channel_name": "\u7efc\u5408",
-        "id": 1056380156534591589,
-        "author": "1503090642",
-        "timestamp": "2022-12-25T01:17:35.912000+00:00",
-        "chroma:document": "loser",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
-    },
-    {
-        "channel_name": "\u7efc\u5408",
-        "id": 1056380150289289267,
-        "author": "1503090642",
-        "timestamp": "2022-12-25T01:17:34.423000+00:00",
-        "chroma:document": "\u6211\u7238\u4e5f\u5728\u634f",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
-    },
-    {
-        "channel_name": "\u7efc\u5408",
-        "id": 1056380115212304395,
-        "author": "1503090642",
-        "timestamp": "2022-12-25T01:17:26.060000+00:00",
-        "chroma:document": "\u8fb9",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
-    },
-    {
-        "channel_name": "\u7efc\u5408",
-        "id": 1056380104667824149,
-        "author": "1503090642",
-        "timestamp": "2022-12-25T01:17:23.546000+00:00",
-        "chroma:document": "\u6211\u59b9\u5728\u65c1\u5e74",
-        "topic": "205d6cbf-a8f4-4536-a810-8feb818ae871"
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
     },
     {
         "channel_name": "\u9ad8\u80fd-\u548c-\u6df7\u526a",
@@ -829,7 +829,15 @@
         "author": "guobuzai",
         "timestamp": "2024-07-02T20:21:11.243000+00:00",
         "chroma:document": "hi",
-        "topic": "9eb2b26f-18f6-46de-b6bd-f9d943326556"
+        "topic": "8f72bb23-a1c3-4e02-bad9-dd926aaa57b3"
+    },
+    {
+        "channel_name": "test",
+        "id": 1264592311149396042,
+        "author": "TheRealJeffBezos",
+        "timestamp": "2024-07-21T14:38:21.967000+00:00",
+        "chroma:document": "Chat history updated.",
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
     },
     {
         "channel_name": "test",
@@ -837,7 +845,7 @@
         "author": "TheRealJeffBezos",
         "timestamp": "2024-07-21T14:37:50.669000+00:00",
         "chroma:document": "Updating chat history...",
-        "topic": "0e063811-ed48-4d65-a645-27c38c75ccf3"
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
     },
     {
         "channel_name": "test",
@@ -845,7 +853,7 @@
         "author": "guobuzai",
         "timestamp": "2024-07-21T14:37:50.252000+00:00",
         "chroma:document": "!update",
-        "topic": "0e063811-ed48-4d65-a645-27c38c75ccf3"
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
     },
     {
         "channel_name": "test",
@@ -853,7 +861,7 @@
         "author": "TheRealJeffBezos",
         "timestamp": "2024-07-21T14:37:46.040000+00:00",
         "chroma:document": "Available commands:\n!invite - Invite bot to channel\n!remove - Remove bot from channel\n!update - Update the entire ChromaDB with chat history (use once only) \n!info - List available commands",
-        "topic": "0e063811-ed48-4d65-a645-27c38c75ccf3"
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
     },
     {
         "channel_name": "test",
@@ -861,7 +869,7 @@
         "author": "TheRealJeffBezos",
         "timestamp": "2024-07-21T14:37:45.821000+00:00",
         "chroma:document": "Bot invited to this channel: test",
-        "topic": "0e063811-ed48-4d65-a645-27c38c75ccf3"
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
     },
     {
         "channel_name": "test",
@@ -869,7 +877,7 @@
         "author": "guobuzai",
         "timestamp": "2024-07-21T14:37:45.328000+00:00",
         "chroma:document": "!invite",
-        "topic": "0e063811-ed48-4d65-a645-27c38c75ccf3"
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
     },
     {
         "channel_name": "test",
@@ -877,7 +885,7 @@
         "author": "TheRealJeffBezos",
         "timestamp": "2024-07-21T14:37:39.644000+00:00",
         "chroma:document": "Invite bot with << !invite >> to use commands.",
-        "topic": "0e063811-ed48-4d65-a645-27c38c75ccf3"
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
     },
     {
         "channel_name": "test",
@@ -885,7 +893,7 @@
         "author": "guobuzai",
         "timestamp": "2024-07-21T14:37:39.200000+00:00",
         "chroma:document": "!update",
-        "topic": "0e063811-ed48-4d65-a645-27c38c75ccf3"
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
     },
     {
         "channel_name": "test",
@@ -893,7 +901,7 @@
         "author": "TheRealJeffBezos",
         "timestamp": "2024-07-21T14:37:09.229000+00:00",
         "chroma:document": "Failed to update chat history.",
-        "topic": "0e063811-ed48-4d65-a645-27c38c75ccf3"
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
     },
     {
         "channel_name": "test",
@@ -901,7 +909,7 @@
         "author": "TheRealJeffBezos",
         "timestamp": "2024-07-21T14:36:38.999000+00:00",
         "chroma:document": "Updating chat history...",
-        "topic": "0e063811-ed48-4d65-a645-27c38c75ccf3"
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
     },
     {
         "channel_name": "test",
@@ -909,7 +917,7 @@
         "author": "guobuzai",
         "timestamp": "2024-07-21T14:36:38.504000+00:00",
         "chroma:document": "!update",
-        "topic": "0e063811-ed48-4d65-a645-27c38c75ccf3"
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
     },
     {
         "channel_name": "test",
@@ -917,7 +925,7 @@
         "author": "TheRealJeffBezos",
         "timestamp": "2024-07-21T14:36:31.761000+00:00",
         "chroma:document": "Available commands:\n!invite - Invite bot to channel\n!remove - Remove bot from channel\n!update - Update the entire ChromaDB with chat history (use once only) \n!info - List available commands",
-        "topic": "0e063811-ed48-4d65-a645-27c38c75ccf3"
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
     },
     {
         "channel_name": "test",
@@ -925,7 +933,7 @@
         "author": "TheRealJeffBezos",
         "timestamp": "2024-07-21T14:36:31.687000+00:00",
         "chroma:document": "Bot invited to this channel: test",
-        "topic": "0e063811-ed48-4d65-a645-27c38c75ccf3"
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
     },
     {
         "channel_name": "test",
@@ -933,7 +941,7 @@
         "author": "guobuzai",
         "timestamp": "2024-07-21T14:36:31.210000+00:00",
         "chroma:document": "!invite",
-        "topic": "0e063811-ed48-4d65-a645-27c38c75ccf3"
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
     },
     {
         "channel_name": "test",
@@ -941,7 +949,7 @@
         "author": "guobuzai",
         "timestamp": "2024-07-02T21:48:46.665000+00:00",
         "chroma:document": "548",
-        "topic": "0e063811-ed48-4d65-a645-27c38c75ccf3"
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
     },
     {
         "channel_name": "test",
@@ -949,7 +957,7 @@
         "author": "guobuzai",
         "timestamp": "2024-07-02T21:31:03.650000+00:00",
         "chroma:document": "531",
-        "topic": "0e063811-ed48-4d65-a645-27c38c75ccf3"
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
     },
     {
         "channel_name": "test",
@@ -957,7 +965,7 @@
         "author": "guobuzai",
         "timestamp": "2024-07-02T21:29:58.443000+00:00",
         "chroma:document": "529",
-        "topic": "0e063811-ed48-4d65-a645-27c38c75ccf3"
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
     },
     {
         "channel_name": "test",
@@ -965,7 +973,7 @@
         "author": "guobuzai",
         "timestamp": "2024-07-02T21:29:20.063000+00:00",
         "chroma:document": "6",
-        "topic": "0e063811-ed48-4d65-a645-27c38c75ccf3"
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
     },
     {
         "channel_name": "test",
@@ -973,7 +981,7 @@
         "author": "guobuzai",
         "timestamp": "2024-07-02T21:28:42.696000+00:00",
         "chroma:document": "5:28",
-        "topic": "0e063811-ed48-4d65-a645-27c38c75ccf3"
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
     },
     {
         "channel_name": "test",
@@ -981,7 +989,7 @@
         "author": "guobuzai",
         "timestamp": "2024-07-02T21:26:09.574000+00:00",
         "chroma:document": "test",
-        "topic": "0e063811-ed48-4d65-a645-27c38c75ccf3"
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
     },
     {
         "channel_name": "test",
@@ -989,7 +997,7 @@
         "author": "guobuzai",
         "timestamp": "2024-07-02T21:26:08.276000+00:00",
         "chroma:document": "hi",
-        "topic": "0e063811-ed48-4d65-a645-27c38c75ccf3"
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
     },
     {
         "channel_name": "test",
@@ -997,7 +1005,7 @@
         "author": "guobuzai",
         "timestamp": "2024-07-02T21:26:07.597000+00:00",
         "chroma:document": "hello",
-        "topic": "0e063811-ed48-4d65-a645-27c38c75ccf3"
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
     },
     {
         "channel_name": "test",
@@ -1005,7 +1013,7 @@
         "author": "guobuzai",
         "timestamp": "2024-07-02T21:26:05.820000+00:00",
         "chroma:document": "hihihihi",
-        "topic": "0e063811-ed48-4d65-a645-27c38c75ccf3"
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
     },
     {
         "channel_name": "test",
@@ -1013,7 +1021,7 @@
         "author": "guobuzai",
         "timestamp": "2024-07-02T20:39:08.804000+00:00",
         "chroma:document": "test test",
-        "topic": "0e063811-ed48-4d65-a645-27c38c75ccf3"
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
     },
     {
         "channel_name": "test",
@@ -1021,7 +1029,7 @@
         "author": "guobuzai",
         "timestamp": "2024-07-02T20:37:31.251000+00:00",
         "chroma:document": "4:37",
-        "topic": "0e063811-ed48-4d65-a645-27c38c75ccf3"
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
     },
     {
         "channel_name": "test",
@@ -1029,7 +1037,7 @@
         "author": "guobuzai",
         "timestamp": "2024-07-02T20:36:43.778000+00:00",
         "chroma:document": "4:36",
-        "topic": "0e063811-ed48-4d65-a645-27c38c75ccf3"
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
     },
     {
         "channel_name": "test",
@@ -1037,7 +1045,7 @@
         "author": "guobuzai",
         "timestamp": "2024-07-02T20:22:27.561000+00:00",
         "chroma:document": "test jul2",
-        "topic": "0e063811-ed48-4d65-a645-27c38c75ccf3"
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
     },
     {
         "channel_name": "test",
@@ -1045,7 +1053,7 @@
         "author": "guobuzai",
         "timestamp": "2024-07-02T20:20:41.533000+00:00",
         "chroma:document": "hello",
-        "topic": "0e063811-ed48-4d65-a645-27c38c75ccf3"
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
     },
     {
         "channel_name": "test",
@@ -1053,6 +1061,1078 @@
         "author": "guobuzai",
         "timestamp": "2024-07-02T20:20:10.468000+00:00",
         "chroma:document": "hello",
-        "topic": "0e063811-ed48-4d65-a645-27c38c75ccf3"
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1265674251114119269,
+        "author": "guobuzai",
+        "timestamp": "2024-07-24T14:17:36.556000+00:00",
+        "chroma:document": "!update",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1265674268717355099,
+        "author": "guobuzai",
+        "timestamp": "2024-07-24T14:17:40.753000+00:00",
+        "chroma:document": "!invite",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1265674285054427137,
+        "author": "guobuzai",
+        "timestamp": "2024-07-24T14:17:44.648000+00:00",
+        "chroma:document": "!update",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1265674286748663890,
+        "author": "TheRealJeffBezos",
+        "timestamp": "2024-07-24T14:17:45.052000+00:00",
+        "chroma:document": "Updating chat history...",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1265674285054427137,
+        "author": "guobuzai",
+        "timestamp": "2024-07-24T14:17:44.648000+00:00",
+        "chroma:document": "!update",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1265674272622248093,
+        "author": "TheRealJeffBezos",
+        "timestamp": "2024-07-24T14:17:41.684000+00:00",
+        "chroma:document": "Use the following commands to interact with the TheRealJeffBezos:\n   1. !invite - Invite bot to channel\n2. !remove - Remove bot from channel\n3. !c - Query 'c'hannel related information\n4. !g - Query 'g'eneral information that are course related\n5. !setup - ONE time use; setup chat history and server information. \n6. !info - List available commands",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1265674272521719995,
+        "author": "TheRealJeffBezos",
+        "timestamp": "2024-07-24T14:17:41.660000+00:00",
+        "chroma:document": "Available commands:\n!invite - Invite bot to channel\n!remove - Remove bot from channel\n!update - Update the entire ChromaDB with chat history (use once only) \n!info - List available commands",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1265674271280336909,
+        "author": "TheRealJeffBezos",
+        "timestamp": "2024-07-24T14:17:41.364000+00:00",
+        "chroma:document": "Bot invited to this channel: \u7efc\u5408",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1265674270155997247,
+        "author": "TheRealJeffBezos",
+        "timestamp": "2024-07-24T14:17:41.096000+00:00",
+        "chroma:document": "Bot invited to this channel: \u7efc\u5408",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1265674268717355099,
+        "author": "guobuzai",
+        "timestamp": "2024-07-24T14:17:40.753000+00:00",
+        "chroma:document": "!invite",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1265674255132135531,
+        "author": "TheRealJeffBezos",
+        "timestamp": "2024-07-24T14:17:37.514000+00:00",
+        "chroma:document": "Invite bot with << !invite >> to use commands.",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1265674251114119269,
+        "author": "guobuzai",
+        "timestamp": "2024-07-24T14:17:36.556000+00:00",
+        "chroma:document": "!update",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1265673741250330694,
+        "author": "guobuzai",
+        "timestamp": "2024-07-24T14:15:34.995000+00:00",
+        "chroma:document": "!update",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1265673715266490462,
+        "author": "TheRealJeffBezos",
+        "timestamp": "2024-07-24T14:15:28.800000+00:00",
+        "chroma:document": "Use the following commands to interact with the TheRealJeffBezos:\n   1. !invite - Invite bot to channel\n2. !remove - Remove bot from channel\n3. !c - Query 'c'hannel related information\n4. !g - Query 'g'eneral information that are course related\n5. !setup - ONE time use; setup chat history and server information. \n6. !info - List available commands",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1265673712451981396,
+        "author": "TheRealJeffBezos",
+        "timestamp": "2024-07-24T14:15:28.129000+00:00",
+        "chroma:document": "Bot invited to this channel: \u7efc\u5408",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1265673710069874812,
+        "author": "guobuzai",
+        "timestamp": "2024-07-24T14:15:27.561000+00:00",
+        "chroma:document": "!invite",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1264755440810463403,
+        "author": "TheRealJeffBezos",
+        "timestamp": "2024-07-22T01:26:35.109000+00:00",
+        "chroma:document": "Chat history updated.",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1264755286371995681,
+        "author": "TheRealJeffBezos",
+        "timestamp": "2024-07-22T01:25:58.288000+00:00",
+        "chroma:document": "Updating chat history...",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1264755284795064392,
+        "author": "guobuzai",
+        "timestamp": "2024-07-22T01:25:57.912000+00:00",
+        "chroma:document": "!update",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1264755272086192169,
+        "author": "TheRealJeffBezos",
+        "timestamp": "2024-07-22T01:25:54.882000+00:00",
+        "chroma:document": "Available commands:\n!invite - Invite bot to channel\n!remove - Remove bot from channel\n!update - Update the entire ChromaDB with chat history (use once only) \n!info - List available commands",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1264755271469764679,
+        "author": "TheRealJeffBezos",
+        "timestamp": "2024-07-22T01:25:54.735000+00:00",
+        "chroma:document": "Bot invited to this channel: \u7efc\u5408",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1264755269758615582,
+        "author": "guobuzai",
+        "timestamp": "2024-07-22T01:25:54.327000+00:00",
+        "chroma:document": "!invite",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1264755237537710235,
+        "author": "TheRealJeffBezos",
+        "timestamp": "2024-07-22T01:25:46.645000+00:00",
+        "chroma:document": "Invite bot with << !invite >> to use commands.",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1264755232546492507,
+        "author": "guobuzai",
+        "timestamp": "2024-07-22T01:25:45.455000+00:00",
+        "chroma:document": "!update",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1264591795413586013,
+        "author": "TheRealJeffBezos",
+        "timestamp": "2024-07-21T14:36:19.006000+00:00",
+        "chroma:document": "Available commands:\n!invite - Invite bot to channel\n!remove - Remove bot from channel\n!update - Update the entire ChromaDB with chat history (use once only) \n!info - List available commands",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1264591794667262072,
+        "author": "TheRealJeffBezos",
+        "timestamp": "2024-07-21T14:36:18.828000+00:00",
+        "chroma:document": "Bot invited to this channel: \u7efc\u5408",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1264591790468763679,
+        "author": "guobuzai",
+        "timestamp": "2024-07-21T14:36:17.827000+00:00",
+        "chroma:document": "!invite",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1264591758592049172,
+        "author": "TheRealJeffBezos",
+        "timestamp": "2024-07-21T14:36:10.227000+00:00",
+        "chroma:document": "",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1257808981842464898,
+        "author": "guobuzai",
+        "timestamp": "2024-07-02T21:23:50.232000+00:00",
+        "chroma:document": "llo",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1257802144392941691,
+        "author": "guobuzai",
+        "timestamp": "2024-07-02T20:56:40.057000+00:00",
+        "chroma:document": "<@860732344893440040> hi",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1257797792555077735,
+        "author": "guobuzai",
+        "timestamp": "2024-07-02T20:39:22.498000+00:00",
+        "chroma:document": "test",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1257792819867947028,
+        "author": "MessageLogger",
+        "timestamp": "2024-07-02T20:19:36.917000+00:00",
+        "chroma:document": "",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1229134781090893955,
+        "author": "snowb1ng",
+        "timestamp": "2024-04-14T18:22:48.032000+00:00",
+        "chroma:document": "",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1227740261648433182,
+        "author": "mashen6743",
+        "timestamp": "2024-04-10T22:01:28.688000+00:00",
+        "chroma:document": "",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1223416554113208392,
+        "author": "yangyudelie",
+        "timestamp": "2024-03-29T23:40:36.481000+00:00",
+        "chroma:document": "",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1223410298338279554,
+        "author": "ye9756",
+        "timestamp": "2024-03-29T23:15:44.988000+00:00",
+        "chroma:document": "",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1221273468826554451,
+        "author": "mooncake3781",
+        "timestamp": "2024-03-24T01:44:45.132000+00:00",
+        "chroma:document": "",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1214673729733267466,
+        "author": "mashen6743",
+        "timestamp": "2024-03-05T20:39:44.715000+00:00",
+        "chroma:document": "https://www.faceit.com/zh/r/uqhQ7g",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1210807163874840666,
+        "author": "mashen6743",
+        "timestamp": "2024-02-24T04:35:23.577000+00:00",
+        "chroma:document": "",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1210807014381330514,
+        "author": "siriuslzzzzz",
+        "timestamp": "2024-02-24T04:34:47.935000+00:00",
+        "chroma:document": "",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1210805898176630784,
+        "author": "mashen6743",
+        "timestamp": "2024-02-24T04:30:21.811000+00:00",
+        "chroma:document": "",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1210074445499211847,
+        "author": "siriuslzzzzz",
+        "timestamp": "2024-02-22T04:03:49.903000+00:00",
+        "chroma:document": "1317537431",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1209523973159649280,
+        "author": "guobuzai",
+        "timestamp": "2024-02-20T15:36:27.070000+00:00",
+        "chroma:document": "https://tenor.com/view/donald-trump-xi-jinping-g20summit-osaka-japan-potus-gif-18553183",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1208252592925184032,
+        "author": "mashen6743",
+        "timestamp": "2024-02-17T03:24:26.401000+00:00",
+        "chroma:document": "",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1207912612935766026,
+        "author": "siriuslzzzzz",
+        "timestamp": "2024-02-16T04:53:28.855000+00:00",
+        "chroma:document": "YNPJ4U",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1207901238818115624,
+        "author": "siriuslzzzzz",
+        "timestamp": "2024-02-16T04:08:17.054000+00:00",
+        "chroma:document": "4ACZYN",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1207467538733334539,
+        "author": "mashen6743",
+        "timestamp": "2024-02-14T23:24:54.896000+00:00",
+        "chroma:document": "HGSmashen#NA1",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1202099806382596116,
+        "author": "siriuslzzzzz",
+        "timestamp": "2024-01-31T03:55:27.776000+00:00",
+        "chroma:document": "R883LJ",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1202069260097302610,
+        "author": "siriuslzzzzz",
+        "timestamp": "2024-01-31T01:54:04.974000+00:00",
+        "chroma:document": "6XEYEU",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1195447481253756940,
+        "author": "mashen6743",
+        "timestamp": "2024-01-12T19:21:29.871000+00:00",
+        "chroma:document": "https://tenor.com/view/ching-cheng-hanji-gif-23996543",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1185303304511688755,
+        "author": "siriuslzzzzz",
+        "timestamp": "2023-12-15T19:32:09.666000+00:00",
+        "chroma:document": "https://www.youtube.com/watch?v=byEQ_-0jH8M",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1185036151514464256,
+        "author": "mashen6743",
+        "timestamp": "2023-12-15T01:50:35.428000+00:00",
+        "chroma:document": "https://tenor.com/view/baby-groot-dancing-guardians-of-the-galaxy-gif-23689132",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1183618575618019378,
+        "author": "kris_bgk",
+        "timestamp": "2023-12-11T03:57:38.997000+00:00",
+        "chroma:document": "lawo",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1183618558442352701,
+        "author": "kris_bgk",
+        "timestamp": "2023-12-11T03:57:34.902000+00:00",
+        "chroma:document": "lai",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1182164923028086814,
+        "author": "mashen6743",
+        "timestamp": "2023-12-07T03:41:21.212000+00:00",
+        "chroma:document": "https://tenor.com/view/do-the-bartman-china-the-simpsons-chinese-gif-5442456632906865382",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1182164772326752316,
+        "author": "mashen6743",
+        "timestamp": "2023-12-07T03:40:45.282000+00:00",
+        "chroma:document": "https://tenor.com/view/tom-ching-cheng-hanji-chinese-chinese-tom-tom-and-jerry-gif-18775286",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1180702415369015378,
+        "author": "mashen6743",
+        "timestamp": "2023-12-03T02:49:52.214000+00:00",
+        "chroma:document": "ipad",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1180702313774592020,
+        "author": "kris_bgk",
+        "timestamp": "2023-12-03T02:49:27.992000+00:00",
+        "chroma:document": "wyonghsouji",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1180702299237126175,
+        "author": "kris_bgk",
+        "timestamp": "2023-12-03T02:49:24.526000+00:00",
+        "chroma:document": "xian bie kai",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1180702214478639144,
+        "author": "kris_bgk",
+        "timestamp": "2023-12-03T02:49:04.318000+00:00",
+        "chroma:document": "erji huaile",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1180702163727556648,
+        "author": "mashen6743",
+        "timestamp": "2023-12-03T02:48:52.218000+00:00",
+        "chroma:document": "\u4f60\u548b\u4e0d\u8bf4\u8bdd",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1180702125362266192,
+        "author": "kris_bgk",
+        "timestamp": "2023-12-03T02:48:43.071000+00:00",
+        "chroma:document": "yaowo",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1180702119607672932,
+        "author": "kris_bgk",
+        "timestamp": "2023-12-03T02:48:41.699000+00:00",
+        "chroma:document": "mashebn",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1180700173551272007,
+        "author": "kris_bgk",
+        "timestamp": "2023-12-03T02:40:57.723000+00:00",
+        "chroma:document": "",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1176743242360963124,
+        "author": "siriuslzzzzz",
+        "timestamp": "2023-11-22T04:37:31.811000+00:00",
+        "chroma:document": "L4D2 Model Animations Fix",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1176370687368245279,
+        "author": "siriuslzzzzz",
+        "timestamp": "2023-11-21T03:57:07.779000+00:00",
+        "chroma:document": "",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1176370534255181974,
+        "author": "mark_mark_uwu",
+        "timestamp": "2023-11-21T03:56:31.274000+00:00",
+        "chroma:document": "",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1176370424880316547,
+        "author": "siriuslzzzzz",
+        "timestamp": "2023-11-21T03:56:05.197000+00:00",
+        "chroma:document": "",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1176361944312205362,
+        "author": "mark_mark_uwu",
+        "timestamp": "2023-11-21T03:22:23.272000+00:00",
+        "chroma:document": "?",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1176361844634570752,
+        "author": "siriuslzzzzz",
+        "timestamp": "2023-11-21T03:21:59.507000+00:00",
+        "chroma:document": "",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1172728405909848164,
+        "author": "mark_mark_uwu",
+        "timestamp": "2023-11-11T02:44:00.209000+00:00",
+        "chroma:document": "\uff1f",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1172207337231110194,
+        "author": "guobuzai",
+        "timestamp": "2023-11-09T16:13:27.755000+00:00",
+        "chroma:document": "nerd",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1170226112178167808,
+        "author": "mark_mark_uwu",
+        "timestamp": "2023-11-04T05:00:46.893000+00:00",
+        "chroma:document": "",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1170225725291368530,
+        "author": "mark_mark_uwu",
+        "timestamp": "2023-11-04T04:59:14.652000+00:00",
+        "chroma:document": "",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1168374356448120852,
+        "author": "mashen6743",
+        "timestamp": "2023-10-30T02:22:33.923000+00:00",
+        "chroma:document": "",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1168270419523027097,
+        "author": "clappyclam",
+        "timestamp": "2023-10-29T19:29:33.429000+00:00",
+        "chroma:document": "",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1167248622841245786,
+        "author": "siriuslzzzzz",
+        "timestamp": "2023-10-26T23:49:18.116000+00:00",
+        "chroma:document": "457802653",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1167247437690314874,
+        "author": "mashen6743",
+        "timestamp": "2023-10-26T23:44:35.554000+00:00",
+        "chroma:document": "AthleticRock#1197",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1161831376669118525,
+        "author": "mashen6743",
+        "timestamp": "2023-10-12T01:03:05.981000+00:00",
+        "chroma:document": "",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1145478484156743754,
+        "author": "siriuslzzzzz",
+        "timestamp": "2023-08-27T22:02:32.584000+00:00",
+        "chroma:document": "https://store.steampowered.com/app/2080690/_/",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1144826538802548898,
+        "author": "tichy031006",
+        "timestamp": "2023-08-26T02:51:56.699000+00:00",
+        "chroma:document": "",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1100983906821492746,
+        "author": "siriuslzzzzz",
+        "timestamp": "2023-04-27T03:16:58.678000+00:00",
+        "chroma:document": "https://tenor.com/view/dice-gif-23849661",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1100983843198095450,
+        "author": "siriuslzzzzz",
+        "timestamp": "2023-04-27T03:16:43.509000+00:00",
+        "chroma:document": "https://tenor.com/view/dice-gif-18958117",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1100265117012205608,
+        "author": "theonenonlycheez",
+        "timestamp": "2023-04-25T03:40:45.833000+00:00",
+        "chroma:document": "?",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1100265070828732497,
+        "author": "mark_mark_uwu",
+        "timestamp": "2023-04-25T03:40:34.822000+00:00",
+        "chroma:document": "\u6a21\u7279\u79c0\uff1a\u6ee1\u5c4f\u5927\u957f\u817f\u8d85\u6a21\uff0c\u4e2d\u6b27\u5c0f\u59d0\u59d0\u8d70\u79c0\uff01\n\nhttps://b23.tv/agroPuC?share_source=more&share_medium=ipad&bbid=YB442DB65B2E17824B2C8FD7F54DABDCA29A&ts=1682394026",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1098454636718989412,
+        "author": "1503090642",
+        "timestamp": "2023-04-20T03:46:33.694000+00:00",
+        "chroma:document": "\u3010\u3010\u52a8\u753bMV/\u7c73\u5c71\u821e/\u4e2d\u65e5\u6b4c\u8bcd\u3011\u97f3\u4e50\u52a8\u753b\u77ed\u7247\u300cCOLORs\u300dby\u6cfd\u91ce\u5f18\u4e4b&\u79e6\u57fa\u535a\u3010MCE\u6c49\u5316\u7ec4\u3011\u3011 https://www.bilibili.com/video/BV1px4y1A7WV/?share_source=copy_web&vd_source=cf97c1ab870559ce178579f635eac73f",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1096555156700672151,
+        "author": "mashen6743",
+        "timestamp": "2023-04-14T21:58:42.367000+00:00",
+        "chroma:document": "https://utweb.rainberrytv.com/gui/share.html#link=magnet%3A%3Fxt%3Durn%3Abtih%3Adbef5dea789992fc174f245e1c4df4a1ef34d1f1%26dn%3DDark%2520and%2520Darker%2520A5%2520Installer%26tr%3Dudp%253a%252f%252ftracker.openbittorrent.com%253a80%252fannounce%26tr%3Dudp%253a%252f%252ftracker.opentrackr.org%253a1337%252fannounce",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1095892652412653568,
+        "author": "guobuzai",
+        "timestamp": "2023-04-13T02:06:09.036000+00:00",
+        "chroma:document": "\u3010AI\u751f\u6210\u5185\u5bb9\u5e94\u5f53\u4f53\u73b0\u793e\u4f1a\u4e3b\u4e49\u6838\u5fc3\u4ef7\u503c\u89c2-\u54d4\u54e9\u54d4\u54e9\u3011 https://b23.tv/CSSIkJR",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1095878462847340575,
+        "author": "mashen6743",
+        "timestamp": "2023-04-13T01:09:45.980000+00:00",
+        "chroma:document": "https://tenor.com/view/brindis-xi-jinping-gif-26069380",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1095878124778033173,
+        "author": "1503090642",
+        "timestamp": "2023-04-13T01:08:25.378000+00:00",
+        "chroma:document": "Wheresmyorange",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1095456974298169345,
+        "author": "mark_mark_uwu",
+        "timestamp": "2023-04-11T21:14:55.279000+00:00",
+        "chroma:document": "\u8dd1\u4e86\u5e72\u5565",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1095456948784210080,
+        "author": "mark_mark_uwu",
+        "timestamp": "2023-04-11T21:14:49.196000+00:00",
+        "chroma:document": "<@664268068863606793>",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1087086245194244186,
+        "author": "dancewithnight",
+        "timestamp": "2023-03-19T18:52:37.940000+00:00",
+        "chroma:document": "",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1086107713425129512,
+        "author": "theonenonlycheez",
+        "timestamp": "2023-03-17T02:04:17.786000+00:00",
+        "chroma:document": "",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1085065034608156752,
+        "author": "gavinzou",
+        "timestamp": "2023-03-14T05:01:03.784000+00:00",
+        "chroma:document": "",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1077079378099458058,
+        "author": "siriuslzzzzz",
+        "timestamp": "2023-02-20T04:08:54.906000+00:00",
+        "chroma:document": "paper digest",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1074180528879714385,
+        "author": "mashen6743",
+        "timestamp": "2023-02-12T04:09:55.394000+00:00",
+        "chroma:document": "<@664268068863606793> \u51fa\u6765",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1073787474851156028,
+        "author": "mark_mark_uwu",
+        "timestamp": "2023-02-11T02:08:04.011000+00:00",
+        "chroma:document": "<@664268068863606793>  sbsbsbsbsbsbsbsbbssbsbsbsbsbsb",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1073003084093071400,
+        "author": "guobuzai",
+        "timestamp": "2023-02-08T22:11:10.681000+00:00",
+        "chroma:document": "\ud83d\udc74",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1071291258997321827,
+        "author": "siriuslzzzzz",
+        "timestamp": "2023-02-04T04:48:59.774000+00:00",
+        "chroma:document": "\u64a4\u9000\u4e86",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1071248847877177464,
+        "author": "mashen6743",
+        "timestamp": "2023-02-04T02:00:28.175000+00:00",
+        "chroma:document": "\u4f60\u770b\u770b\u8bbe\u5907\u662f\u4e0d\u662f\u9009\u7684\u7535\u8111\u5587\u53ed",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1071248766683844608,
+        "author": "mashen6743",
+        "timestamp": "2023-02-04T02:00:08.817000+00:00",
+        "chroma:document": "\u4e0d\u5e26\u7684\u8bdd",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u7efc\u5408",
+        "id": 1071248754918830091,
+        "author": "mashen6743",
+        "timestamp": "2023-02-04T02:00:06.012000+00:00",
+        "chroma:document": "\u4f60\u5e26\u8033\u673a\u8bd5\u8bd5",
+        "topic": "a6434444-3e31-4a04-b569-0530f60cf983"
+    },
+    {
+        "channel_name": "\u9ad8\u80fd-\u548c-\u6df7\u526a",
+        "id": 1257793215499862096,
+        "author": "guobuzai",
+        "timestamp": "2024-07-02T20:21:11.243000+00:00",
+        "chroma:document": "hi",
+        "topic": "8f72bb23-a1c3-4e02-bad9-dd926aaa57b3"
+    },
+    {
+        "channel_name": "test",
+        "id": 1264592311149396042,
+        "author": "TheRealJeffBezos",
+        "timestamp": "2024-07-21T14:38:21.967000+00:00",
+        "chroma:document": "Chat history updated.",
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
+    },
+    {
+        "channel_name": "test",
+        "id": 1264592179876204584,
+        "author": "TheRealJeffBezos",
+        "timestamp": "2024-07-21T14:37:50.669000+00:00",
+        "chroma:document": "Updating chat history...",
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
+    },
+    {
+        "channel_name": "test",
+        "id": 1264592178127175751,
+        "author": "guobuzai",
+        "timestamp": "2024-07-21T14:37:50.252000+00:00",
+        "chroma:document": "!update",
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
+    },
+    {
+        "channel_name": "test",
+        "id": 1264592160460771368,
+        "author": "TheRealJeffBezos",
+        "timestamp": "2024-07-21T14:37:46.040000+00:00",
+        "chroma:document": "Available commands:\n!invite - Invite bot to channel\n!remove - Remove bot from channel\n!update - Update the entire ChromaDB with chat history (use once only) \n!info - List available commands",
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
+    },
+    {
+        "channel_name": "test",
+        "id": 1264592159542087741,
+        "author": "TheRealJeffBezos",
+        "timestamp": "2024-07-21T14:37:45.821000+00:00",
+        "chroma:document": "Bot invited to this channel: test",
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
+    },
+    {
+        "channel_name": "test",
+        "id": 1264592157474295909,
+        "author": "guobuzai",
+        "timestamp": "2024-07-21T14:37:45.328000+00:00",
+        "chroma:document": "!invite",
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
+    },
+    {
+        "channel_name": "test",
+        "id": 1264592133634129973,
+        "author": "TheRealJeffBezos",
+        "timestamp": "2024-07-21T14:37:39.644000+00:00",
+        "chroma:document": "Invite bot with << !invite >> to use commands.",
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
+    },
+    {
+        "channel_name": "test",
+        "id": 1264592131771727962,
+        "author": "guobuzai",
+        "timestamp": "2024-07-21T14:37:39.200000+00:00",
+        "chroma:document": "!update",
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
+    },
+    {
+        "channel_name": "test",
+        "id": 1264592006064242818,
+        "author": "TheRealJeffBezos",
+        "timestamp": "2024-07-21T14:37:09.229000+00:00",
+        "chroma:document": "Failed to update chat history.",
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
+    },
+    {
+        "channel_name": "test",
+        "id": 1264591879270301706,
+        "author": "TheRealJeffBezos",
+        "timestamp": "2024-07-21T14:36:38.999000+00:00",
+        "chroma:document": "Updating chat history...",
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
+    },
+    {
+        "channel_name": "test",
+        "id": 1264591877194383430,
+        "author": "guobuzai",
+        "timestamp": "2024-07-21T14:36:38.504000+00:00",
+        "chroma:document": "!update",
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
+    },
+    {
+        "channel_name": "test",
+        "id": 1264591848912195720,
+        "author": "TheRealJeffBezos",
+        "timestamp": "2024-07-21T14:36:31.761000+00:00",
+        "chroma:document": "Available commands:\n!invite - Invite bot to channel\n!remove - Remove bot from channel\n!update - Update the entire ChromaDB with chat history (use once only) \n!info - List available commands",
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
+    },
+    {
+        "channel_name": "test",
+        "id": 1264591848601813043,
+        "author": "TheRealJeffBezos",
+        "timestamp": "2024-07-21T14:36:31.687000+00:00",
+        "chroma:document": "Bot invited to this channel: test",
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
+    },
+    {
+        "channel_name": "test",
+        "id": 1264591846600867891,
+        "author": "guobuzai",
+        "timestamp": "2024-07-21T14:36:31.210000+00:00",
+        "chroma:document": "!invite",
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
+    },
+    {
+        "channel_name": "test",
+        "id": 1257815258337120326,
+        "author": "guobuzai",
+        "timestamp": "2024-07-02T21:48:46.665000+00:00",
+        "chroma:document": "548",
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
+    },
+    {
+        "channel_name": "test",
+        "id": 1257810799729184781,
+        "author": "guobuzai",
+        "timestamp": "2024-07-02T21:31:03.650000+00:00",
+        "chroma:document": "531",
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
+    },
+    {
+        "channel_name": "test",
+        "id": 1257810526231334945,
+        "author": "guobuzai",
+        "timestamp": "2024-07-02T21:29:58.443000+00:00",
+        "chroma:document": "529",
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
+    },
+    {
+        "channel_name": "test",
+        "id": 1257810365253816461,
+        "author": "guobuzai",
+        "timestamp": "2024-07-02T21:29:20.063000+00:00",
+        "chroma:document": "6",
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
+    },
+    {
+        "channel_name": "test",
+        "id": 1257810208525258894,
+        "author": "guobuzai",
+        "timestamp": "2024-07-02T21:28:42.696000+00:00",
+        "chroma:document": "5:28",
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
+    },
+    {
+        "channel_name": "test",
+        "id": 1257809566284906587,
+        "author": "guobuzai",
+        "timestamp": "2024-07-02T21:26:09.574000+00:00",
+        "chroma:document": "test",
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
+    },
+    {
+        "channel_name": "test",
+        "id": 1257809560840704000,
+        "author": "guobuzai",
+        "timestamp": "2024-07-02T21:26:08.276000+00:00",
+        "chroma:document": "hi",
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
+    },
+    {
+        "channel_name": "test",
+        "id": 1257809557992771675,
+        "author": "guobuzai",
+        "timestamp": "2024-07-02T21:26:07.597000+00:00",
+        "chroma:document": "hello",
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
+    },
+    {
+        "channel_name": "test",
+        "id": 1257809550539620444,
+        "author": "guobuzai",
+        "timestamp": "2024-07-02T21:26:05.820000+00:00",
+        "chroma:document": "hihihihi",
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
+    },
+    {
+        "channel_name": "test",
+        "id": 1257797735118274642,
+        "author": "guobuzai",
+        "timestamp": "2024-07-02T20:39:08.804000+00:00",
+        "chroma:document": "test test",
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
+    },
+    {
+        "channel_name": "test",
+        "id": 1257797325951074304,
+        "author": "guobuzai",
+        "timestamp": "2024-07-02T20:37:31.251000+00:00",
+        "chroma:document": "4:37",
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
+    },
+    {
+        "channel_name": "test",
+        "id": 1257797126835142687,
+        "author": "guobuzai",
+        "timestamp": "2024-07-02T20:36:43.778000+00:00",
+        "chroma:document": "4:36",
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
+    },
+    {
+        "channel_name": "test",
+        "id": 1257793535600627796,
+        "author": "guobuzai",
+        "timestamp": "2024-07-02T20:22:27.561000+00:00",
+        "chroma:document": "test jul2",
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
+    },
+    {
+        "channel_name": "test",
+        "id": 1257793090886828072,
+        "author": "guobuzai",
+        "timestamp": "2024-07-02T20:20:41.533000+00:00",
+        "chroma:document": "hello",
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
+    },
+    {
+        "channel_name": "test",
+        "id": 1257792960590909510,
+        "author": "guobuzai",
+        "timestamp": "2024-07-02T20:20:10.468000+00:00",
+        "chroma:document": "hello",
+        "topic": "02c77b4d-a5f8-461e-b97a-78ca946eecdc"
+    },
+    {
+        "channel_name": "rad05",
+        "id": 1265675888335261728,
+        "author": "rayli7430",
+        "timestamp": "2024-07-24T14:24:06.900000+00:00",
+        "chroma:document": "!invite",
+        "topic": "c55e61b7-a78f-4f78-b83b-a85cd6fd3fde"
     }
 ]
