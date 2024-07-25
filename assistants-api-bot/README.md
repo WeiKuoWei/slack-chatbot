@@ -1,4 +1,4 @@
-# GPT Discord Bot
+# GPT Discord Bot: https://github.com/KeioAIConsortium/gpt-discord-bot
 
 A Discord bot written in Python that uses the [assistants API](https://platform.openai.com/docs/api-reference/assistants) to have conversations with the `gpt-4` model.
 
