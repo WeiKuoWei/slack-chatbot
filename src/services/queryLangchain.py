@@ -3,6 +3,7 @@ from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain.prompts import PromptTemplate
 from langchain.chains import RetrievalQA
 from langchain_community.vectorstores import Chroma
+from langchain_community.embeddings.sentence_transformer import SentenceTransformerEmbeddings
 
 from utlis.config import OPENAI_API_KEY, DB_PATH
 
@@ -27,6 +28,7 @@ async def fetchGptResponse(query, data=[]):
 async def fetchLangchainResponse(query, collection_name):
 
     embedding_model = OpenAIEmbeddings(model="text-embedding-ada-002")
+    # embedding_model = SentenceTransformerEmbeddings(model="all-MiniLM-L6-v2")
 
     # Initialize the ChromaDB client and retriever
     client = Chroma(

@@ -1,48 +1,37 @@
 # crudChroma.py
-import chromadb, uuid, os
+import chromadb, uuid, os, urllib.parse, asyncio
+
 
 from utlis.config import DB_PATH
-from utlis.getFileDir import findFileBFS
 from database.modelsChroma import generate_embedding
 from services.getPdfs import read_hyperlinks, match_filenames_to_urls
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import DirectoryLoader
-from langchain_openai import OpenAIEmbeddings
-
-# temp
-from langchain.chains.question_answering import load_qa_chain
-
 
 class CRUD():
     def __init__(self):
         self.client = chromadb.PersistentClient(path = DB_PATH)
         
-    def save_to_db(self, data):
+    async def save_to_db(self, data):
         for item in data:
-            collection_name, document, embedding= item['collection_name'], item['document'], item['embedding']
+            collection_name, document, embedding = item['collection_name'], item['document'], item['embedding']
 
-            # change collection_name to type str since it was an int, but has to
+            # Change collection_name to type str since it was an int, but has to
             # be a str in order to be used as a collection name
             collection_name = str(collection_name)
 
-            # note that collection_name is equivalent to channel_id
-            collection = self.client.get_or_create_collection(collection_name)
-            collection.add(
-                # same for id, has to be a str
-                ids=[str(document.metadata['id'])], 
+            # Note that collection_name is equivalent to channel_id
+            collection = await asyncio.to_thread(self.client.get_or_create_collection, collection_name)
+            
+            await asyncio.to_thread(collection.add,
+                # Same for id, has to be a str
+                ids=[str(document.metadata['id'])],
                 documents=[document.page_content],
-                embeddings=[embedding], 
+                embeddings=[embedding],
                 metadatas=[document.metadata]
             )
 
             print(f"'{document.page_content}' is added to the collection {collection_name}")
-        
-        '''
-        here might consider checking if the collection exists before using
-        get_or_create_collection
-
-        will also need to update this function to async
-        '''
 
     async def retrieve_relevant_history(self, channel_id, query_embedding, top_k=10):
         try:
@@ -94,7 +83,7 @@ class CRUD():
         filenames = [doc.metadata['source'].split('/')[-1].split('.')[0] for doc in docs]
 
         # get the hyperlinks for the pdfs with filenames
-        hyperlinks_file = f"{file_path}/hyperlinks.csv"
+        hyperlinks_file = f"{file_path}/../hyperlinks.csv"
         urls = read_hyperlinks(hyperlinks_file)
         matched_urls = match_filenames_to_urls(filenames, urls)
 
@@ -106,7 +95,10 @@ class CRUD():
         for doc, id, filename in zip(docs, ids, filenames):
             embedding = await generate_embedding(doc.page_content)
             url = matched_urls.get(filename, "URL not found")
-        
+            
+            # format the filename
+            filename = urllib.parse.unquote(filename.replace('_', ' '))
+            
             if url:
                 source = f"[{filename}]({url})"
             else:

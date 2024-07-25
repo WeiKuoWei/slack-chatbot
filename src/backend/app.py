@@ -26,8 +26,8 @@ async def channel_query(request: QueryRequest):
             query_embedding = await generate_embedding(request.query)
             relevant_docs = await crud.retrieve_relevant_history(request.channel_id, query_embedding)
             
-            for key, value in relevant_docs.items():
-                print(f"Key: {key}, Value: {value}")
+            # for key, value in relevant_docs.items():
+            #     print(f"Key: {key}, Value: {value}")
 
             formatted_messages = []
             unique_authors = set()
@@ -63,7 +63,6 @@ async def channel_query(request: QueryRequest):
 
 @app.post('/resource_query') #, response_model=QueryResponse
 async def resource_query(request: QueryRequest):
-
     try:
         # retrieve chat data from Chromadb here
         try:
@@ -109,7 +108,7 @@ async def update_chat_history(request: UpdateChatHistory):
 
     # Save chat history to Chromadb
     try:
-        crud.save_to_db(chat_history)
+        await crud.save_to_db(chat_history)
     except Exception as e:
         print(f"Error with saving chat history: {e}")
 
@@ -141,7 +140,7 @@ async def update_info(request: Union[UpdateGuildInfo, UpdateChannelInfo, UpdateM
             "document": document,
             "embedding": embedding
         }
-        crud.save_to_db([data])
+        await crud.save_to_db([data])
 
     except Exception as e:
         print(f"Error with updating guild info: {e}")

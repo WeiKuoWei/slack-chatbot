@@ -1,4 +1,5 @@
 import os, json, httpx, discord
+from profanity_check import predict_prob
 from database.modelsChroma import (
     GuildInfo, ChannelInfo, MemberInfoChannel
 )
@@ -11,16 +12,14 @@ async def send_to_app(route, data):
     return response
 
 async def update_message(message, bot_user):
-    if await message_filter(message, bot_user):
-        message = await get_parameters(message) 
-        converted_message = {channel_id: [Message(**msg) for msg in messages] for channel_id, messages in message.items()}
-        data = UpdateChatHistory(all_messages=converted_message)
-        response = await send_to_app('update_chat_history', data.model_dump())
-        
-        if response.status_code == 200:
-            print("Message updated to ChromaDB")
-        else:
-            print("Failed to update message to ChromaDB")
+    converted_message = {channel_id: [Message(**msg) for msg in messages] for channel_id, messages in message.items()}
+    data = UpdateChatHistory(all_messages=converted_message)
+    response = await send_to_app('update_chat_history', data.model_dump())
+    
+    if response.status_code == 200:
+        print("Message updated to ChromaDB")
+    else:
+        print("Failed to update message to ChromaDB")
 
 async def get_parameters(message):
     print(f"Updating message: {message.content}")
@@ -57,11 +56,10 @@ async def get_channels_and_messages(guild, bot_user, limit=500):
             all_text_channels.append(discord_channel)
             messages = []
             async for message in discord_channel.history(limit=limit):
-                print(f"Checking message: {message.content}")
                 if await message_filter(message, bot_user):
                     messages.append({
-                        "channel_id": discord_channel.id,
-                        "channel_name": discord_channel.name,
+                        "channel_id": message.channel.id,
+                        "channel_name": message.channel.name,
                         "message_id": message.id,
                         "author": message.author.name,
                         "author_id": message.author.id,
@@ -73,28 +71,26 @@ async def get_channels_and_messages(guild, bot_user, limit=500):
     return all_text_channels, all_messages
 
 async def message_filter(message, bot_user):
+        # add a profanity_checker here
+        profanity_score = predict_prob([message.content])[0]
+        
         # if message is a command and only a command
         if message.content.startswith('!') and len(message.content) < 10:
-            # print(f"Message is a command: {message.content}")
             return False
         
         # if message is too short, it's probably meaningless
         if len(message.content) < 10:
-            # print(f"Message is too short: {message.content}")
             return False
 
         # if message is for listing info
         if 'following commands' in message.content:
-            # print(f"Message is a command list: {message.content}")
             return False
         
         # if message owner is the bot and less than 50 chars,
         if message.author == bot_user and len(message.content) < 50:
-            # print(f"Message is from bot and too short: {message.content}")
             return False
         
         # if none of the above conditions are met, return True
-        # print(f"Message is valid: {message.content}")
         return True
 
 async def available_commands():

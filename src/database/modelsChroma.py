@@ -2,9 +2,15 @@
 import asyncio
 from langchain.schema import Document
 from langchain_openai import OpenAIEmbeddings
+from langchain_community.embeddings.sentence_transformer import SentenceTransformerEmbeddings
 
-async def generate_embedding(text):
-    embedding_model = OpenAIEmbeddings(model="text-embedding-ada-002")
+# embedding model options
+async def generate_embedding(text, option = "openai"):
+    if option == "openai":
+        embedding_model = OpenAIEmbeddings(model="text-embedding-ada-002")
+    else:
+        embedding_model = SentenceTransformerEmbeddings(model="all-MiniLM-L6-v2")
+    
     return embedding_model.embed_query(text)
 
 '''

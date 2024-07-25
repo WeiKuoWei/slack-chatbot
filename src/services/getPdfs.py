@@ -9,7 +9,6 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 
-# WEBPAGE_FOLDER = 'webpage_files'
 PDF_FOLDER = 'pdf_files'
 PPTX_FOLDER = 'pptx_files'
 
@@ -123,6 +122,7 @@ def match_filenames_to_urls(filenames, urls):
     return matched_urls
 
 # ---------------------------- Main function ----------------------------
+
 def main():
     url = 'https://manual.eg.poly.edu/index.php/Main_Page'
     base_link = 'https://manual.eg.poly.edu'

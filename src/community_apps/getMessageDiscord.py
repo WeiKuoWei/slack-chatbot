@@ -1,13 +1,12 @@
-# getMessageDiscord.py
 import json, os, discord, logging, httpx, time, asyncio
 from discord.ext import commands
+# from profanity_check import predict, predict_prob
 
 from utlis.config import DISCORD_TOKEN
 from community_apps.discordHelper import (
     send_to_app, update_message, get_channels_and_messages, message_filter, available_commands,
-    store_guild_info, store_channel_info, store_member_info, store_channel_list
+    store_guild_info, store_channel_info, store_member_info, store_channel_list, get_parameters
 )
-
 from backend.modelsPydantic import Message, UpdateChatHistory
 
 class DiscordBot:
@@ -15,198 +14,155 @@ class DiscordBot:
         self.bot = bot
         # Maintain a set of approved channels 
         self.approved_channels = set()  
-        '''
-        will instead update the permission to allow the bot to read messages; bot should only response to uses if added to the channel
-        '''
         self.setup_bot()
         self.message_global = None
 
     def setup_bot(self):
-        # Event: Bot is ready
         @self.bot.event
         async def on_ready():
             print(f'We have logged in as {self.bot.user}')
 
-        # Event: Message received
         @self.bot.event
         async def on_message(message):
-            # prevent bot from answering to itself
             if message.author == self.bot.user:
                 return
-            
+
+            if message.content:
+                print(f"Direct content access: {message.content}")
+                self.message_global = message       
+
+                try:
+                    if await message_filter(message, self.bot.user):
+                        message_info = await get_parameters(message)
+                        asyncio.create_task(update_message(message_info, self.bot.user))
+
+                except Exception as e:
+                    print(f"Error with updating parameters: {e}")
+                    response = None
             else:
-                # Check if content is directly accessible
-                if message.content:
-                    print(f"Direct content access: {message.content}")
-                    self.message_global = message       
+                print("No content in message.content")
 
-                    try:
-                        asyncio.create_task(update_message(message, self.bot.user))
-
-                    except Exception as e:
-                        print(f"Error with updating parameters: {e}")
-                        response = None
-                      
-                else:
-                    print("No content in message.content")
-
-            # EXCEPTION: Received bot invitation from user 
             if message.content.startswith('!invite'):
                 await self.bot.process_commands(message)
-
-            # For other commands
             elif message.content.startswith('!'): 
                 if message.channel.id not in self.approved_channels:
                     print("Received commands from an unapproved channel")
                     await message.channel.send("Invite bot with << !invite >> to use commands.")
-                    return
-                
                 else:
                     print("Received commands from an approved channel")
                     await self.bot.process_commands(message)
-            
             else:
                 if message.channel.id in self.approved_channels:
-                    # Send to app and get gpt response if message is not a command
                     print("Received message with no commands")
-                    
                 else:
                     print("Received message from an unapproved channel")
 
-        # Command: update chat history server information, including guild_info,
-        # channel_info, member_info, etc.
         @self.bot.command(name='setup')
         async def setup(ctx):
-            print("Updating server information and chat history to ChromaDB...")
-            guild = ctx.guild
+            await self.update_server_info(ctx)
 
-            if not guild:
-                print("This command can only be used in a server.")
-                await ctx.send("This command can only be used in a server.")
-                return
-            else:
-                print(f"Updating server information for {guild.name}")
-                await ctx.send("Updating server information...")
-
-            try:
-                # get all channels and messages from the server
-                all_channels, all_messages = await get_channels_and_messages(guild, self.bot.user)
-                
-                # add all messages to ChromaDB
-                converted_messages = {channel_id: [Message(**msg) for msg in messages] for channel_id, messages in all_messages.items()}
-                data = UpdateChatHistory(all_messages=converted_messages)
-                await send_to_app('update_chat_history', data.model_dump())
-
-                # store server information to ChromaDB
-                guild_info = await store_guild_info(guild)
-                await send_to_app('update_info', guild_info)
-
-                # save channel, member, and channel list information to the database
-                print(f"There are a total of {len(all_channels)} channels in {guild.name}")
-                member_channels = {}
-                for channel in all_channels:
-                    # get the messages for this specific channel
-                    channel_messages = all_messages[channel.id] 
-                    channel_info = await store_channel_info(channel, guild.id, channel_messages)
-                    await send_to_app('update_info', channel_info)
-
-                    print(f"There are a total of {len(channel.members)} members in {channel.name}")
-                    for member in channel.members:
-                        if member not in member_channels:
-                            member_channels[member] = []
-                        member_info = await store_member_info(channel, member, channel_messages, guild.id)
-                    
-                        # check if member is in this channel; if not, member_info will be None
-                        if member_info:
-                            member_channels[member].append(channel)
-                            await send_to_app('update_info', member_info)
-                
-                for member, channels in member_channels.items():
-                    print(f"Updating channel list for {member.name}")
-                    channel_list = await store_channel_list(member, guild, channels)
-                    await send_to_app('update_info', channel_list)
-
-                print("Server information updated.")
-                await ctx.send("Server information updated.")
-
-            except Exception as e:
-                print(f"Error with updating server information: {e}")
-                await ctx.send("Failed to update server information.")
-                
-                '''
-                at the moment, storing member info in guild level is not
-                implemented instead, guild level info will be calculated
-                based on channel level info a channel_list collection will
-                be created to store the list of channels a member is in, and
-                it will be used to compose guild level info
-                
-                however, will need to figure out a way to dynamically update
-                channel level member info and channel list will a new member
-                is added to a channel
-                '''
-        # Command: Return a list of available commands
         @self.bot.command(name='info')
         async def info(ctx):
-            print("Provide users with available commands")
-                
             await ctx.send(await available_commands())
 
-        # Command: Invite bot to channel
         @self.bot.command(name='invite')
         async def invite(ctx):
-            print(f"Bot invited to this channel: {ctx.channel.name}")
-
             self.approved_channels.add(ctx.channel.id)
             await ctx.send(f"Bot invited to this channel: {ctx.channel.name}")
             await ctx.send(await available_commands())
 
-        # Command: Remove channel from approved list
         @self.bot.command(name='remove')
         async def remove(ctx):
-            print(f"Bot removed from this channel: {ctx.channel.name}")
-
             self.approved_channels.remove(ctx.channel.id)
-            await ctx.send(
-                "Bot removed from this channel. \n" 
-                "Type << !invite >> to add the bot back."
-            )
-            
-        # Command: Respond to user with professor provided resources
+            await ctx.send("Bot removed from this channel. \nType << !invite >> to add the bot back.")
+
         @self.bot.command(name='g')
         async def resource(ctx):
-            print("Received resource command for professor provided resources")
-            print(f"Query: {self.message_global.content}")
+            await self.handle_query(ctx, 'resource_query')
 
-            data = {
-                'guild_id': ctx.guild.id,
-                'channel_id': ctx.channel.id, 
-                'query': self.message_global.content
-            }
-
-            response = await send_to_app('resource_query', data)
-            print(f"Response: {response.json()['answer']['result']}")
-            print(f"Sources: {response.json()['answer']['sources']}")
-            if response.status_code == 200:
-                await ctx.send(response.json()['answer']['result'])
-                await ctx.send(f"Sources: {response.json()['answer']['sources']}")
-
-            else:
-                await ctx.send("Failed to get response from LLM.")
-
-        # Command: Respond to user with channel related query 
         @self.bot.command(name='c')
         async def channel(ctx):
-            print("Received channel command for channel related query")
-            print(f"Query: {self.message_global.content}")
+            await self.handle_query(ctx, 'channel_query')
 
-            data = {
-                'guild_id': ctx.guild.id,
-                'channel_id': ctx.channel.id, 
-                'query': self.message_global.content
-            }
+    async def update_server_info(self, ctx):
+        print("Updating server information and chat history to ChromaDB...")
+        guild = ctx.guild
 
-            response = await send_to_app('channel_query', data)
-            if response.status_code == 200:
-                await ctx.send(response.json()['answer'])
+        if not guild:
+            print("This command can only be used in a server.")
+            await ctx.send("This command can only be used in a server.")
+            return
+        else:
+            print(f"Updating server information for {guild.name}")
+            await ctx.send("Updating server information...")
+
+        try:
+            all_channels, all_messages = await get_channels_and_messages(guild, self.bot.user)
+            # converted_messages = {channel_id: [Message(**msg) for msg in messages] for channel_id, messages in all_messages.items()}
+            # data = UpdateChatHistory(all_messages=converted_messages)
+            # await send_to_app('update_chat_history', data.model_dump())
+
+            await update_message(all_messages, self.bot.user)
+
+            guild_info = await store_guild_info(guild)
+            await send_to_app('update_info', guild_info)
+            await ctx.send("Guild information updated.")
+
+            print(f"There are a total of {len(all_channels)} channels in {guild.name}")
+            member_channels = {}
+            for channel in all_channels:
+                channel_messages = all_messages[channel.id] 
+                channel_info = await store_channel_info(channel, guild.id, channel_messages)
+                await send_to_app('update_info', channel_info)
+
+                print(f"There are a total of {len(channel.members)} members in {channel.name}")
+                for member in channel.members:
+                    if member not in member_channels:
+                        member_channels[member] = []
+                    member_info = await store_member_info(channel, member, channel_messages, guild.id)
+                    if member_info:
+                        member_channels[member].append(channel)
+                        await send_to_app('update_info', member_info)
+
+            await ctx.send("Channel and member information updated.")
+
+            for member, channels in member_channels.items():
+                print(f"Updating channel list for {member.name}")
+                channel_list = await store_channel_list(member, guild, channels)
+                await send_to_app('update_info', channel_list)
+
+            print("Server information updated.")
+            await ctx.send("Server information updated.")
+
+        except Exception as e:
+            print(f"Error with updating server information: {e}")
+            await ctx.send("Failed to update server information.")
+
+    async def handle_query(self, ctx, query_type):
+        print(f"Received {query_type} command")
+        print(f"Query: {self.message_global.content}")
+
+        data = {
+            'guild_id': ctx.guild.id,
+            'channel_id': ctx.channel.id, 
+            'query': self.message_global.content
+        }
+
+        response = await send_to_app(query_type, data)
+       
+        if response.status_code == 200:
+            if isinstance(response.json().get('answer', {}), str):
+                result = response.json().get('answer', {})
+                sources = []
             else:
-                await ctx.send("Failed to get response from LLM.")
+                response_json = response.json()
+                result = response_json.get('answer', {}).get('result', 'No result found')
+                sources = response_json.get('answer', {}).get('sources', [])
+
+            formatted_sources = '\n'.join([f"{source}" for source in sources])
+            
+            await ctx.send(result)
+            if sources:
+                await ctx.send(f"Sources:\n{formatted_sources}")
+        else:
+            await ctx.send("Failed to get response from LLM.")
