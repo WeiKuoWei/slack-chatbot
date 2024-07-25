@@ -1,9 +1,10 @@
 import os, json, httpx, discord
+import numpy as np 
 from profanity_check import predict_prob
 from database.modelsChroma import (
     GuildInfo, ChannelInfo, MemberInfoChannel
 )
-
+from utlis.config import PROFANITY_THRESHOLD
 from backend.modelsPydantic import UpdateChatHistory, Message
 
 async def send_to_app(route, data):
@@ -24,6 +25,9 @@ async def update_message(message, bot_user):
 async def get_parameters(message):
     print(f"Updating message: {message.content}")
     data = {}
+
+    profanity_scores = await profanity_checker([message.content]) # returns a numpy array
+    print(f"Profanity score: {profanity_scores[0]}")
     message_info = {
         "channel_id": message.channel.id,
         "channel_name": message.channel.name,
@@ -31,7 +35,8 @@ async def get_parameters(message):
         "author": message.author.name,
         "author_id": message.author.id,
         "content": message.content,
-        "timestamp": message.created_at.isoformat()
+        "timestamp": message.created_at.isoformat(),
+        "profanity_score": profanity_scores[0]
     }
 
     data[message.channel.id] = [message_info]
@@ -56,7 +61,9 @@ async def get_channels_and_messages(guild, bot_user, limit=500):
             all_text_channels.append(discord_channel)
             messages = []
             async for message in discord_channel.history(limit=limit):
-                if await message_filter(message, bot_user):
+                profanity_scores = await profanity_checker([message.content])
+                profanity_score = profanity_scores[0]
+                if profanity_score > PROFANITY_THRESHOLD or await message_filter(message, bot_user):
                     messages.append({
                         "channel_id": message.channel.id,
                         "channel_name": message.channel.name,
@@ -64,16 +71,14 @@ async def get_channels_and_messages(guild, bot_user, limit=500):
                         "author": message.author.name,
                         "author_id": message.author.id,
                         "content": message.content,
-                        "timestamp": message.created_at.isoformat()
+                        "timestamp": message.created_at.isoformat(),
+                        "profanity_score": profanity_score
                     })
             all_messages[discord_channel.id] = messages
 
     return all_text_channels, all_messages
 
-async def message_filter(message, bot_user):
-        # add a profanity_checker here
-        profanity_score = predict_prob([message.content])[0]
-        
+async def message_filter(message, bot_user): 
         # if message is a command and only a command
         if message.content.startswith('!') and len(message.content) < 10:
             return False
@@ -106,27 +111,41 @@ async def available_commands():
     return commands
 
 # Calculate the profanity score of a message
-async def message_scanner():
-    pass
+async def profanity_checker(messages):
+    contents = [message for message in messages]
+    # save the content in a list; message should be a str
+    for message in messages:
+        contents.append(message)
 
-async def store_guild_info(guild):
+    profanity_scores = predict_prob(contents) # numpy list
+    # total_score = sum(profanity_scores)
+    # average_score = total_score / len(messages) if messages else 0
+
+    return profanity_scores
+
+async def store_guild_info(guild, average_score):
+    # store only the text channels
+    channels = [
+        channel for channel in guild.channels if isinstance(channel, discord.TextChannel)
+    ]
+
     guild_info = {
         "guild_id": guild.id,
         "guild_name": guild.name,
         # "guild_purpose": "[placeholder]", # consider using guild.topic
-        "number_of_channels": len(guild.channels),
-        "number_of_members": guild.member_count
+        "number_of_channels": len(channels),
+        "number_of_members": guild.member_count,
+        "profanity_score": average_score
     }
-    '''
-    guild.description is not added since it is not one of the attributes of the
-    discord.Guild object. ChromaDB's page_content takes PyString as the type for
-    page_content, and null cannot be converted to PyString.
-
-    here, can also consider sending pydantic object instead of dict
-    '''
     return guild_info
 
 async def store_channel_info(channel, guild_id, messages):
+    # profanity score is already stored in the message
+    profanity_scores = np.array([msg['profanity_score'] for msg in messages])
+    total_score = np.sum(profanity_scores)
+    average_score = total_score / len(messages) if messages else 0
+
+
     channel_info ={
         "channel_id": channel.id,
         "guild_id": guild_id,
@@ -136,7 +155,7 @@ async def store_channel_info(channel, guild_id, messages):
         "number_of_members": len(set([msg.get('author_id') for msg in messages])),
         "last_message_timestamp": messages[-1].get('timestamp') if messages else None,
         "first_message_timestamp": messages[0].get('timestamp') if messages else None,
-        # "profanity_score": 0 
+        "profanity_score": average_score
     }
 
     return channel_info
@@ -146,6 +165,9 @@ async def store_member_info(channel, member, messages, guild_id):
     if messages == []:
         return None
     
+    total_score = sum(msg['profanity_score'] for msg in messages)
+    average_score = total_score / len(messages) if messages else 0
+
     member_info = {
         "user_id": member.id,
         "channel_id": channel.id,
@@ -153,7 +175,7 @@ async def store_member_info(channel, member, messages, guild_id):
         "user_name": member.name,
         # "user_description": "[placeholder]",
         "message_sent": len(messages),
-        # "profanity_score": 0 
+        "profanity_score": average_score
     }
 
     return member_info

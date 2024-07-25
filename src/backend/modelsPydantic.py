@@ -18,6 +18,7 @@ class Message(BaseModel):
     author_id: int
     content: str
     timestamp: str
+    profanity_score: float
 
 class UpdateChatHistory(BaseModel):
     all_messages: Dict[int, List[Message]]
@@ -28,6 +29,7 @@ class UpdateGuildInfo(BaseModel):
     guild_purpose: Optional[str] = "null"
     number_of_channels: int
     number_of_members: int
+    profanity_score: Optional[float] = 0.0
 
 class UpdateChannelInfo(BaseModel):
     channel_id: int

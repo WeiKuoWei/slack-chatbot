@@ -91,7 +91,8 @@ async def update_chat_history(request: UpdateChatHistory):
                 "author": message.author,
                 "author_id": message.author_id,
                 "content": message.content,
-                "timestamp": message.timestamp
+                "timestamp": message.timestamp,
+                "profanity_score": message.profanity_score
             }
             # Pass the chat history to modelsChroma to get document and embedding
             try:

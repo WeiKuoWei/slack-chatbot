@@ -1,11 +1,12 @@
 import json, os, discord, logging, httpx, time, asyncio
 from discord.ext import commands
-# from profanity_check import predict, predict_prob
+from profanity_check import predict, predict_prob
 
-from utlis.config import DISCORD_TOKEN
+from utlis.config import DISCORD_TOKEN, PROFANITY_THRESHOLD
 from community_apps.discordHelper import (
     send_to_app, update_message, get_channels_and_messages, message_filter, available_commands,
-    store_guild_info, store_channel_info, store_member_info, store_channel_list, get_parameters
+    store_guild_info, store_channel_info, store_member_info, store_channel_list, get_parameters,
+    profanity_checker
 )
 from backend.modelsPydantic import Message, UpdateChatHistory
 
@@ -32,7 +33,12 @@ class DiscordBot:
                 self.message_global = message       
 
                 try:
-                    if await message_filter(message, self.bot.user):
+                    '''
+                    if profanity score is above threshold, remove the message from the channel and send a warning message
+                    '''
+                    profanity_scores = await profanity_checker([message.content])
+                    profanity_score = profanity_scores[0]
+                    if profanity_score > PROFANITY_THRESHOLD or await message_filter(message, self.bot.user):
                         message_info = await get_parameters(message)
                         asyncio.create_task(update_message(message_info, self.bot.user))
 
@@ -98,41 +104,50 @@ class DiscordBot:
 
         try:
             all_channels, all_messages = await get_channels_and_messages(guild, self.bot.user)
-            # converted_messages = {channel_id: [Message(**msg) for msg in messages] for channel_id, messages in all_messages.items()}
-            # data = UpdateChatHistory(all_messages=converted_messages)
-            # await send_to_app('update_chat_history', data.model_dump())
-
             await update_message(all_messages, self.bot.user)
-
-            guild_info = await store_guild_info(guild)
-            await send_to_app('update_info', guild_info)
-            await ctx.send("Guild information updated.")
 
             print(f"There are a total of {len(all_channels)} channels in {guild.name}")
             member_channels = {}
+            total_messages = 0
+            score_sum = 0 # sum of profanity scores * number of messages for each channel
             for channel in all_channels:
                 channel_messages = all_messages[channel.id] 
                 channel_info = await store_channel_info(channel, guild.id, channel_messages)
                 await send_to_app('update_info', channel_info)
 
+                # update total messages and score sum
+                total_messages += channel_info['number_of_messages']
+                score_sum += channel_info['profanity_score'] * channel_info['number_of_messages']
+
+                # update member information
                 print(f"There are a total of {len(channel.members)} members in {channel.name}")
                 for member in channel.members:
                     if member not in member_channels:
                         member_channels[member] = []
+
                     member_info = await store_member_info(channel, member, channel_messages, guild.id)
+                    
+                    # record that the member is in this channel
                     if member_info:
                         member_channels[member].append(channel)
                         await send_to_app('update_info', member_info)
 
             await ctx.send("Channel and member information updated.")
 
+            # update channel list for each member
             for member, channels in member_channels.items():
                 print(f"Updating channel list for {member.name}")
                 channel_list = await store_channel_list(member, guild, channels)
                 await send_to_app('update_info', channel_list)
 
-            print("Server information updated.")
-            await ctx.send("Server information updated.")
+            # update guild information
+            average_score = score_sum / total_messages if total_messages else 0
+            guild_info = await store_guild_info(guild, average_score)
+            await send_to_app('update_info', guild_info)
+
+            print("Guild information updated.")
+            await ctx.send("Guild information updated.")
+
 
         except Exception as e:
             print(f"Error with updating server information: {e}")
