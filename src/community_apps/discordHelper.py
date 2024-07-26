@@ -12,15 +12,17 @@ async def send_to_app(route, data):
         response = await client.post(f'http://localhost:8000/{route}', json=data)
     return response
 
-async def update_message(message, bot_user):
-    converted_message = {channel_id: [Message(**msg) for msg in messages] for channel_id, messages in message.items()}
-    data = UpdateChatHistory(all_messages=converted_message)
-    response = await send_to_app('update_chat_history', data.model_dump())
-    
-    if response.status_code == 200:
-        print("Message updated to ChromaDB")
-    else:
-        print("Failed to update message to ChromaDB")
+async def update_message(all_messages, bot_user, chunk_size=25):
+    for channel_id, messages in all_messages.items():
+        for chunk in chunk_list(messages, chunk_size):
+            converted_message = {channel_id: [Message(**msg) for msg in chunk]}
+            data = UpdateChatHistory(all_messages=converted_message)
+            response = await send_to_app('update_chat_history', data.model_dump())
+
+            if response.status_code == 200:
+                print(f"Chunk of messages updated to ChromaDB for channel {channel_id}")
+            else:
+                print(f"Failed to update chunk of messages to ChromaDB for channel {channel_id}")
 
 async def get_parameters(message):
     print(f"Updating message: {message.content}")
@@ -89,6 +91,10 @@ async def message_filter(message, bot_user):
 
         # if message is for listing info
         if 'following commands' in message.content:
+            return False
+
+        # if message is a warning message
+        if 'profanity score' in message.content:
             return False
         
         # if message owner is the bot and less than 50 chars,
@@ -190,3 +196,8 @@ async def store_channel_list(member, guild, channels):
     }
 
     return channel_list
+
+
+def chunk_list(data, chunk_size):
+    for i in range(0, len(data), chunk_size):
+        yield data[i:i + chunk_size]

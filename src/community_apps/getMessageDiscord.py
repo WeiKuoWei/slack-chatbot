@@ -33,11 +33,19 @@ class DiscordBot:
                 self.message_global = message       
 
                 try:
-                    '''
-                    if profanity score is above threshold, remove the message from the channel and send a warning message
-                    '''
                     profanity_scores = await profanity_checker([message.content])
                     profanity_score = profanity_scores[0]
+                    
+                    if profanity_score > PROFANITY_THRESHOLD:
+                        try:
+                            # remove and warn user if profanity score is high
+                            await message.delete()
+                            warning_message = f"{message.author.mention} your message is removed due to high profanity score: {int(profanity_score*100)}"
+                            await message.channel.send(warning_message)
+
+                        except Exception as e:
+                            print(f"Error with deleting message: {e}")
+
                     if profanity_score > PROFANITY_THRESHOLD or await message_filter(message, self.bot.user):
                         message_info = await get_parameters(message)
                         asyncio.create_task(update_message(message_info, self.bot.user))
@@ -176,8 +184,9 @@ class DiscordBot:
 
             formatted_sources = '\n'.join([f"{source}" for source in sources])
             
+            await ctx.send(self.message_global.author.mention)
             await ctx.send(result)
             if sources:
-                await ctx.send(f"Sources:\n{formatted_sources}")
+                await ctx.send(f"\nSources:\n{formatted_sources}")
         else:
             await ctx.send("Failed to get response from LLM.")
