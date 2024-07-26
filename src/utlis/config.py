@@ -7,6 +7,7 @@ DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 DB_PATH = os.getenv("DB_PATH")
 PROFANITY_THRESHOLD = float(os.getenv("PROFANITY_THRESHOLD"))
+DISTANCE_THRESHOLD = float(os.getenv("DISTANCE_THRESHOLD"))
 
 if not DISCORD_TOKEN:
     raise ValueError("DISCORD_TOKEN is not set in .env file")
@@ -19,3 +20,6 @@ if not DB_PATH:
 
 if not PROFANITY_THRESHOLD:
     raise ValueError("PROFANITY_THRESHOLD is not set in .env file")
+
+if not DISTANCE_THRESHOLD:
+    raise ValueError("DISTANCE_THRESHOLD is not set in .env file")

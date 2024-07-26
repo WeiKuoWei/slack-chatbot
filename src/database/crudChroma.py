@@ -22,7 +22,7 @@ class CRUD():
 
             # Note that collection_name is equivalent to channel_id
             collection = await asyncio.to_thread(self.client.get_or_create_collection, collection_name)
-            
+
             await asyncio.to_thread(collection.add,
                 # Same for id, has to be a str
                 ids=[str(document.metadata['id'])],
@@ -33,10 +33,9 @@ class CRUD():
 
             print(f"'{document.page_content}' is added to the collection {collection_name}")
 
-    async def retrieve_relevant_history(self, channel_id, query_embedding, top_k=10):
+    async def retrieve_relevant_history(self, collection_name, query_embedding, top_k=10):
         try:
             # Generate the embedding for the query
-            collection_name = f"chat_history_{channel_id}"  # Change from int to str
             print(f"Retrieving collection for channel ID: {collection_name}")
 
             # Get the collection
@@ -49,8 +48,8 @@ class CRUD():
                 n_results=top_k
             )
 
-            for document in results["documents"]:
-                print(f"Result: {document}")
+            # for document in results["documents"]:
+            #     print(f"Result: {document}")
 
             return results
 

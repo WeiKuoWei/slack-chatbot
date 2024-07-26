@@ -171,12 +171,16 @@ class DiscordBot:
             'query': self.message_global.content
         }
 
+        await ctx.send("Processing query...")
         response = await send_to_app(query_type, data)
-       
+
         if response.status_code == 200:
+            # for channel query
             if isinstance(response.json().get('answer', {}), str):
                 result = response.json().get('answer', {})
                 sources = []
+                
+            # for resource query
             else:
                 response_json = response.json()
                 result = response_json.get('answer', {}).get('result', 'No result found')

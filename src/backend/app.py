@@ -1,5 +1,5 @@
 # app.py
-import httpx, uvicorn, chromadb
+import httpx, uvicorn, chromadb, time
 from fastapi import FastAPI, HTTPException
 from typing import Union
 
@@ -7,7 +7,8 @@ from backend.modelsPydantic import (
     QueryResponse, QueryRequest, UpdateChannelInfo, UpdateChatHistory, 
     UpdateGuildInfo, UpdateMemberInfo, UpdateChannelList
 )
-from services.queryLangchain import fetchGptResponse, fetchLangchainResponse
+from services.queryLangchain import fetchGptResponse, fetchLangchainResponse, fetchGptResponseTwo
+from services.nlpTools import preprocess_documents
 from database.crudChroma import CRUD
 from database.modelsChroma import (
     generate_embedding, ChatHistory, GuildInfo, ChannelInfo, MemberInfoChannel, ChannelList
@@ -18,43 +19,49 @@ from utlis.config import DB_PATH
 app = FastAPI()
 crud = CRUD()
 
+CHANNEL_SUMMARIZER = '''
+    You are a channel messages summarizer. You will be the most relevant
+    messages to the user query. Answer the user as detailed as possible.
+'''
+
+COURSE_INSTRUCTOR = '''
+    You are a course instructor. You will be given the most relevant 
+    course materials to the user query. Answer the user as detail as possible.
+'''
+
+
 @app.post('/channel_query') #, response_model=QueryResponse
 async def channel_query(request: QueryRequest):
     try:
-        # retrieve chat data from Chromadb here
-        try:
-            query_embedding = await generate_embedding(request.query)
-            relevant_docs = await crud.retrieve_relevant_history(request.channel_id, query_embedding)
+        query_embedding = await generate_embedding(request.query)
+        collection_name = f"chat_history_{request.channel_id}"
+        relevant_docs = await crud.retrieve_relevant_history(collection_name, query_embedding, top_k=10)
+        
+        # for key, value in relevant_docs.items():
+        #     print(f"Key: {key}, Value: {value}")
+
+        formatted_messages = []
+        unique_authors = set()
+
+        for metadata, document in zip(relevant_docs['metadatas'][0], relevant_docs['documents'][0]):
+            author = metadata['author']
+            timestamp = metadata['timestamp']
+            content = document
+            unique_authors.add(author)
             
-            # for key, value in relevant_docs.items():
-            #     print(f"Key: {key}, Value: {value}")
+            formatted_messages.append(f"Author: {author}\nTimestamp: {timestamp}\nMessage: {content}\n")
 
-            formatted_messages = []
-            unique_authors = set()
+        channel_name = relevant_docs['metadatas'][0][0]['channel_name']
 
-            for metadata, document in zip(relevant_docs['metadatas'][0], relevant_docs['documents'][0]):
-                author = metadata['author']
-                timestamp = metadata['timestamp']
-                content = document
-                unique_authors.add(author)
-                
-                formatted_messages.append(f"Author: {author}\nTimestamp: {timestamp}\nMessage: {content}\n")
+        data = {
+            "channel_name": channel_name,
+            "authors": unique_authors,
+            "number_of_unique_authors": len(unique_authors),
+            "messages": formatted_messages
+        }
 
-            channel_name = relevant_docs['metadatas'][0][0]['channel_name']
-
-            data = {
-                "channel_name": channel_name,
-                "authors": unique_authors,
-                "number_of_unique_authors": len(unique_authors),
-                "messages": formatted_messages
-            }
-
-            answer = await fetchGptResponse(request.query, data)
-            print(f"Answer: {answer}")
-
-        except Exception as e:
-            print(f"Error with GPT response: {e}")
-                    
+        answer = await fetchGptResponse(request.query, CHANNEL_SUMMARIZER , data)
+        print(f"Answer: {answer}")
         return {'answer': answer}  
     
     except Exception as e:
@@ -63,14 +70,10 @@ async def channel_query(request: QueryRequest):
 
 @app.post('/resource_query') #, response_model=QueryResponse
 async def resource_query(request: QueryRequest):
-    try:
-        # retrieve chat data from Chromadb here
-        try:
-            collection_name = "course_materials"
-            answer = await fetchLangchainResponse(request.query, collection_name)
-
-        except Exception as e:
-            print(f"Error with Langchain response: {e}")
+    try:      
+        collection_name = "course_materials"
+        answer = await fetchLangchainResponse(request.query, collection_name, top_k=5)
+        print(f"Answer: {answer}")
         return {'answer': answer}  
     
     except Exception as e:
