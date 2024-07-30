@@ -39,7 +39,12 @@ async def channel_query(request: QueryRequest):
         
         # for key, value in relevant_docs.items():
         #     print(f"Key: {key}, Value: {value}")
-
+        '''
+        collection.get(
+            ids=["id1", "id2", "id3", ...],
+            where={"style": "style1"}
+        )
+        '''
         formatted_messages = []
         unique_authors = set()
 
@@ -151,6 +156,16 @@ async def update_info(request: Union[UpdateGuildInfo, UpdateChannelInfo, UpdateM
 
     print(f"Info updated for {collection_name}")
     return {"status": "Update complete"}
+
+@app.post('/load_course_materials')
+async def load_course_materials():
+    try:
+        await crud.save_pdfs("../src/services/pdf_files", "course_materials")
+        return {"message": "PDFs loaded successfully."}
+    
+    except Exception as e:
+        print(f"Error with loading PDFs: {e}")
+        return {"message": "Failed to load PDFs."}
 
 if __name__ == '__main__':
     uvicorn.run(app, host='0.0.0.0', port=8000)

@@ -21,14 +21,10 @@ def preprocess_text(text):
     # Remove empty strings
     cleaned_tokens = [token for token in cleaned_tokens if token]
 
-    # Normalization (convert to lowercase)
+    # other preprocessing steps
     cleaned_tokens = [token.lower() for token in cleaned_tokens]
-
-    # Remove Stopwords
     stop_words = set(stopwords.words('english'))
     cleaned_tokens = [token for token in cleaned_tokens if token not in stop_words]
-
-    # Lemmatization
     lemmatizer = WordNetLemmatizer()
     cleaned_tokens = [lemmatizer.lemmatize(token) for token in cleaned_tokens]
 

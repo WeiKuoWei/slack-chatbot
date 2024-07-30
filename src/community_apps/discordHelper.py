@@ -24,24 +24,31 @@ async def update_message(all_messages, bot_user, chunk_size=25):
             else:
                 print(f"Failed to update chunk of messages to ChromaDB for channel {channel_id}")
 
-async def get_parameters(message):
-    print(f"Updating message: {message.content}")
+async def get_parameters(interaction_data):
+    content = interaction_data["content"]
+    author = interaction_data["author"]
+    channel = interaction_data["channel"]
+    guild = interaction_data["guild"]
+    message_id = interaction_data["id"]
+    created_at = interaction_data["created_at"]
+
+    print(f"Updating message: {content}")
     data = {}
 
-    profanity_scores = await profanity_checker([message.content]) # returns a numpy array
+    profanity_scores = await profanity_checker([content]) # returns a numpy array
     print(f"Profanity score: {profanity_scores[0]}")
     message_info = {
-        "channel_id": message.channel.id,
-        "channel_name": message.channel.name,
-        "message_id": message.id,
-        "author": message.author.name,
-        "author_id": message.author.id,
-        "content": message.content,
-        "timestamp": message.created_at.isoformat(),
+        "channel_id": channel.id,
+        "channel_name": channel.name,
+        "message_id": message_id,
+        "author": author.name,
+        "author_id": author.id,
+        "content": content,
+        "timestamp": created_at.isoformat(),
         "profanity_score": profanity_scores[0]
     }
 
-    data[message.channel.id] = [message_info]
+    data[channel.id] = [message_info]
     return data
 
 async def get_channels_and_messages(guild, bot_user, limit=500):
@@ -106,13 +113,13 @@ async def message_filter(message, bot_user):
 
 async def available_commands():
     commands = (
-        "Use the following commands to interact with the TheRealJeffBezos:\n"
-        "   1. !invite - Invite bot to channel\n"
-        "2. !remove - Remove bot from channel\n"
-        "3. !c - Query 'c'hannel related information\n"
-        "4. !g - Query 'g'eneral information that are course related\n"
-        "5. !setup - ONE time use; setup chat history and server information. \n"
-        "6. !info - List available commands"
+        "Use / to view commands and interact with the Course Assistant:\n"
+        "   1. /info - List available commands"
+        "2. /channel - Queries related to channel\n"
+        "3. /resource - Queries related to the course\n"
+        "4. /setup - Use ONLY ONE time to setup chat history and server information. \n"
+        "5. /load_course_materials - use ONLY ONE time to load course materials from course website\n"
+        "6. /remove - Remove bot from channel\n"
     )
     return commands
 
