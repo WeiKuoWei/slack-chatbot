@@ -35,37 +35,21 @@ async def channel_query(request: QueryRequest):
     try:
         query_embedding = await generate_embedding(request.query)
         collection_name = f"chat_history_{request.channel_id}"
-        relevant_docs = await crud.retrieve_relevant_history(collection_name, query_embedding, top_k=10)
+        relevant_docs = await crud.get_data_by_similarity(collection_name, query_embedding, top_k=5)
+        channel_info = await crud.get_data_by_id(f"channel_info_{request.guild_id}", [request.channel_id])
         
-        # for key, value in relevant_docs.items():
-        #     print(f"Key: {key}, Value: {value}")
-        '''
-        collection.get(
-            ids=["id1", "id2", "id3", ...],
-            where={"style": "style1"}
-        )
-        '''
-        formatted_messages = []
-        unique_authors = set()
+        content = relevant_docs.get('documents')[0]
+        data = channel_info.get('metadatas')[0]
+        print(f"Relevant messages: {content}")
+        print(f"Channel info: {data}")
 
-        for metadata, document in zip(relevant_docs['metadatas'][0], relevant_docs['documents'][0]):
-            author = metadata['author']
-            timestamp = metadata['timestamp']
-            content = document
-            unique_authors.add(author)
-            
-            formatted_messages.append(f"Author: {author}\nTimestamp: {timestamp}\nMessage: {content}\n")
-
-        channel_name = relevant_docs['metadatas'][0][0]['channel_name']
-
-        data = {
-            "channel_name": channel_name,
-            "authors": unique_authors,
-            "number_of_unique_authors": len(unique_authors),
-            "messages": formatted_messages
+        # combine the relevant messages and channel info
+        combined_data = {
+            'relevant_messages': content,
+            'channel_info': channel_info
         }
 
-        answer = await fetchGptResponse(request.query, CHANNEL_SUMMARIZER , data)
+        answer = await fetchGptResponse(request.query, CHANNEL_SUMMARIZER , combined_data)
         print(f"Answer: {answer}")
         return {'answer': answer}  
     

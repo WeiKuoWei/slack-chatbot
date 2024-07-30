@@ -33,10 +33,10 @@ class CRUD():
 
             print(f"'{document.page_content}' is added to the collection {collection_name}")
 
-    async def retrieve_relevant_history(self, collection_name, query_embedding, top_k=10):
+    async def get_data_by_similarity(self, collection_name, query_embedding, top_k=10):
         try:
             # Generate the embedding for the query
-            print(f"Retrieving collection for channel ID: {collection_name}")
+            print(f"Retrieving documents for the collection: {collection_name}")
 
             # Get the collection
             collection = self.client.get_collection(collection_name)
@@ -48,15 +48,28 @@ class CRUD():
                 n_results=top_k
             )
 
-            # for document in results["documents"]:
-            #     print(f"Result: {document}")
-
             return results
 
         except Exception as e:
             print(f"Error with retrieving relevant history: {e}")
             return []
+    
+    async def get_data_by_id(self, collection_name, ids):
+        # convert ids to str
+        ids = [str(id) for id in ids]
+        try:
+            collection = self.client.get_collection(collection_name)
+            results = collection.get(
+                ids=ids,
+                # where={"style": "style1"}
+            )
 
+            return results
+
+        except Exception as e:
+            print(f"Error with retrieving data by id: {e}")
+            return []
+    
     async def save_pdfs(self, file_path, collection_name):
         # Get the files
         try:
