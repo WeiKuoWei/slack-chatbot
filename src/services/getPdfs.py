@@ -11,6 +11,8 @@ logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 
 PDF_FOLDER = 'pdf_files'
 PPTX_FOLDER = 'pptx_files'
+URL_FILENAME = 'hyperlinks.csv'
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def get_all_hyperlinks(url, base_link):
     try:
@@ -19,13 +21,19 @@ def get_all_hyperlinks(url, base_link):
 
         soup = BeautifulSoup(response.content, 'html.parser')
         anchor_tags = soup.find_all('a')
-        hyperlinks = [a.get('href') for a in anchor_tags if a.get('href')]
+        
+        hyperlinks = []
+        for a in anchor_tags:
+            href = a.get('href')
+            text = a.get_text(strip=True)
+            if href:
+                link = href if href.startswith('http') else base_link + href
+                hyperlinks.append((link, text))
 
-        hyperlinks = [link if link.startswith('http') else base_link + link for link in hyperlinks]
-
-        with open('hyperlinks.csv', 'w') as f:
-            for link in hyperlinks:
-                f.write(f"{link}\n")
+        with open(f'{CURRENT_DIR}/{URL_FILENAME}', 'w', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow(['Link', 'Text'])
+            writer.writerows(hyperlinks)
 
         return hyperlinks
 
@@ -107,18 +115,18 @@ def create_folders(*folders):
 def read_hyperlinks(file_path):
     with open(file_path, newline='') as csvfile:
         reader = csv.reader(csvfile)
-        urls = [row[0] for row in reader]
-    return urls
+        urls_with_texts = [(row[0], row[1]) for row in reader]
+    return urls_with_texts
 
-def match_filenames_to_urls(filenames, urls):
+def match_filenames_to_urls(filenames, urls_with_texts):
     matched_urls = {}
     for filename in filenames:
-        for url in urls:
+        for url, text in urls_with_texts:
             if filename in url:
-                matched_urls[filename] = url
+                matched_urls[filename] = (url, text)
                 break
         else:
-            matched_urls[filename] = None
+            matched_urls[filename] = (None, "Description not found")
     return matched_urls
 
 # ---------------------------- Main function ----------------------------
@@ -130,27 +138,27 @@ def main():
     hyperlinks = get_all_hyperlinks(url, base_link)
     hyperlinks = filter_links(hyperlinks, base_link)
 
-    create_folders(PPTX_FOLDER, PDF_FOLDER, PDF_FOLDER)
+    # create_folders(PPTX_FOLDER, PDF_FOLDER, PDF_FOLDER)
 
-    # get the hyperlinks that are pptx and download them
-    pptx_links = [link for link in hyperlinks if link.endswith('.pptx')]
-    for link in pptx_links:
-        download_file(link, PPTX_FOLDER)
+    # # get the hyperlinks that are pptx and download them
+    # pptx_links = [link for link in hyperlinks if link.endswith('.pptx')]
+    # for link in pptx_links:
+    #     download_file(link, PPTX_FOLDER)
 
-    convert_all_pptx_in_folder(PPTX_FOLDER, PDF_FOLDER)
+    # convert_all_pptx_in_folder(PPTX_FOLDER, PDF_FOLDER)
 
-    # get the hyperlinks that are pdf and download them
-    pdf_links = [link for link in hyperlinks if link.endswith('.pdf')]
-    for link in pdf_links:
-        download_file(link, PDF_FOLDER)
+    # # get the hyperlinks that are pdf and download them
+    # pdf_links = [link for link in hyperlinks if link.endswith('.pdf')]
+    # for link in pdf_links:
+    #     download_file(link, PDF_FOLDER)
 
-    # get the hyperlinks that are webpages and convert them to pdf
-    webpage_links = [link for link in hyperlinks if not link.endswith('.pdf') and not link.endswith('.pptx')]
-    loop = asyncio.get_event_loop()
-    for link in webpage_links:
-        local_filename = link.split('/')[-1] + '.pdf'
-        pdf_path = os.path.join(PDF_FOLDER, local_filename)
-        loop.run_until_complete(convert_webpage_as_pdf(link, pdf_path))
+    # # get the hyperlinks that are webpages and convert them to pdf
+    # webpage_links = [link for link in hyperlinks if not link.endswith('.pdf') and not link.endswith('.pptx')]
+    # loop = asyncio.get_event_loop()
+    # for link in webpage_links:
+    #     local_filename = link.split('/')[-1] + '.pdf'
+    #     pdf_path = os.path.join(PDF_FOLDER, local_filename)
+    #     loop.run_until_complete(convert_webpage_as_pdf(link, pdf_path))
 
 if __name__ == "__main__":
     main()

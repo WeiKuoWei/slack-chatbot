@@ -4,8 +4,11 @@ from profanity_check import predict_prob
 from database.modelsChroma import (
     GuildInfo, ChannelInfo, MemberInfoChannel
 )
+from services.nlpTools import TextProcessor
 from utlis.config import PROFANITY_THRESHOLD
 from backend.modelsPydantic import UpdateChatHistory, Message
+
+nlp_tools = TextProcessor()
 
 async def send_to_app(route, data):
     async with httpx.AsyncClient(timeout=60.0) as client:
@@ -158,12 +161,19 @@ async def store_channel_info(channel, guild_id, messages):
     total_score = np.sum(profanity_scores)
     average_score = total_score / len(messages) if messages else 0
 
+    # Extract content from messages
+    message_contents = [msg['content'] for msg in messages]
+    cleaned_documents, key_phrases, metadata, keywords = await nlp_tools.process_messages(message_contents)
+    
+    print(f"Cleaned documents: {cleaned_documents}\n Key phrases: {key_phrases}\n Metadata: {metadata}\n Keywords: {keywords}") 
 
+    key_phrases_str = [' '.join(phrases) for phrases in key_phrases] 
+    
     channel_info ={
         "channel_id": channel.id,
         "guild_id": guild_id,
         "channel_name": channel.name,
-        # "channel_purpose": "[placeholder]", 
+        "channel_purpose": str(key_phrases_str), 
         "number_of_messages": len(messages),
         "number_of_members": len(set([msg.get('author_id') for msg in messages])),
         "last_message_timestamp": messages[-1].get('timestamp') if messages else None,

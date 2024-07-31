@@ -8,7 +8,7 @@ from backend.modelsPydantic import (
     UpdateGuildInfo, UpdateMemberInfo, UpdateChannelList
 )
 from services.queryLangchain import fetchGptResponse, fetchLangchainResponse, fetchGptResponseTwo
-from services.nlpTools import preprocess_documents
+from services.nlpTools import TextProcessor
 from database.crudChroma import CRUD
 from database.modelsChroma import (
     generate_embedding, ChatHistory, GuildInfo, ChannelInfo, MemberInfoChannel, ChannelList
@@ -143,8 +143,16 @@ async def update_info(request: Union[UpdateGuildInfo, UpdateChannelInfo, UpdateM
 
 @app.post('/load_course_materials')
 async def load_course_materials():
+    file_path = "./src/services/pdf_files"
+    collection_name = "course_materials"
     try:
-        await crud.save_pdfs("../src/services/pdf_files", "course_materials")
+        data = await crud.save_pdfs(file_path, collection_name)
+
+        # save the data to the database in chunks of ten documents
+        chunk_size = 10
+        for i in range(0, len(data), chunk_size):
+            await crud.save_to_db(data[i:i+chunk_size])
+
         return {"message": "PDFs loaded successfully."}
     
     except Exception as e:

@@ -23,7 +23,7 @@ class CRUD():
             # Note that collection_name is equivalent to channel_id
             collection = await asyncio.to_thread(self.client.get_or_create_collection, collection_name)
 
-            await asyncio.to_thread(collection.add,
+            await asyncio.to_thread(collection.upsert,
                 # Same for id, has to be a str
                 ids=[str(document.metadata['id'])],
                 documents=[document.page_content],
@@ -71,6 +71,7 @@ class CRUD():
             return []
     
     async def save_pdfs(self, file_path, collection_name):
+        print(f"Saving PDFs from {file_path} to collection {collection_name}")
         # Get the files
         try:
             loader = DirectoryLoader(file_path, glob = "*.pdf", show_progress = True)
@@ -78,6 +79,7 @@ class CRUD():
 
         except Exception as e:
             print(f"Error with loading PDFs: {e}")
+
             return
         
 
@@ -104,25 +106,37 @@ class CRUD():
 
         # save the docs in the collection with collection_name
         collection = self.client.get_or_create_collection(collection_name)
+
+        data_to_save = []
         for doc, id, filename in zip(docs, ids, filenames):
-            embedding = await generate_embedding(doc.page_content)
-            url = matched_urls.get(filename, "URL not found")
+            url, text = matched_urls.get(filename, (None, "Description not found"))
+            combined_text = f"{text} {doc.page_content}"
+            # print the first 50 characters of the combined text
+            print(f"Combined text: {combined_text[:50]}...")
+            embedding = await generate_embedding(combined_text)
             
-            # format the filename
+            # Format the filename
             filename = urllib.parse.unquote(filename.replace('_', ' '))
             
             if url:
                 source = f"[{filename}]({url})"
             else:
                 source = filename
+            
+            # Prepare the metadata for saving
+            metadata = {
+                "id": id,
+                "source": source
+            }
 
-            collection.add(
-                ids=[id],
-                documents=[doc.page_content],
-                embeddings=[embedding],
-                metadatas=[{"source": source}]
-            )
+            # Add to data to be saved
+            data_to_save.append({
+                "collection_name": collection_name,
+                "document": doc,
+                "embedding": embedding,
+                "metadata": metadata
+            })
 
-            print(f"Saved {filename} to collection {collection_name}")
-        
+        return data_to_save
+
 
