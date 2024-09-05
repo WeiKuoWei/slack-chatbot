@@ -1,0 +1,27 @@
+{
+    "1260241690782990511": {
+        "channel_name": "general",
+        "guild_id": "1260241690782990506",
+        "guild_name": "FAMS-Workspace"
+    },
+    "1260241793665204336": {
+        "channel_name": "team1",
+        "guild_id": "1260241690782990506",
+        "guild_name": "FAMS-Workspace"
+    },
+    "1260241811134349445": {
+        "channel_name": "team2",
+        "guild_id": "1260241690782990506",
+        "guild_name": "FAMS-Workspace"
+    },
+    "1260241834567794809": {
+        "channel_name": "team3",
+        "guild_id": "1260241690782990506",
+        "guild_name": "FAMS-Workspace"
+    },
+    "1260241946308251739": {
+        "channel_name": "team4",
+        "guild_id": "1260241690782990506",
+        "guild_name": "FAMS-Workspace"
+    }
+}
