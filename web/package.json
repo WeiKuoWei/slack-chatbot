@@ -1,8 +1,8 @@
 {
-  "name": "coinbase_web",
+  "name": "chatbot_web",
   "version": "1.0.0",
   "description": "## Please see instructions.md for detailed daily progress report.",
-  "main": "get_all_know_trading_pairs.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
