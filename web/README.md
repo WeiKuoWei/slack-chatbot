@@ -2,18 +2,23 @@
 
 - `Using Github`
 
+**Configure Environment Variables:**
+   - Add your OpenAI API key and other environment-specific variables
+
+
+
 Please execute the following instructions
 
 ```
-cd web
 npm install
 cd frontend
 npm install
 ```
 
 Now have one additional terminal inside web directory, run
+
+
 ```
-npm install
 node server.js
 ```
 
