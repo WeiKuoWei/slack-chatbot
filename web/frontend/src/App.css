@@ -1,0 +1,157 @@
+.App {
+  text-align: center;
+  height: 100vh; /* Ensure the app takes the full height of the viewport */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.App-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.main-content {
+  display: flex;
+  width: 100vw; /* Full width of the viewport */
+  height: 90vh; /* Adjust the height to fit within the viewport minus some space for the header */
+}
+
+.left-half, .right-half {
+  width: 50%;
+  height: 100%;
+}
+
+.left-half {
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.right-half {
+  padding: 20px;
+  background-color: #fff;
+  border-left: 2px solid #ccc;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.ask-gpt-button {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+}
+
+.sandbox-assets-container {
+  position: fixed;
+  top: 60px;
+  right: 20px;
+  width: 300px;
+  height: 400px;
+  background-color: black;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  z-index: 1000;
+  overflow-y: auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  color: white; /* Ensure text is white for readability */
+}
+
+.close-button {
+  cursor: pointer;
+  font-size: 24px;
+  font-weight: bold;
+  color: black;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+/* Styles for hovered messages display */
+.hovered-messages {
+  background-color: #f9f9f9;
+  padding: 10px;
+  border: 1px solid #ddd;
+  margin-top: 10px;
+  width: 80%; /* Adjust the width as needed */
+  margin: 0 auto; /* Center align */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.hovered-messages h4 {
+  margin-top: 0;
+}
+
+.hovered-messages ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.hovered-messages li {
+  margin-bottom: 5px;
+}
+
+/* Styles for user statistics */
+.user-statistics {
+  background-color: #f9f9f9;
+  padding: 10px;
+  border: 1px solid #ddd;
+  margin-top: 10px;
+  width: 80%; /* Adjust the width as needed */
+  margin: 0 auto; /* Center align */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+}
+
+.user-statistics h4 {
+  margin-top: 0;
+}
+
+.user-statistics p {
+  margin: 5px 0;
+}
+
+.ReactModal__Overlay {
+  background-color: rgba(0, 0, 0, 0.75);
+}
+
+.ReactModal__Content {
+  border: none;
+  border-radius: 4px;
+  padding: 20px;
+  max-width: 600px;
+  width: 100%;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Styles for selected time period display */
+.selected-time-period {
+  background-color: #f9f9f9;
+  padding: 10px;
+  border: 1px solid #ddd;
+  margin-top: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.selected-time-period h4 {
+  margin-top: 0;
+}
+
+.selected-time-period ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.selected-time-period li {
+  margin-bottom: 5px;
+}
