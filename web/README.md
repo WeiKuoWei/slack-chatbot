@@ -1,20 +1,19 @@
 # Instructions
-## Author: Kaiwen Guo. Email: kg3354@nyu.edu 
 
 - `Using Github`
 
-To use my github repo, please execute the following instructions
+Please execute the following instructions
 
 ```
-
 cd web
 npm install
 cd frontend
 npm install
 ```
 
-Now have one terminal inside jsDbFrontend directory, run
+Now have one additional terminal inside web directory, run
 ```
+npm install
 node server.js
 ```
 
