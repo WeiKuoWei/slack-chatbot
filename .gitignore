@@ -6,6 +6,8 @@ pdf_files
 pdf_files_old
 pptx_files
 __pycache__ 
+node_modules/
+web/node_modules/
 
 # files
 .venv
@@ -18,3 +20,5 @@ hyperlinks.csv
 
 # file types
 .DS_Store
+
+
