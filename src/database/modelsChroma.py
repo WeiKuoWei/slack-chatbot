@@ -2,9 +2,15 @@
 import asyncio
 from langchain.schema import Document
 from langchain_openai import OpenAIEmbeddings
+from langchain_community.embeddings.sentence_transformer import SentenceTransformerEmbeddings
 
-async def generate_embedding(text):
-    embedding_model = OpenAIEmbeddings(model="text-embedding-ada-002")
+# embedding model options
+async def generate_embedding(text, option = "openai"):
+    if option == "openai":
+        embedding_model = OpenAIEmbeddings(model="text-embedding-ada-002")
+    else:
+        embedding_model = SentenceTransformerEmbeddings(model="all-MiniLM-L6-v2")
+    
     return embedding_model.embed_query(text)
 
 '''
@@ -21,7 +27,7 @@ class GuildInfo:
         self.guild_purpose = data.get('guild_purpose', 'null')
         self.number_of_channels = data['number_of_channels']
         self.number_of_members = data['number_of_members']
-        self.profanity_score = data.get('profanity_score', 0)
+        self.profanity_score = data["profanity_score"]
 
     async def to_document(self):
         embedding = await generate_embedding(self.guild_purpose)
@@ -31,7 +37,8 @@ class GuildInfo:
                 'id': self.guild_id, # id
                 'guild_name': self.guild_name,
                 'number_of_channels': self.number_of_channels,
-                'number_of_members': self.number_of_members
+                'number_of_members': self.number_of_members,
+                'profanity_score': self.profanity_score
             }
         ), embedding
 
@@ -125,6 +132,7 @@ class ChatHistory:
         self.author = data['author']
         self.author_id = data['author_id']
         self.timestamp = data['timestamp']
+        self.profanity_score = data.get('profanity_score', 0.0)
 
     async def to_document(self):
         embedding = await generate_embedding(self.content)
@@ -134,6 +142,7 @@ class ChatHistory:
                 'id': self.message_id,
                 'channel_name': self.channel_name,
                 'author': self.author,
-                'timestamp': self.timestamp
+                'timestamp': self.timestamp,
+                'profanity_score': self.profanity_score
             }
         ), embedding
