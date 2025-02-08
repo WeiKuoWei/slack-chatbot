@@ -3,12 +3,20 @@ import asyncio
 import nltk
 import spacy
 import json
+import ssl
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from concurrent.futures import ThreadPoolExecutor
 from sklearn.feature_extraction.text import TfidfVectorizer
 from collections import Counter
+
+try:
+    _create_unverified_https_context = ssl._create_unverified_context
+except AttributeError:
+    pass
+else:
+    ssl._create_default_https_context = _create_unverified_https_context
 
 # Download necessary NLTK data
 nltk.download('stopwords')

@@ -59,16 +59,22 @@ async def channel_query(request: QueryRequest):
 
 @app.post('/resource_query') #, response_model=QueryResponse
 async def resource_query(request: QueryRequest):
-    try:      
+    try:
+        query_embedding = await generate_embedding(request.query)
         collection_name = "course_materials"
-        answer = await fetchLangchainResponse(request.query, collection_name, top_k=5)
+        relevant_docs = await crud.get_data_by_similarity(collection_name, query_embedding, top_k=5)
+        
+        content = relevant_docs.get('documents')[0]
+        print(f"Relevant messages: {content}")
+
+        answer = await fetchGptResponse(request.query, COURSE_INSTRUCTOR , relevant_docs)
         print(f"Answer: {answer}")
         return {'answer': answer}  
     
     except Exception as e:
         print(f"Error with course material related question: {e}")
         raise HTTPException(status_code=500, detail=str(e))
-
+    
 @app.post('/update_chat_history')
 async def update_chat_history(request: UpdateChatHistory):
     all_messages = request.all_messages
@@ -94,7 +100,7 @@ async def update_chat_history(request: UpdateChatHistory):
                 print(f"Error with updating chat history: {e}")
             
             chat_history.append({
-                "collection_name": f"chat_history_{message_info["channel_id"]}",
+                "collection_name": f"chat_history_{message_info.get('channel_id')}",
                 "document": document,
                 "embedding": embedding
             })
@@ -143,7 +149,7 @@ async def update_info(request: Union[UpdateGuildInfo, UpdateChannelInfo, UpdateM
 
 @app.post('/load_course_materials')
 async def load_course_materials():
-    file_path = "./src/services/pdf_files"
+    file_path = "./data/pdf_files"
     collection_name = "course_materials"
     try:
         data = await crud.save_pdfs(file_path, collection_name)
@@ -156,7 +162,7 @@ async def load_course_materials():
         return {"message": "PDFs loaded successfully."}
     
     except Exception as e:
-        print(f"Error with loading PDFs: {e}")
+        print(f"app.py: Error with loading PDFs: {e}")
         return {"message": "Failed to load PDFs."}
 
 if __name__ == '__main__':
