@@ -5,14 +5,20 @@ from backend.app import app as fastapi_app
 
 from utlis.config import DISCORD_TOKEN
 
+
+# temp
+from database.crudChroma import CRUD
+
 sys.path.append(os.path.join(os.path.dirname(__file__), 'src'))
 
-# Define your bot and command prefix
+# Define bot and command prefix
+'''could use Intents.all() instead of Intents.default()'''
 intents = discord.Intents.default()
+intents.members = True
 intents.message_content = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# Initialize your Discord bot class (assuming you have one)
+# Initialize your Discord bot class 
 discord_bot = DiscordBot(bot)
 
 # Function to run FastAPI server
@@ -40,3 +46,20 @@ if __name__ == "__main__":
 
     except KeyboardInterrupt:
         print("Shutting down...")
+
+
+# async def load_pdfs():
+#     # print current working directory
+#     crud = CRUD()
+#     await crud.save_pdfs("./src/services/pdf_files", "course_materials")
+
+
+# if __name__ == "__main__":
+#     asyncio.run(load_pdfs())
+
+
+'''
+this, along with the !update function, should be moved to a separate file
+responsible for model initialization
+'''
+

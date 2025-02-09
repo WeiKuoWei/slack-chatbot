@@ -1,5 +1,5 @@
 # app.py
-import httpx, uvicorn, chromadb
+import httpx, uvicorn, chromadb, time
 from fastapi import FastAPI, HTTPException
 from typing import Union
 
@@ -7,7 +7,8 @@ from backend.modelsPydantic import (
     QueryResponse, QueryRequest, UpdateChannelInfo, UpdateChatHistory, 
     UpdateGuildInfo, UpdateMemberInfo, UpdateChannelList
 )
-from services.queryLangchain import fetchGptResponse, fetchLangchainResponse
+from services.queryLangchain import fetchGptResponse, fetchLangchainResponse, fetchGptResponseTwo
+from services.nlpTools import TextProcessor
 from database.crudChroma import CRUD
 from database.modelsChroma import (
     generate_embedding, ChatHistory, GuildInfo, ChannelInfo, MemberInfoChannel, ChannelList
@@ -18,43 +19,38 @@ from utlis.config import DB_PATH
 app = FastAPI()
 crud = CRUD()
 
+CHANNEL_SUMMARIZER = '''
+    You are a channel messages summarizer. You will be the most relevant
+    messages to the user query. Answer the user as detailed as possible.
+'''
+
+COURSE_INSTRUCTOR = '''
+    You are a course instructor. You will be given the most relevant 
+    course materials to the user query. Answer the user as detail as possible.
+'''
+
+
 @app.post('/channel_query') #, response_model=QueryResponse
 async def channel_query(request: QueryRequest):
     try:
-        # retrieve chat data from Chromadb here
-        try:
-            query_embedding = await generate_embedding(request.query)
-            relevant_docs = await crud.retrieve_relevant_history(request.channel_id, query_embedding)
-            
-            for key, value in relevant_docs.items():
-                print(f"Key: {key}, Value: {value}")
+        query_embedding = await generate_embedding(request.query)
+        collection_name = f"chat_history_{request.channel_id}"
+        relevant_docs = await crud.get_data_by_similarity(collection_name, query_embedding, top_k=5)
+        channel_info = await crud.get_data_by_id(f"channel_info_{request.guild_id}", [request.channel_id])
+        
+        content = relevant_docs.get('documents')[0]
+        data = channel_info.get('metadatas')[0]
+        print(f"Relevant messages: {content}")
+        print(f"Channel info: {data}")
 
-            formatted_messages = []
-            unique_authors = set()
+        # combine the relevant messages and channel info
+        combined_data = {
+            'relevant_messages': content,
+            'channel_info': channel_info
+        }
 
-            for metadata, document in zip(relevant_docs['metadatas'][0], relevant_docs['documents'][0]):
-                author = metadata['author']
-                timestamp = metadata['timestamp']
-                content = document
-                unique_authors.add(author)
-                
-                formatted_messages.append(f"Author: {author}\nTimestamp: {timestamp}\nMessage: {content}\n")
-
-            channel_name = relevant_docs['metadatas'][0][0]['channel_name']
-
-            data = {
-                "channel_name": channel_name,
-                "authors": unique_authors,
-                "number_of_unique_authors": len(unique_authors),
-                "messages": formatted_messages
-            }
-
-            answer = await fetchGptResponse(request.query, data)
-            print(f"Answer: {answer}")
-
-        except Exception as e:
-            print(f"Error with GPT response: {e}")
-                    
+        answer = await fetchGptResponse(request.query, CHANNEL_SUMMARIZER , combined_data)
+        print(f"Answer: {answer}")
         return {'answer': answer}  
     
     except Exception as e:
@@ -63,21 +59,22 @@ async def channel_query(request: QueryRequest):
 
 @app.post('/resource_query') #, response_model=QueryResponse
 async def resource_query(request: QueryRequest):
-
     try:
-        # retrieve chat data from Chromadb here
-        try:
-            collection_name = "course_materials"
-            answer = await fetchLangchainResponse(request.query, collection_name)
+        query_embedding = await generate_embedding(request.query)
+        collection_name = "course_materials"
+        relevant_docs = await crud.get_data_by_similarity(collection_name, query_embedding, top_k=5)
+        
+        content = relevant_docs.get('documents')[0]
+        print(f"Relevant messages: {content}")
 
-        except Exception as e:
-            print(f"Error with Langchain response: {e}")
+        answer = await fetchGptResponse(request.query, COURSE_INSTRUCTOR , relevant_docs)
+        print(f"Answer: {answer}")
         return {'answer': answer}  
     
     except Exception as e:
         print(f"Error with course material related question: {e}")
         raise HTTPException(status_code=500, detail=str(e))
-
+    
 @app.post('/update_chat_history')
 async def update_chat_history(request: UpdateChatHistory):
     all_messages = request.all_messages
@@ -92,7 +89,8 @@ async def update_chat_history(request: UpdateChatHistory):
                 "author": message.author,
                 "author_id": message.author_id,
                 "content": message.content,
-                "timestamp": message.timestamp
+                "timestamp": message.timestamp,
+                "profanity_score": message.profanity_score
             }
             # Pass the chat history to modelsChroma to get document and embedding
             try:
@@ -102,14 +100,14 @@ async def update_chat_history(request: UpdateChatHistory):
                 print(f"Error with updating chat history: {e}")
             
             chat_history.append({
-                "collection_name": f"chat_history_{message_info["channel_id"]}",
+                "collection_name": f"chat_history_{message_info.get('channel_id')}",
                 "document": document,
                 "embedding": embedding
             })
 
     # Save chat history to Chromadb
     try:
-        crud.save_to_db(chat_history)
+        await crud.save_to_db(chat_history)
     except Exception as e:
         print(f"Error with saving chat history: {e}")
 
@@ -141,7 +139,7 @@ async def update_info(request: Union[UpdateGuildInfo, UpdateChannelInfo, UpdateM
             "document": document,
             "embedding": embedding
         }
-        crud.save_to_db([data])
+        await crud.save_to_db([data])
 
     except Exception as e:
         print(f"Error with updating guild info: {e}")
@@ -149,23 +147,23 @@ async def update_info(request: Union[UpdateGuildInfo, UpdateChannelInfo, UpdateM
     print(f"Info updated for {collection_name}")
     return {"status": "Update complete"}
 
-# @app.post('/update_channel_info')
-# async def update_channel_info(request: UpdateChannelInfo):
-#     try:
-#         channel_info = ChannelInfo(request.model_dump())
-#         document, embedding = await channel_info.to_document()
-#         data = {
-#             "collection_name": "channel_info",
-#             "document": document,
-#             "embedding": embedding
-#         }
-#         crud.save_to_db([data])
+@app.post('/load_course_materials')
+async def load_course_materials():
+    file_path = "./data/pdf_files"
+    collection_name = "course_materials"
+    try:
+        data = await crud.save_pdfs(file_path, collection_name)
 
-#     except Exception as e:
-#         print(f"Error with updating channel info: {e}")
+        # save the data to the database in chunks of ten documents
+        chunk_size = 10
+        for i in range(0, len(data), chunk_size):
+            await crud.save_to_db(data[i:i+chunk_size])
 
-#     print(f"Channel info updated for {request.channel_name}")
-#     return {"status": "Update complete"}
+        return {"message": "PDFs loaded successfully."}
+    
+    except Exception as e:
+        print(f"app.py: Error with loading PDFs: {e}")
+        return {"message": "Failed to load PDFs."}
 
 if __name__ == '__main__':
     uvicorn.run(app, host='0.0.0.0', port=8000)

@@ -3,12 +3,14 @@ data
 dumps
 local_chromadb
 pdf_files
+pdf_files_old
 pptx_files
 __pycache__ 
 
 # files
 .venv
 .env
+.python-version
 
 files.json
 test.py
