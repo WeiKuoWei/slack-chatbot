@@ -5,6 +5,7 @@ load_dotenv()
 
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 DB_PATH = os.getenv("DB_PATH")
 PROFANITY_THRESHOLD = float(os.getenv("PROFANITY_THRESHOLD"))
 DISTANCE_THRESHOLD = float(os.getenv("DISTANCE_THRESHOLD"))
@@ -14,6 +15,9 @@ if not DISCORD_TOKEN:
 
 if not OPENAI_API_KEY:
     raise ValueError("OPENAI_API_KEY is not set in .env file")
+
+if not GEMINI_API_KEY:
+    raise ValueError("GEMINI_API_KEY is not set in .env file")
 
 if not DB_PATH:
     raise ValueError("DB_PATH is not set in .env file")
