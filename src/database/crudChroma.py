@@ -78,8 +78,7 @@ class CRUD():
             docs = loader.load()
 
         except Exception as e:
-            print(f"Error with loading PDFs: {e}")
-
+            print(f"crudChroma.py: Error with loading PDFs: {e}")
             return
         
 
