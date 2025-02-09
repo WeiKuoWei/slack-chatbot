@@ -9,76 +9,63 @@ from utils.config import GEMINI_API_KEY
 # Setup logging
 logging.basicConfig(level=logging.ERROR, format="%(asctime)s, %(levelname)s: %(message)s")
 
+'''
+Currently passed in as a global variable. 
+Might need to create a separate configuration file in the future. 
+'''
+GENERATION_CONFIG = {
+    "temperature": 0.4,
+    "top_p": 1,
+    "top_k": 32,
+    "max_output_tokens": 2048,
+}
+
 class Gemini:
     def __init__(self):
-        # Load API key
-        if not GEMINI_API_KEY:
-            logging.error("GEMINI_API_KEY is missing from envrionment variables.")
-            raise ValueError("GEMINI_API_KEY is undefined.")
-        genai.configure(api_key=GEMINI_API_KEY)
 
-        # Load Gemini with specific generation and safety settings
-        generation_config = {
-            "temperature": 0.4,
-            "top_p": 1,
-            "top_k":32,
-            "max_output_tokens": 2048
-        }
-        safety_settings = {
+        genai.configure(api_key=GEMINI_API_KEY)
+        
+        self.safety_settings = {
             HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE,
             HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_LOW_AND_ABOVE
         }
 
-        # Load Gemini-1.5-Pro model
-        try:
-            self.Pro = genai.GenerativeModel(
-                model_name="gemini-1.5-pro",
-                generation_config=generation_config,
-                safety_settings=safety_settings
-            )
-        except Exception as e:
-            logging.error(f"Failed to load Gemini-1.5-Pro model: {e}")
-            raise RuntimeError(f"Failed to load Gemini-1.5-Pro model: {e}")
-        
-        # Load Gemini-1.5-Flash model
-        try:
-            self.Flash = genai.GenerativeModel(
-                model_name="gemini-1.5-flash",
-                generation_config=generation_config,
-                safety_settings=safety_settings
-            )
-        except Exception as e:
-            logging.error(f"Failed to load Gemini-1.5-Flash model: {e}")
-            raise RuntimeError(f"Failed to load Gemini-1.5-Flash model: {e}")
+        # Defining rate limits
+        self.rate_limits = {
+            "gemini-1.5-pro": (2, 60),
+            "gemini-1.5-flash": (15, 60)
+        }
 
-    # Query Gemini Pro: Set rate limit to 2 RPM / user
     @sleep_and_retry
-    @limits(calls=2, period=60)
-    async def pro_query(self, prompt): # let model response be ansynchronous to allow for concurrency
-        try:
-            response = await asyncio.to_thread(self.Pro.generate_content, prompt) # can't access generate_content() method asynchronously --> access, then make asynchronous
-            return response.text.strip()
-        except Exception as e:
-            logging.error(f"Failed to query Gemini-1.5-Pro model: {e}")
-            return f"Failed to query Gemini-1.5-Pro model: {e}"
+    async def query(self, prompt, model_name="gemini-1.5-pro"):
+        if model_name not in self.rate_limits:
+            raise ValueError(f"Invalid model name. Choose from {list(self.rate_limits.keys())}")
+
+        calls, period = self.rate_limits[model_name]
+
+        '''
+        Though genai.GenerativeModel seems to be a lightweight initialization, 
+        might consider caching (model={}) for performance. 
+        '''
+        model = genai.GenerativeModel(
+            model_name=model_name,
+            generation_config=GENERATION_CONFIG,
+            safety_settings=self.safety_settings
+        )
+
+        # Nested function to customize calls and periods
+        @limits(calls=calls, period=period)
+        async def _query():
+            try:
+                response = await asyncio.to_thread(model.generate_content, prompt)
+                return response.text.strip()
+            except Exception as e:
+                logging.error(f"Failed to query {model_name} model: {e}")
+                return f"Failed to query {model_name} model: {e}"
         
-    # Query Gemini Flash: Set rate limit to 15 RPM / user
-    @sleep_and_retry
-    @limits(calls=15, period=60)   # 15 RPM 
-    async def flash_query(self, prompt): # let model response be ansynchronous to allow for concurrency
-        try:
-            response = await asyncio.to_thread(self.Flash.generate_content, prompt) # can't access generate_content() method asynchronously --> access, then make asynchronous
-            return response.text.strip()
-        except Exception as e:
-            logging.error(f"Failed to query Gemini-1.5-Flash model: {e}")
-            return f"Failed to query Gemini-1.5-Flash model: {e}"
+        return await _query()
 
-# Function to run Gemini-1.5-Pro
-async def run_gemini_pro(prompt):
-    response = await Gemini().pro_query(prompt)
-    return response
-
-# Function to run Gemini-1.5-Flash
-async def run_gemini_flash(prompt):
-    response = await Gemini().flash_query(prompt)
+# "gemini-1.5-pro" by default
+async def run_gemini(prompt, model_name="gemini-1.5-pro"):
+    response = await Gemini().query(prompt, model_name)
     return response
