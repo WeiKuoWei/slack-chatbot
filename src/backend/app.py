@@ -94,7 +94,7 @@ async def update_chat_history(request: UpdateChatHistory):
                 print(f"Error with updating chat history: {e}")
             
             chat_history.append({
-                "collection_name": f"chat_history_{message_info["channel_id"]}",
+                "collection_name": f"chat_history_{message_info['channel_id']}",
                 "document": document,
                 "embedding": embedding
             })
