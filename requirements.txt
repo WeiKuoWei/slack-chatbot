@@ -99,7 +99,7 @@ posthog==3.7.0
 preshed==3.0.9
 profanity-check==1.0.3
 propcache==0.2.0
-protobuf==4.25.5
+protobuf>=5.26.1,<6.0dev
 pyasn1==0.6.1
 pyasn1_modules==0.4.1
 pydantic==2.9.2

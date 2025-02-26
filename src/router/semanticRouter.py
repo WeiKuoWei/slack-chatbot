@@ -1,8 +1,41 @@
 from semantic_router import Route, RouteLayer
 from semantic_router.encoders import OpenAIEncoder
 import os
-from utlis.config import OPENAI_API_KEY, DB_PATH, DISTANCE_THRESHOLD
+import sys
 import logging
+import inspect 
+import importlib
+
+passed_crud = None
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from utlis.config import OPENAI_API_KEY, DB_PATH, DISTANCE_THRESHOLD
+from backend.modelsPydantic import (
+    QueryResponse, QueryRequest, UpdateChannelInfo, UpdateChatHistory, 
+    UpdateGuildInfo, UpdateMemberInfo, UpdateChannelList
+)
+
+from database.modelsChroma import generate_embedding
+from services.queryLangchain import fetchGptResponse
+
+
+COURSE_INSTRUCTOR = '''
+    You are a course instructor. You will be given the most relevant 
+    course materials to the user query. Answer the user as detail as possible.
+'''
+
+
+async def generate_expert_response(crud, request):
+    query_embedding = await generate_embedding(request.query)
+    collection_name = "course_materials"
+    relevant_docs = await crud.get_data_by_similarity(collection_name, query_embedding, top_k=5)
+    
+    content = relevant_docs.get('documents')[0]
+    print(f"Relevant messages: {content}")
+
+    answer = await fetchGptResponse(request.query, COURSE_INSTRUCTOR , relevant_docs)
+    print(f"Answer: {answer}")
+    return {'answer': answer}  
+
 
 # Logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -190,7 +223,7 @@ route_layer = RouteLayer(encoder=encoder, routes=[
 
 
 # Response functions
-def progress_report_guidance():
+async def progress_report_guidance():
     return "Tracking your submitted labs and reviewing feedback will help ensure steady progress."
 
 
@@ -198,15 +231,16 @@ def problem_solve_guidance():
     return "Start by breaking the problem into smaller parts and focus on the key concepts."
 
 
-def material_info_guidance():
-    return "You can access additional study materials through the EG-UY 1004 portal and the university library."
+async def material_info_guidance(request: QueryRequest):
+    if passed_crud is None:
+        raise ValueError("CRUD instance is not initialized")
+    return await generate_expert_response(passed_crud, request)
 
-
-def mental_support_guidance():
+async def mental_support_guidance():
     return "If you are feeling overwhelmed, NYU provides free counseling services to help students manage stress."
 
 
-def fallback_response():
+async def fallback_response():
     return "I'm not sure I understood that. Could you rephrase or ask something more specific?"
 
 
@@ -219,37 +253,51 @@ route_responses = {
     "fallback": fallback_response,
 }
 
+import asyncio
 
-# Function to process queries
-def process_query(query: str):
+async def process_query(crud, request: QueryRequest):
     try:
-        route = route_layer(query)
+        global passed_crud
+        passed_crud = crud
 
-        # Debugging: Log the processed route details
+        route = route_layer(request.query)
+
+        # Log the processed route details
         logging.info(f"Processed route: {route}")
 
         if hasattr(route, 'name') and route.name:
-            response = route_responses.get(route.name, fallback_response)()
+            response_function = route_responses.get(route.name, fallback_response)
+
+            # Handle async and non-async functions
+            if inspect.iscoroutinefunction(response_function):
+                response = await response_function(request) if len(inspect.signature(response_function).parameters) > 0 else await response_function()
+            else:
+                response = response_function(request) if len(inspect.signature(response_function).parameters) > 0 else response_function()
         else:
             response = fallback_response()
 
-        logging.info(f"Query: {query} -> Routed to: {route.name}")
-        print(f"Query: {query}\nResponse: {response}\n")
+        # Ensure response is properly formatted
+        if inspect.iscoroutine(response):
+            response = await response 
+        if isinstance(response, dict):
+            return response  
+        elif isinstance(response, str):
+            return {"answer": response}  
+        else:
+            return {"answer": str(response)} 
 
     except Exception as e:
-        logging.error(f"Error processing query: {query} | Error: {e}")
-        print("Sorry, something went wrong. Please try again later.")
-
-
+        logging.error(f"Error processing query: {request.query} | Error: {e}")
+        return {"error": str(e)} 
 # Test sample queries
-test_queries = [
-    "Can I have an update on my lab progress?",  # Should go to progress_report
-    "I am struggling with my coursework.",  # Should go to problem_solve
-    "Where can I find additional study materials?",  # Should go to material_info
-    "I feel overwhelmed with my coursework.",  # Should go to mental_support
-    "Tell me about black holes",  # Should trigger fallback response
+# test_queries = [
+#     # "Can I have an update on my lab progress?",  # Should go to progress_report
+#     # "I am struggling with my coursework.",  # Should go to problem_solve
+#     "Where can I find additional study materials?",  # Should go to material_info
+#     # "I feel overwhelmed with my coursework.",  # Should go to mental_support
+#     # "Tell me about black holes",  # Should trigger fallback response
 
-]
+# ]
 
-for query in test_queries:
-    process_query(query)
+# for query in test_queries:
+#     process_query(query)

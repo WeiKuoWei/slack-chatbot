@@ -1,7 +1,18 @@
 # app.py
+
 import httpx, uvicorn, chromadb, time
 from fastapi import FastAPI, HTTPException
 from typing import Union
+import sys
+import os
+import logging
+
+# Add src directory to sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
+
+from router.semanticRouter import process_query
+
 
 from backend.modelsPydantic import (
     QueryResponse, QueryRequest, UpdateChannelInfo, UpdateChatHistory, 
@@ -29,6 +40,28 @@ COURSE_INSTRUCTOR = '''
     course materials to the user query. Answer the user as detail as possible.
 '''
 
+# async def generate_expert_response(request: QueryRequest):
+#     query_embedding = await generate_embedding(request.query)
+#     collection_name = f"chat_history_{request.channel_id}"
+#     relevant_docs = await crud.get_data_by_similarity(collection_name, query_embedding, top_k=5)
+#     channel_info = await crud.get_data_by_id(f"channel_info_{request.guild_id}", [request.channel_id])
+    
+#     content = relevant_docs.get('documents')[0]
+#     data = channel_info.get('metadatas')[0]
+#     print(f"Relevant messages: {content}")
+#     print(f"Channel info: {data}")
+
+#     # combine the relevant messages and channel info
+#     combined_data = {
+#         'relevant_messages': content,
+#         'channel_info': channel_info
+#     }
+
+#     answer = await fetchGptResponse(request.query, CHANNEL_SUMMARIZER , combined_data)
+#     print(f"Answer: {answer}")
+#     return {'answer': answer}  
+
+
 
 @app.post('/channel_query') #, response_model=QueryResponse
 async def channel_query(request: QueryRequest):
@@ -37,38 +70,41 @@ async def channel_query(request: QueryRequest):
         collection_name = f"chat_history_{request.channel_id}"
         relevant_docs = await crud.get_data_by_similarity(collection_name, query_embedding, top_k=5)
         channel_info = await crud.get_data_by_id(f"channel_info_{request.guild_id}", [request.channel_id])
-        
+
         content = relevant_docs.get('documents')[0]
         data = channel_info.get('metadatas')[0]
+
         print(f"Relevant messages: {content}")
         print(f"Channel info: {data}")
 
-        # combine the relevant messages and channel info
         combined_data = {
             'relevant_messages': content,
             'channel_info': channel_info
         }
 
-        answer = await fetchGptResponse(request.query, CHANNEL_SUMMARIZER , combined_data)
+        answer = await fetchGptResponse(request.query, CHANNEL_SUMMARIZER, combined_data)
         print(f"Answer: {answer}")
-        return {'answer': answer}  
-    
+        return {'answer': answer}
+
     except Exception as e:
         print(f"Error with channel related question: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post('/resource_query') #, response_model=QueryResponse
+@app.post('/resource_query')
 async def resource_query(request: QueryRequest):
-    try:      
-        collection_name = "course_materials"
-        answer = await fetchLangchainResponse(request.query, collection_name, top_k=5)
-        print(f"Answer: {answer}")
-        return {'answer': answer}  
-    
+    try:
+        response = await process_query(crud, request)
+
+        if response is None:
+            raise ValueError("Received None response from process_query")
+
+        return response
+
     except Exception as e:
-        print(f"Error with course material related question: {e}")
+        logging.error(f"Error with course material related question: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+    
 @app.post('/update_chat_history')
 async def update_chat_history(request: UpdateChatHistory):
     all_messages = request.all_messages
@@ -94,7 +130,7 @@ async def update_chat_history(request: UpdateChatHistory):
                 print(f"Error with updating chat history: {e}")
             
             chat_history.append({
-                "collection_name": f"chat_history_{message_info["channel_id"]}",
+                "collection_name": f"chat_history_{message_info.get('channel_id')}",
                 "document": document,
                 "embedding": embedding
             })
@@ -143,7 +179,7 @@ async def update_info(request: Union[UpdateGuildInfo, UpdateChannelInfo, UpdateM
 
 @app.post('/load_course_materials')
 async def load_course_materials():
-    file_path = "./src/services/pdf_files"
+    file_path = "./data/pdf_files"
     collection_name = "course_materials"
     try:
         data = await crud.save_pdfs(file_path, collection_name)
@@ -156,7 +192,7 @@ async def load_course_materials():
         return {"message": "PDFs loaded successfully."}
     
     except Exception as e:
-        print(f"Error with loading PDFs: {e}")
+        print(f"app.py: Error with loading PDFs: {e}")
         return {"message": "Failed to load PDFs."}
 
 if __name__ == '__main__':
