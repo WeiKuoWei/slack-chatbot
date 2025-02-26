@@ -4,7 +4,6 @@ from fastapi import FastAPI, HTTPException
 from typing import Union
 import sys
 import os
-import logging
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
@@ -68,7 +67,7 @@ async def resource_query(request: QueryRequest):
         return response
 
     except Exception as e:
-        logging.error(f"Error with the question: {e}")
+        print(f"Error with course material related question: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
     
