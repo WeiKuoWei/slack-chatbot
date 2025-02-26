@@ -7,7 +7,8 @@ from fastapi import FastAPI, HTTPException
 from typing import Union
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
+from router.semanticRouter import process_query
 from backend.modelsPydantic import (
     QueryResponse, QueryRequest, UpdateChannelInfo, UpdateChatHistory, 
     UpdateGuildInfo, UpdateMemberInfo, UpdateChannelList
@@ -18,7 +19,6 @@ from database.crudChroma import CRUD
 from database.modelsChroma import (
     generate_embedding, ChatHistory, GuildInfo, ChannelInfo, MemberInfoChannel, ChannelList
 )
-
 from utlis.config import DB_PATH
 
 app = FastAPI()
@@ -28,12 +28,6 @@ CHANNEL_SUMMARIZER = '''
     You are a channel messages summarizer. You will be the most relevant
     messages to the user query. Answer the user as detailed as possible.
 '''
-
-COURSE_INSTRUCTOR = '''
-    You are a course instructor. You will be given the most relevant 
-    course materials to the user query. Answer the user as detail as possible.
-'''
-
 
 @app.post('/channel_query') #, response_model=QueryResponse
 async def channel_query(request: QueryRequest):
@@ -65,19 +59,17 @@ async def channel_query(request: QueryRequest):
 @app.post('/resource_query') #, response_model=QueryResponse
 async def resource_query(request: QueryRequest):
     try:
-        query_embedding = await generate_embedding(request.query)
-        collection_name = "course_materials"
-        relevant_docs = await crud.get_data_by_similarity(collection_name, query_embedding, top_k=5)
-        
-        content = relevant_docs.get('documents')[0]
-        print(f"Relevant messages: {content}")
+        response = await process_query(crud, request)
+
+        if response is None:
+            raise ValueError("Process_query returned none")
 
         answer = await fetchGptResponse(request.query, COURSE_INSTRUCTOR , relevant_docs)
         print(f"Answer: {answer}")
         return {'answer': answer}  
     
     except Exception as e:
-        print(f"Error with course material related question: {e}")
+        logging.error(f"Error with the question: {e}")
         raise HTTPException(status_code=500, detail=str(e))
     
 @app.post('/update_chat_history')
