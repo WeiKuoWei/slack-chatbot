@@ -4,26 +4,36 @@ import os
 import sys
 import logging
 import inspect 
-import importlib
 
-passed_crud = None
+#Adding path to esnure utlis and backend are detected
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from utlis.config import OPENAI_API_KEY, DB_PATH, DISTANCE_THRESHOLD
-from backend.modelsPydantic import (
-    QueryResponse, QueryRequest, UpdateChannelInfo, UpdateChatHistory, 
-    UpdateGuildInfo, UpdateMemberInfo, UpdateChannelList
-)
-
+from utlis.config import OPENAI_API_KEY
+from backend.modelsPydantic import QueryRequest
 from database.modelsChroma import generate_embedding
 from services.queryLangchain import fetchGptResponse
 
-
+passed_crud = None
 COURSE_INSTRUCTOR = '''
     You are a course instructor. You will be given the most relevant 
     course materials to the user query. Answer the user as detail as possible.
 '''
 
+# Logging
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
+# OpenAI API Key
+os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
+
+# Initialize encoder
+encoder = OpenAIEncoder()
+
+'''''
+Moved response generation logic from resource query in app.py
+to this file. Avoiding circular import
+seperated from original function to add parameters for passed in 
+request after routing to proper function
+'''''
+#Generates response
 async def generate_expert_response(crud, request):
     query_embedding = await generate_embedding(request.query)
     collection_name = "course_materials"
@@ -35,16 +45,6 @@ async def generate_expert_response(crud, request):
     answer = await fetchGptResponse(request.query, COURSE_INSTRUCTOR , relevant_docs)
     print(f"Answer: {answer}")
     return {'answer': answer}  
-
-
-# Logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
-
-# OpenAI API Key
-os.environ["OPENAI_API_KEY"] = OPENAI_API_KEY
-
-# Initialize encoder
-encoder = OpenAIEncoder()
 
 # Route definitions and their utterances
 progress_report_rt = Route(
@@ -230,7 +230,7 @@ async def progress_report_guidance():
 def problem_solve_guidance():
     return "Start by breaking the problem into smaller parts and focus on the key concepts."
 
-
+# Only LLM based function, generates response about course material
 async def material_info_guidance(request: QueryRequest):
     if passed_crud is None:
         raise ValueError("CRUD instance is not initialized")
@@ -252,8 +252,6 @@ route_responses = {
     "mental_support": mental_support_guidance,
     "fallback": fallback_response,
 }
-
-import asyncio
 
 async def process_query(crud, request: QueryRequest):
     try:
@@ -289,15 +287,4 @@ async def process_query(crud, request: QueryRequest):
     except Exception as e:
         logging.error(f"Error processing query: {request.query} | Error: {e}")
         return {"error": str(e)} 
-# Test sample queries
-# test_queries = [
-#     # "Can I have an update on my lab progress?",  # Should go to progress_report
-#     # "I am struggling with my coursework.",  # Should go to problem_solve
-#     "Where can I find additional study materials?",  # Should go to material_info
-#     # "I feel overwhelmed with my coursework.",  # Should go to mental_support
-#     # "Tell me about black holes",  # Should trigger fallback response
-
-# ]
-
-# for query in test_queries:
-#     process_query(query)
+    

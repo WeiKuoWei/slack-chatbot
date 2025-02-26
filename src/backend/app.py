@@ -1,5 +1,4 @@
 # app.py
-
 import httpx, uvicorn, chromadb, time
 from fastapi import FastAPI, HTTPException
 from typing import Union
@@ -7,13 +6,9 @@ import sys
 import os
 import logging
 
-# Add src directory to sys.path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
-
 from router.semanticRouter import process_query
-
-
 from backend.modelsPydantic import (
     QueryResponse, QueryRequest, UpdateChannelInfo, UpdateChatHistory, 
     UpdateGuildInfo, UpdateMemberInfo, UpdateChannelList
@@ -24,7 +19,6 @@ from database.crudChroma import CRUD
 from database.modelsChroma import (
     generate_embedding, ChatHistory, GuildInfo, ChannelInfo, MemberInfoChannel, ChannelList
 )
-
 from utlis.config import DB_PATH
 
 app = FastAPI()
@@ -34,34 +28,6 @@ CHANNEL_SUMMARIZER = '''
     You are a channel messages summarizer. You will be the most relevant
     messages to the user query. Answer the user as detailed as possible.
 '''
-
-COURSE_INSTRUCTOR = '''
-    You are a course instructor. You will be given the most relevant 
-    course materials to the user query. Answer the user as detail as possible.
-'''
-
-# async def generate_expert_response(request: QueryRequest):
-#     query_embedding = await generate_embedding(request.query)
-#     collection_name = f"chat_history_{request.channel_id}"
-#     relevant_docs = await crud.get_data_by_similarity(collection_name, query_embedding, top_k=5)
-#     channel_info = await crud.get_data_by_id(f"channel_info_{request.guild_id}", [request.channel_id])
-    
-#     content = relevant_docs.get('documents')[0]
-#     data = channel_info.get('metadatas')[0]
-#     print(f"Relevant messages: {content}")
-#     print(f"Channel info: {data}")
-
-#     # combine the relevant messages and channel info
-#     combined_data = {
-#         'relevant_messages': content,
-#         'channel_info': channel_info
-#     }
-
-#     answer = await fetchGptResponse(request.query, CHANNEL_SUMMARIZER , combined_data)
-#     print(f"Answer: {answer}")
-#     return {'answer': answer}  
-
-
 
 @app.post('/channel_query') #, response_model=QueryResponse
 async def channel_query(request: QueryRequest):
@@ -96,12 +62,12 @@ async def resource_query(request: QueryRequest):
         response = await process_query(crud, request)
 
         if response is None:
-            raise ValueError("Received None response from process_query")
+            raise ValueError("Process_query returned none")
 
         return response
 
     except Exception as e:
-        logging.error(f"Error with course material related question: {e}")
+        logging.error(f"Error with the question: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
     
