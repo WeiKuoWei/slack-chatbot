@@ -69,7 +69,7 @@ async def resource_query(request: QueryRequest):
         return {'answer': answer}  
     
     except Exception as e:
-        logging.error(f"Error with the question: {e}")
+        print(f"Error with course material related question: {e}")
         raise HTTPException(status_code=500, detail=str(e))
     
 @app.post('/update_chat_history')
