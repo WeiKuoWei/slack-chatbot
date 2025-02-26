@@ -43,6 +43,7 @@ async def channel_query(request: QueryRequest):
         print(f"Relevant messages: {content}")
         print(f"Channel info: {data}")
 
+        # combine the relevant messages and channel info
         combined_data = {
             'relevant_messages': content,
             'channel_info': channel_info
@@ -56,7 +57,7 @@ async def channel_query(request: QueryRequest):
         print(f"Error with channel related question: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
-@app.post('/resource_query')
+@app.post('/resource_query') #, response_model=QueryResponse
 async def resource_query(request: QueryRequest):
     try:
         response = await process_query(crud, request)
