@@ -1,0 +1,25 @@
+import asyncio
+import traceback
+from database.crudChroma import CRUD
+
+async def test():
+    crud = CRUD()
+    file_path = "/home/marclikestocode/nyu-fams/slack-chatbot/pdf_files"
+    collection_name = "course_materials"
+    
+    print("🚀 Testing `save_pdfs()` function...")
+    
+    try:
+        data = await crud.save_pdfs(file_path, collection_name)
+        print(f"✅ Successfully vectorized {len(data)} PDFs")
+        print("📦 Attempting to save to ChromaDB...")
+        chunk_size = 10
+        for i in range(0, len(data), chunk_size):
+            print(f"📝 Saving chunk {i // chunk_size + 1} to ChromaDB...")
+            await crud.save_to_db(data[i:i+chunk_size])
+    except Exception as e:
+        print("❌ ERROR in `save_pdfs()` ❌")
+        import traceback
+        traceback.print_exc()  # 🔹 Force error traceback
+
+asyncio.run(test())
