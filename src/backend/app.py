@@ -1,7 +1,11 @@
 # app.py
 import httpx, uvicorn, chromadb, time
+import sys, os
+import traceback
 from fastapi import FastAPI, HTTPException
 from typing import Union
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from backend.modelsPydantic import (
     QueryResponse, QueryRequest, UpdateChannelInfo, UpdateChatHistory, 
@@ -109,6 +113,7 @@ async def update_chat_history(request: UpdateChatHistory):
     try:
         await crud.save_to_db(chat_history)
     except Exception as e:
+        traceback.print_exc()
         print(f"Error with saving chat history: {e}")
 
     print(f"Update complete, {total_messages} messages from {len(all_messages)} channels are loaded to the database.")
@@ -166,4 +171,4 @@ async def load_course_materials():
         return {"message": "Failed to load PDFs."}
 
 if __name__ == '__main__':
-    uvicorn.run(app, host='0.0.0.0', port=8000)
+    uvicorn.run(app, host='0.0.0.0', port=8080)

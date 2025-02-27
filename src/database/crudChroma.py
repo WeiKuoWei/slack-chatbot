@@ -1,5 +1,6 @@
 # crudChroma.py
 import chromadb, uuid, os, urllib.parse, asyncio
+import os
 
 
 from utlis.config import DB_PATH
@@ -14,7 +15,8 @@ class CRUD():
         
     async def save_to_db(self, data):
         for item in data:
-            collection_name, document, embedding = item['collection_name'], item['document'], item['embedding']
+            #added metadata
+            collection_name, document, embedding, metadata = item['collection_name'], item['document'], item['embedding'], item['metadata']
 
             # Change collection_name to type str since it was an int, but has to
             # be a str in order to be used as a collection name
@@ -23,12 +25,17 @@ class CRUD():
             # Note that collection_name is equivalent to channel_id
             collection = await asyncio.to_thread(self.client.get_or_create_collection, collection_name)
 
+            print(f"DEBUG: Metadata for document -> {metadata}")
+            if 'id' not in metadata:
+                print(f"ERROR: 'id' key is missing in metadata! Skipping...")
+                continue  # Skip this document if no ID
+
             await asyncio.to_thread(collection.upsert,
                 # Same for id, has to be a str
-                ids=[str(document.metadata['id'])],
+                ids=[str(metadata['id'])],
                 documents=[document.page_content],
                 embeddings=[embedding],
-                metadatas=[document.metadata]
+                metadatas=[metadata]
             )
 
             print(f"'{document.page_content}' is added to the collection {collection_name}")
@@ -91,12 +98,15 @@ class CRUD():
         # get docs, ids, and filenames (for metadata purposes)
         docs = text_splitter.split_documents(docs)
         ids = [str(uuid.uuid4()) for _ in range(len(docs))]
+        for doc, doc_id in zip(docs, ids):
+            doc.metadata['id'] = doc_id  # Assign unique ID
 
         # remove the file path and extension from the source
         filenames = [doc.metadata['source'].split('/')[-1].split('.')[0] for doc in docs]
 
         # get the hyperlinks for the pdfs with filenames
-        hyperlinks_file = f"{file_path}/../hyperlinks.csv"
+        hyperlinks_file = os.path.join(os.path.dirname(__file__), "../services/hyperlinks.csv")
+        print(f"Looking for hyperlinks.csv at: {os.path.abspath(hyperlinks_file)}")
         urls = read_hyperlinks(hyperlinks_file)
         matched_urls = match_filenames_to_urls(filenames, urls)
 
@@ -137,5 +147,4 @@ class CRUD():
             })
 
         return data_to_save
-
-
+        

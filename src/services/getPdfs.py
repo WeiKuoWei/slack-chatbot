@@ -1,9 +1,12 @@
 import requests, os, asyncio, logging, csv
+import sys
+import asyncio 
 from aspose.slides import Presentation
 from aspose.slides.export import SaveFormat
 from pyppeteer import launch
 from bs4 import BeautifulSoup
 from concurrent.futures import ThreadPoolExecutor, as_completed
+
 
 
 # Set up logging
@@ -14,28 +17,37 @@ PPTX_FOLDER = 'pptx_files'
 URL_FILENAME = 'hyperlinks.csv'
 CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 
+os.makedirs(PDF_FOLDER, exist_ok=True)
+os.makedirs(PPTX_FOLDER, exist_ok=True)
+
 def get_all_hyperlinks(url, base_link):
+    """Extracts all hyperlinks from a webpage and saves to CSV."""
     try:
         response = requests.get(url)
         response.raise_for_status()
 
         soup = BeautifulSoup(response.content, 'html.parser')
         anchor_tags = soup.find_all('a')
-        
+
         hyperlinks = []
+        hyperlink_pairs = []  # For CSV storage (link, text)
+
         for a in anchor_tags:
             href = a.get('href')
             text = a.get_text(strip=True)
             if href:
                 link = href if href.startswith('http') else base_link + href
-                hyperlinks.append((link, text))
+                hyperlinks.append(link)  # Store only the URL for later use
+                hyperlink_pairs.append((link, text))  # Store both for CSV
 
+        # Save both link + text to CSV
         with open(f'{CURRENT_DIR}/{URL_FILENAME}', 'w', newline='') as f:
             writer = csv.writer(f)
             writer.writerow(['Link', 'Text'])
-            writer.writerows(hyperlinks)
+            writer.writerows(hyperlink_pairs)
 
-        return hyperlinks
+        print(f"Extracted {len(hyperlinks)} links.")
+        return hyperlinks  # Return only the URLs for further processing
 
     except requests.RequestException as e:
         logging.error(f"Failed to retrieve the page: {e}")
@@ -50,9 +62,14 @@ def filter_links(hyperlinks, base_link):
     return filtered_links
 
 def download_file(url, folder):
+    local_filename = os.path.basename(url)
+    local_filepath = os.path.join(folder, local_filename)
+
+    if os.path.exists(local_filepath):
+        logging.info(f"File already exists: {local_filepath}, skipping download.")
+        return local_filepath
+
     try:
-        local_filename = url.split('/')[-1]
-        local_filepath = os.path.join(folder, local_filename)
         response = requests.get(url, stream=True)
         response.raise_for_status()
 
@@ -61,11 +78,12 @@ def download_file(url, folder):
                 f.write(chunk)
 
         logging.info(f"Downloaded {url} to {local_filepath}")
-        return local_filename
+        return local_filepath
 
     except requests.RequestException as e:
         logging.error(f"Failed to download {url}: {e}")
         return None
+
 
 def convert_pptx_to_pdf(pptx_path, pdf_path):
     try:
@@ -76,7 +94,8 @@ def convert_pptx_to_pdf(pptx_path, pdf_path):
         # Load the presentation
         with Presentation(pptx_path) as presentation:
             # Save as PDF
-            presentation.save(pdf_path, SaveFormat.PDF)
+            presentation.save(pdf_path, SaveFormat.Pdf)
+            #presentation.save(pdf_path, 32)
             logging.info(f"Converted {pptx_path} to {pdf_path}")
 
     except Exception as e:
@@ -129,14 +148,70 @@ def match_filenames_to_urls(filenames, urls_with_texts):
             matched_urls[filename] = (None, "Description not found")
     return matched_urls
 
+async def process_all_links(pdf_links, pptx_links, webpage_links):
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+    from database.crudChroma import CRUD
+
+    crud = CRUD()  # Initialize CRUD for saving PDFs
+
+    # Step 1: Download PDFs
+    if pdf_links:
+        print("Downloading PDFs...")
+        for link in pdf_links:
+            download_file(link, PDF_FOLDER)
+
+    # Step 2: Download & Convert PPTX to PDFs
+    if pptx_links:
+        print("Downloading and converting PPTX files...")
+        for link in pptx_links:
+            download_file(link, PPTX_FOLDER)
+
+        # Convert all downloaded PPTX files into PDFs
+        convert_all_pptx_in_folder(PPTX_FOLDER, PDF_FOLDER)
+
+    # Step 3: Convert Webpages to PDFs
+    if webpage_links:
+        print("Converting webpages to PDFs...")
+        tasks = []
+        for link in webpage_links:
+            filename = link.split("/")[-1] + ".pdf"  # Generate a filename
+            pdf_path = os.path.join(PDF_FOLDER, filename)
+            tasks.append(convert_webpage_as_pdf(link, pdf_path))
+
+        # Run all conversions asynchronously
+        await asyncio.gather(*tasks)
+
+    # Step 4: Save All PDFs into ChromaDB
+    print("Processing PDFs and saving them to ChromaDB...")
+    await crud.save_pdfs(PDF_FOLDER, "course_materials")
+
+    print("All materials have been processed and stored.")
 # ---------------------------- Main function ----------------------------
 
-def main():
+async def main():
+    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+    from database.crudChroma import CRUD
+
+    # crud = CRUD()  # Initialize CRUD for saving PDFs
+    # await crud.save_pdfs(PDF_FOLDER, "course_materials")
+
+
     url = 'https://manual.eg.poly.edu/index.php/Main_Page'
     base_link = 'https://manual.eg.poly.edu'
 
+    print("Extracting hyperlinks...")
     hyperlinks = get_all_hyperlinks(url, base_link)
     hyperlinks = filter_links(hyperlinks, base_link)
+
+    #Separate links
+    pdf_links = [link for link in hyperlinks if link.endswith('.pdf')]
+    webpage_links = [link for link in hyperlinks if not link.endswith('.pdf') and not link.endswith('.pptx')]
+    pptx_links = [link for link in hyperlinks if link.endswith('.pptx')]
+
+    print(f"{len(pdf_links) + len(webpage_links) + len(pptx_links)} links found.") # Should be 60 total links.
+    print(f"PDFs: {len(pdf_links)} | Webpages: {len(webpage_links)} | PPTX: {len(pptx_links)}") # Should be 20 each.
+    
+    await process_all_links(pdf_links, pptx_links, webpage_links)
 
     # create_folders(PPTX_FOLDER, PDF_FOLDER, PDF_FOLDER)
 
@@ -160,6 +235,6 @@ def main():
     #     pdf_path = os.path.join(PDF_FOLDER, local_filename)
     #     loop.run_until_complete(convert_webpage_as_pdf(link, pdf_path))
 
-if __name__ == "__main__":
-    main()
 
+if __name__ == "__main__":
+    asyncio.run(main())
