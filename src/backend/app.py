@@ -157,10 +157,16 @@ async def load_course_materials():
     file_path = "./data/pdf_files"
     collection_name = "course_materials"
     try:
+        #returns pdfs as a list of dictionaries that hold chunks of text
+
+        existing_data = await crud.get_data_by_id(collection_name, ["course_materials"])
+        if existing_data:
+            return {"message": "PDFs already loaded."}
+        
         data = await crud.save_pdfs(file_path, collection_name)
 
         # save the data to the database in chunks of ten documents
-        chunk_size = 10
+        chunk_size = 5
         for i in range(0, len(data), chunk_size):
             await crud.save_to_db(data[i:i+chunk_size])
 

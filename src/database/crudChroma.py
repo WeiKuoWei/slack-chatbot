@@ -98,6 +98,8 @@ class CRUD():
         # get docs, ids, and filenames (for metadata purposes)
         docs = text_splitter.split_documents(docs)
         ids = [str(uuid.uuid4()) for _ in range(len(docs))]
+
+        #New: assigns unique ID to each document chunk
         for doc, doc_id in zip(docs, ids):
             doc.metadata['id'] = doc_id  # Assign unique ID
 
