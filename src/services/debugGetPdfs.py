@@ -2,14 +2,15 @@ import requests, os, asyncio, logging, csv
 import sys
 import asyncio 
 import traceback
-#from aspose.slides import Presentation
-#from aspose.slides.export import SaveFormat
 import pdfkit
+from aspose.slides import Presentation
+# from aspose.slides.export import SaveFormat
 from pyppeteer import launch
 from bs4 import BeautifulSoup
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
+#Alternative getPdf script as we continuously fail at 
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
@@ -115,19 +116,19 @@ def convert_all_pptx_in_folder(PPTX_FOLDER, PDF_FOLDER):
             pdf_path = os.path.join(PDF_FOLDER, pdf_filename)
             convert_pptx_to_pdf(pptx_path, pdf_path)
 
-# async def convert_webpage_as_pdf(url, pdf_path):
-#     try:
-#         browser = await launch(headless=True, args=['--no-sandbox', '--disable-setuid-sandbox'])
-#         page = await browser.newPage()
-#         await page.goto(url)
-#         await page.pdf({'path': pdf_path, 'format': 'A4'})
-#         await browser.close()
-#         logging.info(f"Converted {url} to {pdf_path}")
+async def convert_webpage_as_pdf(url, pdf_path):
+    #going to try pdfkit
+    try:
+        browser = await launch(headless=True, args=['--no-sandbox', '--disable-setuid-sandbox'])
+        page = await browser.newPage()
+        await page.goto(url)
+        await page.pdf({'path': pdf_path, 'format': 'A4'})
+        await browser.close()
+        logging.info(f"Converted {url} to {pdf_path}")
 
-#     except Exception as e:
-#         traceback.print_exc()
-#         logging.error(f"Failed to convert {url} to PDF: {e}")
-
+    except Exception as e:
+        traceback.print_exc()
+        logging.error(f"Failed to convert {url} to PDF: {e}")
 def webpage_to_pdf(url, pdf_path):
     """Converts a webpage to PDF and saves it in the pdf_files folder."""
     try: 
@@ -145,14 +146,6 @@ def create_folders(*folders):
         if not os.path.exists(folder):
             os.makedirs(folder)
 
-# ---------------------------- Other helper functions ----------------------------
-
-def read_hyperlinks(file_path):
-    with open(file_path, newline='') as csvfile:
-        reader = csv.reader(csvfile)
-        urls_with_texts = [(row[0], row[1]) for row in reader]
-    return urls_with_texts
-
 def match_filenames_to_urls(filenames, urls_with_texts):
     matched_urls = {}
     for filename in filenames:
@@ -166,71 +159,81 @@ def match_filenames_to_urls(filenames, urls_with_texts):
 
 async def process_all_links(pdf_links, pptx_links, webpage_links):
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-    from database.crudChroma import CRUD
+    #from database.crudChroma import CRUD
 
-    crud = CRUD()  # Initialize CRUD for saving PDFs
+    #crud = CRUD()  # Initialize CRUD for saving PDFs
 
-    print(f"Pdf links stored: {len(pdf_links)} ")
+    # print(f"Pdf links stored: {len(pdf_links)} ")
 
-    # Step 1: Download PDFs
-    if pdf_links:
-        print("Downloading PDFs...")
-        for link in pdf_links:
-            download_file(link, PDF_FOLDER)
+    # # Step 1: Download PDFs (THIS WORKS)
+    # if pdf_links:
+    #     print("Downloading PDFs...")
+    #     for link in pdf_links:
+    #         download_file(link, PDF_FOLDER)
+
+    print(f"pptx links stored: {len(pptx_links)} ")
 
     # Step 2: Download & Convert PPTX to PDFs
-    if pptx_links:
-        print("Downloading and converting PPTX files...")
-        for link in pptx_links:
-            download_file(link, PPTX_FOLDER)
+    # Issue: No usable version of libssl was found Aborted (core dumped)
+    # Need to find a different way to convert pptx to pdf
+    # if pptx_links:
+    #     print("Downloading and converting PPTX files...")
+    #     for link in pptx_links:
+    #         download_file(link, PPTX_FOLDER)
 
-        # Convert all downloaded PPTX files into PDFs
-        convert_all_pptx_in_folder(PPTX_FOLDER, PDF_FOLDER)
+    #     # Convert all downloaded PPTX files into PDFs
+    #     convert_all_pptx_in_folder(PPTX_FOLDER, PDF_FOLDER)
 
     # Step 3: Convert Webpages to PDFs
+    # WORKS!!!
     if webpage_links:
         print("Converting webpages to PDFs...")
-        #tasks = []
+        tasks = []
         for link in webpage_links:            
             filename = link.split("/")[-1] + ".pdf"  # Generate a filename
             pdf_path = os.path.join(PDF_FOLDER, filename)
-            webpage_to_pdf(link, pdf_path)
-            # tasks.append(asyncio.to_thread(webpage_to_pdf(link, pdf_path)))
+            #webpage_to_pdf(link, pdf_path)
+            tasks.append(asyncio.to_thread(webpage_to_pdf(link, pdf_path)))
 
             # tasks.append(convert_webpage_as_pdf(link, pdf_path))
 
-        # Run all conversions asynchronously
-        #await asyncio.gather(*tasks)
+    #     # Run all conversions asynchronously
+    await asyncio.gather(*tasks)
+    
 
-    # Step 4: Save All PDFs into ChromaDB
-    #print("Processing PDFs and saving them to ChromaDB...")
-    #await crud.save_pdfs(PDF_FOLDER, "course_materials")
+    # # Step 4: Save All PDFs into ChromaDB
+    # print("Processing PDFs and saving them to ChromaDB...")
+    # await crud.save_pdfs(PDF_FOLDER, "course_materials")
 
     print("All materials have been processed and stored.")
-# ---------------------------- Main function ----------------------------
 
 async def main():
-    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-    from database.crudChroma import CRUD
 
     # crud = CRUD()  # Initialize CRUD for saving PDFs
     # await crud.save_pdfs(PDF_FOLDER, "course_materials")
-
-
     url = 'https://manual.eg.poly.edu/index.php/Main_Page'
     base_link = 'https://manual.eg.poly.edu'
 
     print("Extracting hyperlinks...")
     hyperlinks = get_all_hyperlinks(url, base_link)
-    hyperlinks = filter_links(hyperlinks, base_link)
+    # print(f"Before filtration: {hyperlinks}")
+    # Properly seperates links, fits into what we need. One pdf a bunch of webpages and some slides
+        # pdf_links = [link for link in hyperlinks if link.endswith('.pdf')]
+        # webpage_links = [link for link in hyperlinks if not link.endswith('.pdf') and not link.endswith('.pptx')]
+        # pptx_links = [link for link in hyperlinks if link.endswith('.pptx')]
+        # print(f"PDFS: {pdf_links} /n Webpages: {webpage_links} /n PPTX: {pptx_links}")
 
-    #Separate links
+    hyperlinks = filter_links(hyperlinks, base_link)
+    # print(f"After filtration: {hyperlinks}")
+
+    # # Separate links
     pdf_links = [link for link in hyperlinks if link.endswith('.pdf')]
     webpage_links = [link for link in hyperlinks if not link.endswith('.pdf') and not link.endswith('.pptx')]
     pptx_links = [link for link in hyperlinks if link.endswith('.pptx')]
 
     print(f"{len(pdf_links) + len(webpage_links) + len(pptx_links)} links found.") # Should be 60 total links.
     print(f"PDFs: {len(pdf_links)} | Webpages: {len(webpage_links)} | PPTX: {len(pptx_links)}") # Should be 20 each.
+    print(f"PDFS: {pdf_links} /n Webpages: {webpage_links} /n PPTX: {pptx_links}")
     
     await process_all_links(pdf_links, pptx_links, webpage_links)
 
