@@ -11,6 +11,8 @@ from community_apps.discordHelper import (
 )
 from backend.modelsPydantic import Message, UpdateChatHistory
 
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+
 class DiscordBot:
     def __init__(self, bot):
         self.bot = bot
@@ -23,7 +25,7 @@ class DiscordBot:
         @self.bot.event
         async def on_ready():
             await self.tree.sync()
-            print(f'We have logged in as {self.bot.user}')
+            logging.info(f'We have logged in as {self.bot.user}')
 
         @self.bot.event
         async def on_message(message):
@@ -31,7 +33,7 @@ class DiscordBot:
                 return
 
             if message.content:
-                print(f"Direct content access: {message.content}")
+                logging.info(f"Direct content access: {message.content}")
                 self.message_global = message       
 
                 try:
@@ -44,14 +46,14 @@ class DiscordBot:
                             warning_message = f"{message.author.mention} your message is removed due to high profanity score: {int(profanity_score*100)}"
                             await message.channel.send(warning_message)
                         except Exception as e:
-                            print(f"Error with deleting message: {e}")
+                            logging.error(f"Error with deleting message: {e}")
 
                     if profanity_score > PROFANITY_THRESHOLD or await message_filter(message, self.bot.user):
                         message_info = await get_parameters(message)
                         asyncio.create_task(update_message(message_info, self.bot.user))
 
                 except Exception as e:
-                    print(f"Error with updating parameters: {e}")
+                    logging.error(f"Error with updating parameters: {e}")
 
             if message.content.startswith('!'): 
                 await message.channel.send("Use / to access commands, and /info to see available commands.")
@@ -96,22 +98,22 @@ class DiscordBot:
 
 
     async def update_server_info(self, interaction: discord.Interaction):
-        print("Updating server information and chat history to ChromaDB...")
+        logging.info("Updating server information and chat history to ChromaDB...")
         guild = interaction.guild
 
         if not guild:
-            print("This command can only be used in a server.")
+            logging.info("This command can only be used in a server.")
             await interaction.response.send_message("This command can only be used in a server.")
             return
         else:
-            print(f"Updating server information for {guild.name}")
+            logging.info(f"Updating server information for {guild.name}")
             await interaction.response.send_message("Updating server information...")
 
         try:
             all_channels, all_messages = await get_channels_and_messages(guild, self.bot.user)
             await update_message(all_messages, self.bot.user)
 
-            print(f"There are a total of {len(all_channels)} channels in {guild.name}")
+            logging.info(f"There are a total of {len(all_channels)} channels in {guild.name}")
             member_channels = {}
             total_messages = 0
             score_sum = 0
@@ -123,7 +125,7 @@ class DiscordBot:
                 total_messages += channel_info['number_of_messages']
                 score_sum += channel_info['profanity_score'] * channel_info['number_of_messages']
 
-                print(f"There are a total of {len(channel.members)} members in {channel.name}")
+                logging.info(f"There are a total of {len(channel.members)} members in {channel.name}")
                 for member in channel.members:
                     if member not in member_channels:
                         member_channels[member] = []
@@ -137,7 +139,7 @@ class DiscordBot:
             await interaction.followup.send("Channel and member information updated.")
 
             for member, channels in member_channels.items():
-                print(f"Updating channel list for {member.name}")
+                logging.info(f"Updating channel list for {member.name}")
                 channel_list = await store_channel_list(member, guild, channels)
                 await send_to_app('update_info', channel_list)
 
@@ -145,17 +147,17 @@ class DiscordBot:
             guild_info = await store_guild_info(guild, average_score)
             await send_to_app('update_info', guild_info)
 
-            print("Guild information updated.")
+            logging.info("Guild information updated.")
             await interaction.followup.send("Guild information updated.")
 
         except Exception as e:
-            print(f"Error with updating server information: {e}")
+            logging.error(f"Error with updating server information: {e}")
             await interaction.followup.send("Failed to update server information.")
 
     async def handle_query(self, interaction: discord.Interaction, query_type, query):
         current_author = interaction.user
-        print(f"Received {query_type} command")
-        print(f"Query: {query}")
+        logging.info(f"Received {query_type} command")
+        logging.info(f"Query: {query}")
 
         data = {
             'guild_id': interaction.guild.id,
