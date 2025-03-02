@@ -1,4 +1,4 @@
-import os, json, httpx, discord
+import os, json, httpx, discord, logging
 import numpy as np 
 from profanity_check import predict_prob
 from database.modelsChroma import (
@@ -8,6 +8,7 @@ from services.nlpTools import TextProcessor
 from utlis.config import PROFANITY_THRESHOLD
 from backend.modelsPydantic import UpdateChatHistory, Message
 
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 nlp_tools = TextProcessor()
 
 async def send_to_app(route, data):
@@ -23,9 +24,9 @@ async def update_message(all_messages, bot_user, chunk_size=25):
             response = await send_to_app('update_chat_history', data.model_dump())
 
             if response.status_code == 200:
-                print(f"Chunk of messages updated to ChromaDB for channel {channel_id}")
+                logging.info(f"Chunk of messages updated to ChromaDB for channel {channel_id}")
             else:
-                print(f"Failed to update chunk of messages to ChromaDB for channel {channel_id}")
+                logging.error(f"Failed to update chunk of messages to ChromaDB for channel {channel_id}")
 
 async def get_parameters(interaction_data):
     content = interaction_data["content"]
@@ -35,11 +36,11 @@ async def get_parameters(interaction_data):
     message_id = interaction_data["id"]
     created_at = interaction_data["created_at"]
 
-    print(f"Updating message: {content}")
+    logging.info(f"Updating message: {content}")
     data = {}
 
     profanity_scores = await profanity_checker([content]) # returns a numpy array
-    print(f"Profanity score: {profanity_scores[0]}")
+    logging.info(f"Profanity score: {profanity_scores[0]}")
     message_info = {
         "channel_id": channel.id,
         "channel_name": channel.name,
@@ -165,7 +166,7 @@ async def store_channel_info(channel, guild_id, messages):
     message_contents = [msg['content'] for msg in messages]
     cleaned_documents, key_phrases, metadata, keywords = await nlp_tools.process_messages(message_contents)
     
-    print(f"Cleaned documents: {cleaned_documents}\n Key phrases: {key_phrases}\n Metadata: {metadata}\n Keywords: {keywords}") 
+    logging.info(f"Cleaned documents: {cleaned_documents}\n Key phrases: {key_phrases}\n Metadata: {metadata}\n Keywords: {keywords}") 
 
     key_phrases_str = [' '.join(phrases) for phrases in key_phrases] 
     
