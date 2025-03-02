@@ -26,7 +26,7 @@ class LLM():
     # Query Model: Set rate limit to RATE_LIMIT RPM / user
     @sleep_and_retry
     @limits(calls=RATE_LIMIT, period=60)
-    async def query(self, prompt): # let model response be ansynchronous to allow for concurrency
+    async def query(self, prompt:str) -> str: # let model response be ansynchronous to allow for concurrency
         try:
             response = await asyncio.to_thread(self.model.generate_content, prompt) # can't access generate_content() method asynchronously --> access, then make asynchronous
             return response.text.strip()
@@ -35,7 +35,7 @@ class LLM():
             return f"Failed to query {self.model.model_name} model: {e}"
 
 # Function to run model
-async def run_model(prompt, model_name:str, generation_config:dict, safety_settings:dict):
+async def run_model(prompt, model_name:str, generation_config:dict, safety_settings:dict) -> str:
     response = await LLM(model_name, generation_config, safety_settings).query(prompt)
     return response
 
