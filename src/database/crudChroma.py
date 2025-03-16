@@ -85,6 +85,7 @@ class CRUD():
             print(f"Error with retrieving data by id: {e}")
             return []
     
+
     async def save_pdfs(self, pdfs_file_path, category_prefix="course_materials"):
         #pass in directory with pdf folders, and the prefix relates to type.
         print(f"Scanning for PDFs from {pdfs_file_path} ... ")
@@ -93,16 +94,16 @@ class CRUD():
 
         data_to_save = []  
 
-        # Check if `pdf_files/` has **subdirectories** (Wei's structure)
-        has_subdirectories = any(Path(pdfs_file_path).iterdir())
+         # Check if pdf_files contains subdirectories (Wei’s requested structure)
+        has_subdirectories = any(p.is_dir() for p in Path(pdfs_file_path).iterdir())
 
-        # If no subdirectories → Save all PDFs to `course_materials`
-        if not has_subdirectories:
-            print(f"No subdirectories found! Storing PDFs directly in `course_materials` collection...")
-            category_prefix = "course_materials"
-            data_to_save.extend(await self._process_pdfs(Path(pdfs_file_path), category_prefix))
+        # If pdf_files has direct PDFs, process them under `course_materials`
+        direct_pdfs = list(Path(pdfs_file_path).glob("*.pdf"))
+        if direct_pdfs:
+            print(f"Found PDFs directly inside {pdfs_file_path}. Storing in `course_materials` collection.")
+            data_to_save.extend(await self.process_pdfs(Path(pdfs_file_path), category_prefix))
 
-        else:
+        if has_subdirectories:
             for category_folder in Path(pdfs_file_path).iterdir():
                 # Assuming Wei structure, load pdfs from each sub directroy in pdf directory.
                 if category_folder.is_dir():
@@ -119,15 +120,12 @@ class CRUD():
                         print(f"Loading PDFs from {category_prefix}, subject: {sub_category_name} ...")
                         #Example, would be loading course_materials/CS 1114
 
-                        data_to_save.extend(await self._process_pdfs(sub_category_folder, collection_name))
-                        
+                        data_to_save.extend(await self.process_pdfs(sub_category_folder, collection_name))
+
         return data_to_save
 
 
-                    
-
-
-    async def process_data(self, directory, collection_name):
+    async def process_pdfs(self, directory, collection_name):
         try:
             loader = DirectoryLoader(str(directory), glob="*.pdf", show_progress=True)
             docs = loader.load()
