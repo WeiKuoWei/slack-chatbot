@@ -9,7 +9,12 @@ from pyppeteer import launch
 from bs4 import BeautifulSoup
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
+#SEPERATE SCRAPING FROM DOWNLOADING
+#SEPERATE DOWNLOADING FROM CONVERTING
+#Wei wants more modularity.
+#Get rid of abs routes to allow others to use the code.
 
+#Helping Edward: Using DFS to scrape mental health resources as those sites aren't anything but text nested deeper and deeper links. 
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
@@ -115,19 +120,6 @@ def convert_all_pptx_in_folder(PPTX_FOLDER, PDF_FOLDER):
             pdf_path = os.path.join(PDF_FOLDER, pdf_filename)
             convert_pptx_to_pdf(pptx_path, pdf_path)
 
-# async def convert_webpage_as_pdf(url, pdf_path):
-#     try:
-#         browser = await launch(headless=True, args=['--no-sandbox', '--disable-setuid-sandbox'])
-#         page = await browser.newPage()
-#         await page.goto(url)
-#         await page.pdf({'path': pdf_path, 'format': 'A4'})
-#         await browser.close()
-#         logging.info(f"Converted {url} to {pdf_path}")
-
-#     except Exception as e:
-#         traceback.print_exc()
-#         logging.error(f"Failed to convert {url} to PDF: {e}")
-
 def webpage_to_pdf(url, pdf_path):
     """Converts a webpage to PDF and saves it in the pdf_files folder."""
     try: 
@@ -165,11 +157,6 @@ def match_filenames_to_urls(filenames, urls_with_texts):
     return matched_urls
 
 async def process_all_links(pdf_links, pptx_links, webpage_links):
-    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-    from database.crudChroma import CRUD
-
-    crud = CRUD()  # Initialize CRUD for saving PDFs
-
     print(f"Pdf links stored: {len(pdf_links)} ")
 
     # Step 1: Download PDFs
@@ -195,23 +182,11 @@ async def process_all_links(pdf_links, pptx_links, webpage_links):
             filename = link.split("/")[-1] + ".pdf"  # Generate a filename
             pdf_path = os.path.join(PDF_FOLDER, filename)
             webpage_to_pdf(link, pdf_path)
-            # tasks.append(asyncio.to_thread(webpage_to_pdf(link, pdf_path)))
-
-            # tasks.append(convert_webpage_as_pdf(link, pdf_path))
-
-        # Run all conversions asynchronously
-        #await asyncio.gather(*tasks)
-
-    # Step 4: Save All PDFs into ChromaDB
-    #print("Processing PDFs and saving them to ChromaDB...")
-    #await crud.save_pdfs(PDF_FOLDER, "course_materials")
-
+            
     print("All materials have been processed and stored.")
 # ---------------------------- Main function ----------------------------
 
 async def main():
-    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-    from database.crudChroma import CRUD
 
     # crud = CRUD()  # Initialize CRUD for saving PDFs
     # await crud.save_pdfs(PDF_FOLDER, "course_materials")
@@ -232,30 +207,9 @@ async def main():
     print(f"{len(pdf_links) + len(webpage_links) + len(pptx_links)} links found.") # Should be 60 total links.
     print(f"PDFs: {len(pdf_links)} | Webpages: {len(webpage_links)} | PPTX: {len(pptx_links)}") # Should be 20 each.
     
-    await process_all_links(pdf_links, pptx_links, webpage_links)
+    process_all_links(pdf_links, pptx_links, webpage_links)
 
     # create_folders(PPTX_FOLDER, PDF_FOLDER, PDF_FOLDER)
-
-    # # get the hyperlinks that are pptx and download them
-    # pptx_links = [link for link in hyperlinks if link.endswith('.pptx')]
-    # for link in pptx_links:
-    #     download_file(link, PPTX_FOLDER)
-
-    # convert_all_pptx_in_folder(PPTX_FOLDER, PDF_FOLDER)
-
-    # # get the hyperlinks that are pdf and download them
-    # pdf_links = [link for link in hyperlinks if link.endswith('.pdf')]
-    # for link in pdf_links:
-    #     download_file(link, PDF_FOLDER)
-
-    # # get the hyperlinks that are webpages and convert them to pdf
-    # webpage_links = [link for link in hyperlinks if not link.endswith('.pdf') and not link.endswith('.pptx')]
-    # loop = asyncio.get_event_loop()
-    # for link in webpage_links:
-    #     local_filename = link.split('/')[-1] + '.pdf'
-    #     pdf_path = os.path.join(PDF_FOLDER, local_filename)
-    #     loop.run_until_complete(convert_webpage_as_pdf(link, pdf_path))
-
 
 if __name__ == "__main__":
     asyncio.run(main())
