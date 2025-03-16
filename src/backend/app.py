@@ -152,9 +152,11 @@ async def update_info(request: Union[UpdateGuildInfo, UpdateChannelInfo, UpdateM
     print(f"Info updated for {collection_name}")
     return {"status": "Update complete"}
 
-@app.post('/load_course_materials')
-async def load_course_materials():
-    file_path = "./data/pdf_files"
+@app.post('/load_materials')
+async def load_materials():
+    # change out abs
+    # the collectiion name should be dependent on the type of data
+    file_path = os.path.join(os.path.dirname(__file__), "pdf_files")
     collection_name = "course_materials"
     try:
         #returns pdfs as a list of dictionaries that hold chunks of text
