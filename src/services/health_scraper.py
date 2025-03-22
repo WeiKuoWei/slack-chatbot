@@ -8,6 +8,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from webdriver_manager.chrome import ChromeDriverManager
 from urllib.parse import urlparse, urlunparse
 from pyppeteer import launch
+import matplotlib.pyplot as plt
+
 import time
 import re
 
@@ -92,6 +94,7 @@ async def save_pdf(url, pdf_filename):
 
 def dfs_scrape(url, max_depth=3):
     stack = [(normalize_url(url), 0)]  # (URL, depth)
+    relevant_count = 0  # Track number of relevant links found
     
     while stack:
         current_url, depth = stack.pop()
@@ -114,7 +117,8 @@ def dfs_scrape(url, max_depth=3):
         if contains_keywords:
             print(f"✅ Relevant page found! Keywords: {', '.join(matched_keywords)}")
             pdf_filename = f"relevant_page_{len(visited)}.pdf"
-            asyncio.run(save_pdf(current_url, pdf_filename))
+            #asyncio.run(save_pdf(current_url, pdf_filename))
+            relevant_count += 1
         else:
             print(f"❌ Skipping {current_url} (no relevant keywords)")
             continue
@@ -122,15 +126,27 @@ def dfs_scrape(url, max_depth=3):
         new_links = clickable_elements()
         for href in reversed(new_links):
             if href not in visited:
-                stack.append((href, depth + 1))  # Increase depth
+                stack.append((href, depth + 1))  
 
-    return visited
+    return relevant_count  
+
 
 if __name__ == "__main__":
-    all_links = dfs_scrape(BASE_URL)
+    depths = list(range(8, 11))
+    relevant_links_found = []
 
-    print("\nAll Scraped Links:")
-    for link in sorted(all_links):
-        print(link)
+    for depth in depths:
+        visited.clear()  
+        driver = webdriver.Chrome(service=service, options=chrome_options)  
+        count = dfs_scrape(BASE_URL, max_depth=depth)
+        relevant_links_found.append(count)
+        driver.quit()
 
-    driver.quit()
+    # Plot the results
+    plt.figure(figsize=(8, 6))
+    plt.plot(depths, relevant_links_found, marker='o', linestyle='-', color='b')
+    plt.xlabel("Max Depth")
+    plt.ylabel("Number of Relevant Links Found")
+    plt.title("Max Depth vs. Number of Relevant Links Found")
+    plt.grid()
+    plt.show()
