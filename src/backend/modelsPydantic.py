@@ -6,6 +6,7 @@ class QueryRequest(BaseModel):
     guild_id: int
     channel_id: int
     query: str
+    has_been_rerouted: bool = False  
 
 class QueryResponse(BaseModel):
     answer: str

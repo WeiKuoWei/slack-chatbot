@@ -5,6 +5,7 @@ load_dotenv()
 
 DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 DB_PATH = os.getenv("DB_PATH")
 PROFANITY_THRESHOLD = float(os.getenv("PROFANITY_THRESHOLD"))
 DISTANCE_THRESHOLD = float(os.getenv("DISTANCE_THRESHOLD"))
