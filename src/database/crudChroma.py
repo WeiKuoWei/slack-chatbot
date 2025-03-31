@@ -1,4 +1,6 @@
 # crudChroma.py
+from datetime import datetime
+from dateutil.parser import parse
 import chromadb, uuid, os, urllib.parse, asyncio
 import os
 from pathlib import Path
@@ -85,16 +87,22 @@ class CRUD():
             print(f"Error with retrieving data by id: {e}")
             return []
     
+    async def get_data_by_metadata(self, collection_name, metadata_query):
+        try:
+            collection = self.client.get_collection(collection_name)
+            results = collection.get(where=metadata_query)
+            return results
+        except Exception as e:
+            print(f"Error with retrieving data by metadata: {e}")
+            return []
 
     async def save_pdfs(self, pdfs_file_path, category_prefix="course_materials"):
         #pass in directory with pdf folders, and the prefix relates to type.
         print(f"Scanning for PDFs from {pdfs_file_path} ... ")
 
-        #Quick edge case checking.
-
         data_to_save = []  
 
-         # Check if pdf_files contains subdirectories (Wei’s requested structure)
+         # Check if pdf_files contains subdirectories so course_materials (Wei’s requested structure) Return: BOOL.
         has_subdirectories = any(p.is_dir() for p in Path(pdfs_file_path).iterdir())
 
         # If pdf_files has direct PDFs, process them under `course_materials`
@@ -103,6 +111,10 @@ class CRUD():
             print(f"Found PDFs directly inside {pdfs_file_path}. Storing in `course_materials` collection.")
             data_to_save.extend(await self.process_pdfs(Path(pdfs_file_path), category_prefix))
 
+
+        #Missing checks for subdirectories --> as of 3/28/25 should be fixed 
+
+        #If pdf_files has subdirectories, process them under their respective categories
         if has_subdirectories:
             for category_folder in Path(pdfs_file_path).iterdir():
                 # Assuming Wei structure, load pdfs from each sub directroy in pdf directory.
@@ -164,7 +176,13 @@ class CRUD():
                 filename = urllib.parse.unquote(filename.replace('_', ' '))
                 source = f"[{filename}]({url})" if url else filename
 
-                metadata = {"id": doc_id, "source": source}
+                metadata = {
+                    "id": doc_id, 
+                    "source": source,
+                    "timestamp": doc.metadata.get("timestamp") or datetime.utcnow().isoformat()
+                }
+
+
                 processed_data.append({"collection_name": collection_name, "document": doc, "embedding": embedding, "metadata": metadata})
 
             return processed_data
