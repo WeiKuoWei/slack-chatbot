@@ -1,5 +1,6 @@
 # app.py
 import httpx, uvicorn, chromadb, time
+import asyncio
 import sys, os
 import traceback
 from fastapi import FastAPI, HTTPException
@@ -151,15 +152,21 @@ async def load_materials():
     # change out abs
     # the collectiion name should be dependent on the type of data
     file_path = os.path.join(os.path.dirname(__file__), "pdf_files")
-    collection_name = "course_materials"
+
+    #need to add proper routing to appropiate collection name depending on the type of data
+    # Pretty sure I can just comment this out since it sav_pdfs has a default param to properly route collection name.
+    #collection_name = "course_materials"
     try:
         #returns pdfs as a list of dictionaries that hold chunks of text
+        all_collections = await asyncio.to_thread(crud.client.list_collections)  # Fetch all collections
+        for collection in all_collections:
+            collection_name = collection.name
+            existing_data = await crud.get_data_by_id(collection_name, ["course_materials"])
+            if existing_data:
+                return {"message": f"PDFs already loaded in collection: {collection_name}"}
 
-        existing_data = await crud.get_data_by_id(collection_name, ["course_materials"])
-        if existing_data:
-            return {"message": "PDFs already loaded."}
         
-        data = await crud.save_pdfs(file_path, collection_name)
+        data = await crud.save_pdfs(file_path)
 
         # save the data to the database in chunks of ten documents
         chunk_size = 5
