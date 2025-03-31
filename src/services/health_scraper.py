@@ -1,3 +1,4 @@
+from openai import OpenAI
 import requests, os, asyncio, logging, csv
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
@@ -13,6 +14,7 @@ import matplotlib.pyplot as plt
 import time
 import re
 
+client = OpenAI(api_key = "API_KEY")
 BASE_URL = "https://www.nyu.edu/life/safety-health-wellness/health-resources.html"
 PDF_FOLDER = "saved_pdfs"
 
@@ -71,16 +73,68 @@ def clickable_elements():
 
     return elements
 
-def page_contains_keywords():
-    """Check if the page contains mental health-related keywords."""
+def check_relevance_with_openai(page_content):
+    """
+    Use OpenAI API to determine if the page is relevant to mental health resources.
+    
+    Args:
+        page_content (str): The text content of the webpage
+        
+    Returns:
+        tuple: (is_relevant, explanation)
+    """
+
+    max_content_length = 4000
+    if len(page_content) > max_content_length:
+        page_content = page_content[:max_content_length] + "..."
+    
     try:
-        main_content = driver.find_element(By.TAG_NAME, "main").text.lower().strip()
-    except:
-        main_content = driver.page_source.lower().strip()
-
-    matched_keywords = [kw for kw in MENTAL_HEALTH_KEYWORDS if re.search(rf"\b{re.escape(kw)}\b", main_content)]
-
-    return bool(matched_keywords), matched_keywords
+        prompt = f"""
+        Task: Determine if the following webpage content is relevant to mental health resources.
+        
+        Context: I'm looking for mental health resources at NYU, including counseling services, 
+        psychological support, therapy options, crisis intervention, wellness programs, 
+        or any resources related to anxiety, depression, stress management, or emotional wellbeing.
+        
+        Webpage content: 
+        {page_content}
+        
+        Is this webpage relevant to mental health resources? 
+        Answer YES if it contains information about mental health services, resources, support, 
+        or wellbeing that would be useful for someone seeking mental health assistance.
+        Answer NO if it doesn't contain relevant mental health information.
+        
+        Format your response as:
+        RELEVANT: YES/NO
+        REASON: Brief explanation
+        """
+        
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",  
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant that evaluates webpage content."},
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=150,
+            temperature=0
+        )
+        
+        result = response.choices[0].message.content.strip()
+        
+        is_relevant = "RELEVANT: YES" in result
+        reason = result.split("REASON:")[1].strip() if "REASON:" in result else "No reason provided"
+        
+        return is_relevant, reason
+        
+    except Exception as e:
+        print(f"Error calling OpenAI API: {e}")
+        matched_keywords = [kw for kw in [
+            "mental health", "counseling", "therapy", "psychological", 
+            "psychiatry", "depression", "anxiety", "stress",
+            "support group", "crisis", "emotional support", "mindfulness", "illness"
+        ] if re.search(rf"\b{re.escape(kw)}\b", page_content.lower())]
+        
+        return bool(matched_keywords), f"Fallback keyword match: {', '.join(matched_keywords) if matched_keywords else 'none'}"
 
 async def save_pdf(url, pdf_filename):
     """Save the relevant page as a PDF using Pyppeteer."""
@@ -114,16 +168,27 @@ def dfs_scrape(url, max_depth=3):
         except:
             print(f"Skipping {current_url} due to timeout.")
             continue
+        
+        try:
+            main_content = driver.find_element(By.TAG_NAME, "main").text.strip()
+        except:
+            main_content = driver.find_element(By.TAG_NAME, "body").text.strip()
 
-        contains_keywords, matched_keywords = page_contains_keywords()
+        is_relevant, reason = check_relevance_with_openai(main_content)
 
-        if contains_keywords:
-            print(f"✅ Relevant page found! Keywords: {', '.join(matched_keywords)}")
+        if is_relevant:
+            print(f"✅ Relevant page found! Reason: {reason}")
             pdf_filename = f"relevant_page_{len(visited)}.pdf"
             asyncio.run(save_pdf(current_url, pdf_filename))
-            relevant_count += 1
+            
+            with open('relevant_pages.csv', 'a', newline='', encoding='utf-8') as csvfile:
+                writer = csv.writer(csvfile)
+                if os.path.getsize('relevant_pages.csv') == 0:
+                    writer.writerow(['URL', 'Reason', 'Depth'])
+                writer.writerow([current_url, reason, depth])
+            
         else:
-            print(f"❌ Skipping {current_url} (no relevant keywords)")
+            print(f"❌ Skipping {current_url} (not relevant: {reason})")
             continue
 
         new_links = clickable_elements()
@@ -144,7 +209,10 @@ if __name__ == "__main__":
     #     count = dfs_scrape(BASE_URL, max_depth=depth)
     #     relevant_links_found.append(count)
     #     driver.quit()
-    
+    with open('relevant_pages.csv', 'w', newline='', encoding='utf-8') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(['URL', 'Reason', 'Depth'])
+        
     visited.clear()  
     driver = webdriver.Chrome(service=service, options=chrome_options)  
     count = dfs_scrape(BASE_URL, max_depth=7)
