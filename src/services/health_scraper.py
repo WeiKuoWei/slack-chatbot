@@ -44,9 +44,12 @@ def normalize_url(url): #removes fragment identifiers
 
 def load_page_delay():
     try:
-        WebDriverWait(driver, 3).until(EC.presence_of_element_located((By.TAG_NAME, "body")))
+        WebDriverWait(driver, 1.5).until(
+            lambda d: d.execute_script('return document.readyState') == 'complete'
+        )
     except:
-        print("Page load timed out but continuing...")
+        print("Page load timed out or still loading... continuing anyway.")
+
 
 def clickable_elements():
     elements = []
@@ -117,7 +120,7 @@ def dfs_scrape(url, max_depth=3):
         if contains_keywords:
             print(f"✅ Relevant page found! Keywords: {', '.join(matched_keywords)}")
             pdf_filename = f"relevant_page_{len(visited)}.pdf"
-            #asyncio.run(save_pdf(current_url, pdf_filename))
+            asyncio.run(save_pdf(current_url, pdf_filename))
             relevant_count += 1
         else:
             print(f"❌ Skipping {current_url} (no relevant keywords)")
@@ -132,21 +135,26 @@ def dfs_scrape(url, max_depth=3):
 
 
 if __name__ == "__main__":
-    depths = list(range(8, 11))
-    relevant_links_found = []
+    # depths = list(range(0, 11))
+    # relevant_links_found = []
 
-    for depth in depths:
-        visited.clear()  
-        driver = webdriver.Chrome(service=service, options=chrome_options)  
-        count = dfs_scrape(BASE_URL, max_depth=depth)
-        relevant_links_found.append(count)
-        driver.quit()
+    # for depth in depths:
+    #     visited.clear()  
+    #     driver = webdriver.Chrome(service=service, options=chrome_options)  
+    #     count = dfs_scrape(BASE_URL, max_depth=depth)
+    #     relevant_links_found.append(count)
+    #     driver.quit()
+    
+    visited.clear()  
+    driver = webdriver.Chrome(service=service, options=chrome_options)  
+    count = dfs_scrape(BASE_URL, max_depth=7)
+    driver.quit()
 
     # Plot the results
-    plt.figure(figsize=(8, 6))
-    plt.plot(depths, relevant_links_found, marker='o', linestyle='-', color='b')
-    plt.xlabel("Max Depth")
-    plt.ylabel("Number of Relevant Links Found")
-    plt.title("Max Depth vs. Number of Relevant Links Found")
-    plt.grid()
-    plt.show()
+    # plt.figure(figsize=(8, 6))
+    # plt.plot(depths, relevant_links_found, marker='o', linestyle='-', color='b')
+    # plt.xlabel("Max Depth")
+    # plt.ylabel("Number of Relevant Links Found")
+    # plt.title("Max Depth vs. Number of Relevant Links Found")
+    # plt.grid()
+    # plt.show()
