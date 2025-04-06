@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 import time
 import re
 
-client = OpenAI(api_key = "API_KEY")
+client = OpenAI(api_key = "A")
 BASE_URL = "https://www.nyu.edu/life/safety-health-wellness/health-resources.html"
 PDF_FOLDER = "saved_pdfs"
 
@@ -96,6 +96,14 @@ def check_relevance_with_openai(page_content):
         psychological support, therapy options, crisis intervention, wellness programs, 
         or any resources related to anxiety, depression, stress management, or emotional wellbeing.
         
+        If it is relevant, categorize it as one of the following:
+        - Mental Health (e.g., psychological services, therapy, crisis support)
+        - Emotional Health (e.g., stress relief, mindfulness, emotional well-being)
+        - Social Health (e.g., support groups, community belonging, peer relationships)
+        - Physical Health (e.g., medical services, fitness, nutrition)
+        
+        Also, generate a 1 to 3-word summary or topic that captures the main focus of the page.
+        
         Webpage content: 
         {page_content}
         
@@ -106,33 +114,38 @@ def check_relevance_with_openai(page_content):
         
         Format your response as:
         RELEVANT: YES/NO
+        CATEGORY: One of Mental Health, Emotional Health, Social Health, Physical Health
+        SUMMARY: 1 to 3 words that describe the main topic
         REASON: Brief explanation
         """
         
         response = client.chat.completions.create(
-            model="gpt-3.5-turbo",  
+            model="gpt-3.5-turbo-16k",  
             messages=[
                 {"role": "system", "content": "You are a helpful assistant that evaluates webpage content."},
                 {"role": "user", "content": prompt}
             ],
-            max_tokens=150,
+            max_tokens=200,
             temperature=0
         )
         
         result = response.choices[0].message.content.strip()
-        
+
         is_relevant = "RELEVANT: YES" in result
-        reason = result.split("REASON:")[1].strip() if "REASON:" in result else "No reason provided"
+        reason_match = re.search(r"REASON:\s*(.*)", result)
+        category_match = re.search(r"CATEGORY:\s*(.*)", result)
+        summary_match = re.search(r"SUMMARY:\s*(.*)", result)
         
-        return is_relevant, reason
+        reason = reason_match.group(1).strip() if reason_match else "No reason provided"
+        category = category_match.group(1).strip() if category_match else "Uncategorized"
+        summary = summary_match.group(1).strip().replace(" ", "_").lower() if summary_match else "untitled"
+        
+        return is_relevant, reason, category, summary
         
     except Exception as e:
         print(f"Error calling OpenAI API: {e}")
-        matched_keywords = [kw for kw in [
-            "mental health", "counseling", "therapy", "psychological", 
-            "psychiatry", "depression", "anxiety", "stress",
-            "support group", "crisis", "emotional support", "mindfulness", "illness"
-        ] if re.search(rf"\b{re.escape(kw)}\b", page_content.lower())]
+        matched_keywords = [kw for kw in MENTAL_HEALTH_KEYWORDS
+         if re.search(rf"\b{re.escape(kw)}\b", page_content.lower())]
         
         return bool(matched_keywords), f"Fallback keyword match: {', '.join(matched_keywords) if matched_keywords else 'none'}"
 
@@ -174,19 +187,18 @@ def dfs_scrape(url, max_depth=3):
         except:
             main_content = driver.find_element(By.TAG_NAME, "body").text.strip()
 
-        is_relevant, reason = check_relevance_with_openai(main_content)
+        is_relevant, reason, category, summary = check_relevance_with_openai(main_content)
 
         if is_relevant:
             print(f"✅ Relevant page found! Reason: {reason}")
-            pdf_filename = f"relevant_page_{len(visited)}.pdf"
+            pdf_filename = f"{summary}.pdf"
             asyncio.run(save_pdf(current_url, pdf_filename))
             
             with open('relevant_pages.csv', 'a', newline='', encoding='utf-8') as csvfile:
                 writer = csv.writer(csvfile)
                 if os.path.getsize('relevant_pages.csv') == 0:
-                    writer.writerow(['URL', 'Reason', 'Depth'])
-                writer.writerow([current_url, reason, depth])
-            
+                    writer.writerow(['URL', 'Category', 'Summary', 'Reason', 'Depth'])
+                writer.writerow([current_url, category, summary, reason, depth])
         else:
             print(f"❌ Skipping {current_url} (not relevant: {reason})")
             continue
@@ -211,8 +223,8 @@ if __name__ == "__main__":
     #     driver.quit()
     with open('relevant_pages.csv', 'w', newline='', encoding='utf-8') as csvfile:
         writer = csv.writer(csvfile)
-        writer.writerow(['URL', 'Reason', 'Depth'])
-        
+        writer.writerow(['URL', 'Category', 'Summary', 'Reason', 'Depth']) 
+               
     visited.clear()  
     driver = webdriver.Chrome(service=service, options=chrome_options)  
     count = dfs_scrape(BASE_URL, max_depth=7)
