@@ -9,7 +9,10 @@ GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 DB_PATH = os.getenv("DB_PATH")
 PROFANITY_THRESHOLD = float(os.getenv("PROFANITY_THRESHOLD"))
 DISTANCE_THRESHOLD = float(os.getenv("DISTANCE_THRESHOLD"))
-
+SIMILARITY_THRESHOLD = float(os.getenv("SIMILARITY_THRESHOLD"))
+MAX_MEMORY_PER_EXPERT = os.getenv("MAX_MEMORY_PER_EXPERT"))
+MEMORY_FILEPATH = os.getenv("MEMORY_FILEPATH")
+                                    
 if not DISCORD_TOKEN:
     raise ValueError("DISCORD_TOKEN is not set in .env file")
 
