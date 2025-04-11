@@ -1,4 +1,5 @@
 import asyncio, os
+import json
 import logging
 import time
 from ratelimit import limits, sleep_and_retry
@@ -7,42 +8,41 @@ from langchain_community.vectorstores import DocArrayInMemorySearch
 from langchain.prompts import PromptTemplate
 from google.generativeai.types import HarmCategory, HarmBlockThreshold
 from collections import deque, defaultdict
-from utlis.config import GEMINI_API_KEY, RATE_LIMIT
+from utlis.config import GEMINI_API_KEY, MEMORY_FILEPATH, SIMILARITY_THRESHOLD, MAX_MEMORY_PER_EXPERT
+from src.services.gemini2 import LLM
+from sklearn.metrics.pairwise import cosine_similarity
+import numpy as np
 
 # Setup logging
 logging.basicConfig(level=logging.ERROR, format="%(asctime)s, %(levelname)s: %(message)s")
 
-# Global configuration
-CONTEXT_WINDOW_SIZE = 10 # max number of stored interactions per user
-MEMORY_LIMIT = 30 # max number of stored conversations before summarization
-
 class LLMMemory:
     def __init__(self, model_name:str, generation_config:dict, safety_settings:dict):
+        """
+            Initialize model, memory, and vectorstore
+        """
         # Load Gemini Pro model
         try:
-            self.model = ChatGoogleGenerativeAI(
-                model=model_name,
-                api_key=GEMINI_API_KEY,
-                generation_config=generation_config,
-                safety_settings=safety_settings
-            )
+            self.model = LLM # Use passed LLM instant for modularity
         except Exception as e:
             logging.error(f"Failed to load Gemini Pro model: {e}")
             return RuntimeError(f"Failed to load Gemini Pro model: {e}")
         
-        # Initialize memory storage as context windows for each user/channel
-        self.context_windows = defaultdict(lambda: deque(maxlen=CONTEXT_WINDOW_SIZE)) # keep most recent CONTEXT_WINDOW_SIZE convos (defaultdict will automatically create a key with a default value if key does not exist)
-        self.user_conversations = defaultdict(list) # store conversation summaries for each user
+        # Initialize memory storage as context windows for each user/channel (temporary in-session memory)
+        self.context_windows = defaultdict(lambda: defaultdict(list)) 
+
+        # Load persistent conversation memory
+        self.memory = self.load_memory()
 
         # Initialize model embeddings and vector store for context retrieval
-        embeddings = GoogleGenerativeAIEmbeddings(model="model/text-embedding-001")
+        self.embeddings = GoogleGenerativeAIEmbeddings(model="model/text-embedding-001")
         self.vectorstore = DocArrayInMemorySearch.from_texts(
             [  # set mini docs for embedding (used to train the vector store prioritize conversation context when retrieving relevant past messages)
                 "This system tracks ongoing conversations between users and experts, ensuring continuity and context-aware responses.",
                 "Each user has a dedicated context window storing their last 10 interactions, allowing for smooth follow-up discussions."
                 "Context windows are tied to a user id (private chat) or channel id (group chat) to maintain proper conversation history.", "Routing decisions consider the entire conversation history, preventing users from being incorrectly reassigned to different experts.", "The system summarizes older messages to retain key details while optimizing memory usage."
             ],
-            embedding=embeddings
+            embeddings=self.embeddings
         )
 
         # Initialize retriever
@@ -57,83 +57,119 @@ class LLMMemory:
         """
         self.prompt = PromptTemplate.from_template(template)
 
-    def update_context_window(self, user_id:str, question:str, response:str) -> None:
+    def load_memory(self):
         """
-            Maintain last CONTEXT_WINDOW_SIZE messages and enforce memory limits. If limit is reached, summarize conversation and clear context window for new interaction entry.
+            Load conversation memory from JSON file.
         """
-        # If total stored conversations exceeds MEMORY_LIMIT, summarize old data
-        if len(self.context_windows[user_id]) == CONTEXT_WINDOW_SIZE:
-            self.summarize_conversation(user_id)
-            self.context_windows[user_id].clear() # clear context window after summarization
+        if os.path.exists(MEMORY_FILEPATH):
+            with open(MEMORY_FILEPATH, "r") as file:
+                return json.load(file)
+        return {}
+    
+    def save_memory(self):
+        """
+            Save conversation memory to JSON file.
+        """
+        with open(MEMORY_FILEPATH, 'w') as file:
+            json.dump(self.memory, file, indent=4)
 
-        # Add new convo into context window
-        self.context_windows[user_id].append((question,response))
+    def detect_context_shift(self, user_id:str, expert_name:str, new_query:str) -> bool:
+        """
+        Determine if a topic shift has occurred by comparing the new query to existing context. Return True if the topic has shifted, otherwise False.
+        """
+        if not self.context_windows[user_id][expert_name]:
+            return False # no previous messages, no shift
+        context_texts = [" ".join(q for q,r in self.context_windows[user_id][expert_name])]
+        context_embeddings = self.embeddings.embed(context_texts)
+        query_embeddings = self.embeddings.embed(new_query) 
+        similarities = cosine_similarity([query_embeddings], context_embeddings)[0]
+        max_similarity = np.max(similarities)
 
+        return max_similarity < SIMILARITY_THRESHOLD # shift detected if similarity is low
 
-    def get_context_window(self, user_id:str) -> str:
+    def update_context_window(self, user_id:str, expert_name:str, question:str, response:str) -> None:
+        """
+            Update the context window dynamically. If a context shift is detected, label and store old context and start a new window.
+        """
+        # Detect context shift
+        if self.detect_context_shift(user_id, expert_name, question):
+            self.context_windows[user_id][expert_name] = {"messages": [], "topic": question}
+
+        # Add new message
+        self.context_windows[user_id][expert_name]["messages"].append((question, response))
+
+        # Store entire context in vector embeddings for better retrieval
+        history = "\n".join([f"User: {q}\nBot: {a}" for q,a in self.context_windows[user_id][expert_name]["messages"]])
+        self.vectorstore.add_texts([history])
+
+    def store_conversation(self, user_id:str, expert_name:str):
+        """
+            Store past conversations in memory, ensuring each user has only 5 stored context windows per expert.
+        """
+        messages = self.context_windows[user_id][expert_name]
+        if not messages:
+            return # No data to store if no messages
+        
+        # Ensure the user and expert exist in memory
+        if user_id not in self.memory:
+            self.memory[user_id] = {}
+        if expert_name not in self.memory[user_id]:
+            self.memory[user_id][expert_name] = []
+
+        new_entry = {
+            "context": messages["topic"],
+            "messages": messages["messages"]
+        }
+        
+        self.memory[user_id][expert_name].append(new_entry)
+        
+        # Maintain memory limit per expert
+        if len(self.memory[user_id][expert_name]) > MAX_MEMORY_PER_EXPERT:
+            self.memory[user_id][expert_name].pop(0)
+
+        self.save_memory()
+
+    def get_context_window(self, user_id:str, expert_name:str) -> str:
         """
             Retrieve last CONTEXT_WINDOW_SIZE interactions from user's conversation history.
         """
-        return "\n".join([f"Question: {q}\nA: {a}" for q, a in self.context_windows[user_id]])
-    
-    def summarize_conversation(self, user_id:str) -> None:
-        """
-            Summarize past conversations when CONTEXT_WINDOW_SIZE exceeded to prevent overflow and optimize memory usage. Store summary in user_conversations. Remove old summaries when MEMORY_LIMIT exceeded.
-        """
-        history = "\n".join([f"User: {q}\nBot: {a}" for q, a in self.context_windows[user_id]])
-        summary_prompt = f"Summarize the following conversation:\n{history}"
-        try:
-            summary = self.model.generate_summary(summary_prompt).text.strip()
-        except Exception as e:
-            logging.error(f"Failed to generate summary: {e}")
-            raise RuntimeError(f"Failed to generate summary: {e}")
-        
-        # Ensure memory limit is not exceeded
-        if len(self.user_conversations[user_id]) == MEMORY_LIMIT:
-            self.user_conversations[user_id].popleft() # remove oldest summary
-        
-        self.user_conversations[user_id].append(summary)
+        messages = self.context_windows[user_id][expert_name]["messages"]
+        return "\n".join([f"Question: {q}\nResponse: {r}" for q, r in messages]) if messages else "No prior history :("
 
-    @sleep_and_retry
-    @limits(calls=2, period=60) # Rate limit set to 2RPM per user
-    async def query(self, user_id:str, question:str) -> str: # let model response be asynchronous to allow for concurrency
+    async def query(self, user_id:str, expert_name:str, question:str):
         """
-            Query Gemini Pro while considering user context. Use vector retrival and stored conversation history for better responses.
+            Query the LLM while considering user context.
         """
-        try:
-            # Retrieve relevant docs from vector store
+        try: 
+            # Retrieve relevant context from the vectorstore
             context_docs = self.retriever.get_relevant_documents(question)
             context = " ".join([doc.page_content for doc in context_docs])
 
-            # Retrieve user-specific most recent conversation history
-            history = self.get_context_window(user_id)
+            # Get conversation history
+            history = self.get_context_window(user_id, expert_name)
 
             # Format input prompt
-            chain_input = {"context": context, "history": history, "question": question}
+            chain_input = {
+                "context": context,
+                "history": history,
+                "question": question
+            }
             formatted_prompt = self.prompt.format(**chain_input)
 
-            # Generate response asynchronously using configured data
-            response = await asyncio.to_thread(self.model.generate_content, formatted_prompt)
-            response = response.text.strip()
+            # Generate response asynchronously
+            response = await self.llm.query(formatted_prompt)
 
-            # Update memory with new interaction and track question
-            self.update_context_window(user_id, question, response)
-
-            return response
+            # Update context window
+            self.update_context_window(user_id, expert_name, question, response)
         except Exception as e:
-            logging.error(f"Failed to query Gemini-1.5-Pro model: {e}")
-            return f"Failed to query Gemini-1.5-Pro model: {e}"
+            logging.error(f"Failed to query model: {e}")
+            return f"Error: {e}"
 
-async def run_gemini_with_memory(user_id:str, prompt:str) -> str:
+
+async def run_model_with_memory(user_id:str, expert_name:str, prompt:str, llm:LLM) -> str:
     """
         Run Gemini Pro with context window tracking.
     """
-    response = await LLMMemory().query(user_id, prompt)
+    memory = LLMMemory(llm)
+    response = await memory.query(user_id, expert_name, prompt)
     return response
-
-# Test gemini with memory storage implementation
-if __name__ == "__main__":
-    test_user = "user_123" # simulated user id
-    prompt = "What is the difference between a stack and a queue? Answer in one sentence."
-    response = asyncio.run(run_gemini_with_memory(test_user, prompt))
-    print(response)
