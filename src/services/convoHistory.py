@@ -7,7 +7,7 @@ from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmb
 from langchain_community.vectorstores import DocArrayInMemorySearch
 from langchain.prompts import PromptTemplate
 from google.generativeai.types import HarmCategory, HarmBlockThreshold
-from collections import deque, defaultdict
+from collections import defaultdict
 from utlis.config import GEMINI_API_KEY, MEMORY_FILEPATH, SIMILARITY_THRESHOLD, MAX_MEMORY_PER_EXPERT
 from src.services.gemini2 import LLM
 from sklearn.metrics.pairwise import cosine_similarity
