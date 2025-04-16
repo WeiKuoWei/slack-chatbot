@@ -29,7 +29,6 @@ chrome_options = Options()
 chrome_options.add_argument("--disable-gpu")
 chrome_options.add_argument("--no-sandbox")
 chrome_options.add_argument("--disable-dev-shm-usage")
-# chrome_options.add_argument("--headless")  # Uncomment for headless mode
 
 service = Service(ChromeDriverManager().install())
 driver = webdriver.Chrome(service=service, options=chrome_options)
@@ -212,15 +211,7 @@ def dfs_scrape(url, max_depth=3):
 
 
 if __name__ == "__main__":
-    # depths = list(range(0, 11))
-    # relevant_links_found = []
 
-    # for depth in depths:
-    #     visited.clear()  
-    #     driver = webdriver.Chrome(service=service, options=chrome_options)  
-    #     count = dfs_scrape(BASE_URL, max_depth=depth)
-    #     relevant_links_found.append(count)
-    #     driver.quit()
     with open('relevant_pages.csv', 'w', newline='', encoding='utf-8') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(['URL', 'Category', 'Summary', 'Reason', 'Depth']) 
@@ -229,12 +220,3 @@ if __name__ == "__main__":
     driver = webdriver.Chrome(service=service, options=chrome_options)  
     count = dfs_scrape(BASE_URL, max_depth=7)
     driver.quit()
-
-    # Plot the results
-    # plt.figure(figsize=(8, 6))
-    # plt.plot(depths, relevant_links_found, marker='o', linestyle='-', color='b')
-    # plt.xlabel("Max Depth")
-    # plt.ylabel("Number of Relevant Links Found")
-    # plt.title("Max Depth vs. Number of Relevant Links Found")
-    # plt.grid()
-    # plt.show()
