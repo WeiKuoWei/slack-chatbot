@@ -1,6 +1,9 @@
 # crudChroma.py
+from datetime import datetime
+from dateutil.parser import parse
 import chromadb, uuid, os, urllib.parse, asyncio
-
+import os
+from pathlib import Path
 
 from utlis.config import DB_PATH
 from database.modelsChroma import generate_embedding
@@ -14,7 +17,8 @@ class CRUD():
         
     async def save_to_db(self, data):
         for item in data:
-            collection_name, document, embedding = item['collection_name'], item['document'], item['embedding']
+            #added metadata
+            collection_name, document, embedding, metadata = item['collection_name'], item['document'], item['embedding'], item['metadata']
 
             # Change collection_name to type str since it was an int, but has to
             # be a str in order to be used as a collection name
@@ -23,12 +27,24 @@ class CRUD():
             # Note that collection_name is equivalent to channel_id
             collection = await asyncio.to_thread(self.client.get_or_create_collection, collection_name)
 
+            print(f"DEBUG: Metadata for document -> {metadata}")
+            if 'id' not in metadata:
+                print(f"ERROR: 'id' key is missing in metadata! Skipping...")
+                continue  # Skip this document if no ID
+
+            existing_doc = await asyncio.to_thread(collection.get, ids=[metadata["id"]])
+
+            # Don't save duplicates
+            if existing_doc and existing_doc["documents"]:
+                print(f"Document {metadata['id']} already exists. Skipping...")
+                continue  
+
             await asyncio.to_thread(collection.upsert,
                 # Same for id, has to be a str
-                ids=[str(document.metadata['id'])],
+                ids=[str(metadata['id'])],
                 documents=[document.page_content],
                 embeddings=[embedding],
-                metadatas=[document.metadata]
+                metadatas=[metadata]
             )
 
             print(f"'{document.page_content}' is added to the collection {collection_name}")
@@ -70,72 +86,103 @@ class CRUD():
             print(f"Error with retrieving data by id: {e}")
             return []
     
-    async def save_pdfs(self, file_path, collection_name):
-        print(f"Saving PDFs from {file_path} to collection {collection_name}")
-        # Get the files
+    async def get_data_by_metadata(self, collection_name, metadata_query):
         try:
-            loader = DirectoryLoader(file_path, glob = "*.pdf", show_progress = True)
-            docs = loader.load()
-
-        except Exception as e:
-            print(f"crudChroma.py: Error with loading PDFs: {e}")
-            return
+            collection = self.client.get_collection(collection_name)
+            results = collection.get(where=metadata_query)
+            return results
         
+        except Exception as e:
+            print(f"Error with retrieving data by metadata: {e}")
+            return []
 
-        # split the text 
-        text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size = 1000, 
-            chunk_overlap = 200
-        )
+    async def save_pdfs(self, pdfs_file_path, category_prefix="course_materials"):
 
-        # get docs, ids, and filenames (for metadata purposes)
-        docs = text_splitter.split_documents(docs)
-        ids = [str(uuid.uuid4()) for _ in range(len(docs))]
+        data_to_save = []  
 
-        # remove the file path and extension from the source
-        filenames = [doc.metadata['source'].split('/')[-1].split('.')[0] for doc in docs]
+        # Check if pdf_files contains subdirectories so course_materials (Wei’s requested structure) Return: BOOL.
+        has_subdirectories = any(p.is_dir() for p in Path(pdfs_file_path).iterdir())
 
-        # get the hyperlinks for the pdfs with filenames
-        hyperlinks_file = f"{file_path}/../hyperlinks.csv"
-        urls = read_hyperlinks(hyperlinks_file)
-        matched_urls = match_filenames_to_urls(filenames, urls)
+        # If pdf_files has direct PDFs, process them under `course_materials`
+        direct_pdfs = list(Path(pdfs_file_path).glob("*.pdf"))
+        if direct_pdfs:
+            print(f"Found PDFs directly inside {pdfs_file_path}. Storing in `course_materials` collection.")
+            data_to_save.extend(await self.process_pdfs(Path(pdfs_file_path), category_prefix))
 
-        for filename, url in matched_urls.items():
-            print(f"{filename}: {url}")
 
-        # save the docs in the collection with collection_name
-        collection = self.client.get_or_create_collection(collection_name)
+        # If pdf_files has subdirectories, process them under their respective categories
+        if has_subdirectories:
+            for category_folder in Path(pdfs_file_path).iterdir():
+                # Assuming Wei structure, load pdfs from each sub directroy in pdf directory.
+                if category_folder.is_dir():
+                    #if directory ... load pdfs
+                    category_prefix = category_folder.name
 
-        data_to_save = []
-        for doc, id, filename in zip(docs, ids, filenames):
-            url, text = matched_urls.get(filename, (None, "Description not found"))
-            combined_text = f"{text} {doc.page_content}"
-            # print the first 50 characters of the combined text
-            print(f"Combined text: {combined_text[:50]}...")
-            embedding = await generate_embedding(combined_text)
-            
-            # Format the filename
-            filename = urllib.parse.unquote(filename.replace('_', ' '))
-            
-            if url:
-                source = f"[{filename}]({url})"
-            else:
-                source = filename
-            
-            # Prepare the metadata for saving
-            metadata = {
-                "id": id,
-                "source": source
-            }
+                    for sub_category_folder in category_folder.iterdir():
+                        sub_category_name = sub_category_folder.name
+                        
+                        #Wei wants category_[subcategory] as the collection name
+                        collection_name = f"{category_prefix}_[{sub_category_name}]"
 
-            # Add to data to be saved
-            data_to_save.append({
-                "collection_name": collection_name,
-                "document": doc,
-                "embedding": embedding,
-                "metadata": metadata
-            })
+
+                        print(f"Loading PDFs from {category_prefix}, subject: {sub_category_name} ...")
+                        #Example, would be loading course_materials/CS 1114
+
+                        data_to_save.extend(await self.process_pdfs(sub_category_folder, collection_name))
 
         return data_to_save
 
 
+    async def process_pdfs(self, directory, collection_name):
+        try:
+            loader = DirectoryLoader(str(directory), glob="*.pdf", show_progress=True)
+            docs = loader.load()
+
+            if not docs:
+                print(f" No PDFs found in {directory}, skipping...")
+                return []
+
+            # Split text into chunks
+            text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+            docs = text_splitter.split_documents(docs)
+
+            # Generate unique IDs
+            ids = [str(uuid.uuid4()) for _ in range(len(docs))]
+            for doc, doc_id in zip(docs, ids):
+                doc.metadata['id'] = doc_id
+
+            # Extract filenames
+            filenames = [doc.metadata['source'].split('/')[-1].split('.')[0] for doc in docs]
+
+            # Match URLs from hyperlinks.csv
+            hyperlinks_file = os.path.join(os.path.dirname(__file__), "../services/hyperlinks.csv")
+            print(f"Looking for hyperlinks.csv at: {os.path.abspath(hyperlinks_file)}")
+            urls = read_hyperlinks(hyperlinks_file)
+            matched_urls = match_filenames_to_urls(filenames, urls)
+
+            processed_data = []
+            for doc, doc_id, filename in zip(docs, ids, filenames):
+                url, text = matched_urls.get(filename, (None, "Description not found"))
+                combined_text = f"{text} {doc.page_content}"
+                print(f" Processing {filename}...")
+
+                embedding = await generate_embedding(combined_text)
+
+                # Format metadata
+                filename = urllib.parse.unquote(filename.replace('_', ' '))
+                source = f"[{filename}]({url})" if url else filename
+
+                metadata = {
+                    "id": doc_id, 
+                    "source": source,
+                    "timestamp": doc.metadata.get("timestamp") or datetime.utcnow().isoformat()
+                }
+
+
+                processed_data.append({"collection_name": collection_name, "document": doc, "embedding": embedding, "metadata": metadata})
+
+            return processed_data
+
+        except Exception as e:
+            print(f" Error processing PDFs: {e}")
+            return []
