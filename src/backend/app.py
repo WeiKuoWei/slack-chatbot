@@ -1,5 +1,8 @@
 # app.py
 import httpx, uvicorn, chromadb, time
+import asyncio
+import sys, os
+import traceback
 from fastapi import FastAPI, HTTPException
 from typing import Union
 import sys
@@ -142,15 +145,25 @@ async def update_info(request: Union[UpdateGuildInfo, UpdateChannelInfo, UpdateM
     logging.info(f"Info updated for {collection_name}")
     return {"status": "Update complete"}
 
-@app.post('/load_course_materials')
-async def load_course_materials():
-    file_path = "./data/pdf_files"
-    collection_name = "course_materials"
+@app.post('/load_materials')
+async def load_materials():
+    # change out abs; the collectiion name should be dependent on the type of data
+    file_path = os.path.join(os.path.dirname(__file__), "pdf_files")
+
     try:
-        data = await crud.save_pdfs(file_path, collection_name)
+        #returns pdfs as a list of dictionaries that hold chunks of text
+        all_collections = await asyncio.to_thread(crud.client.list_collections)  # Fetch all collections
+        for collection in all_collections:
+            collection_name = collection.name
+            existing_data = await crud.get_data_by_id(collection_name, ["course_materials"])
+            if existing_data:
+                return {"message": f"PDFs already loaded in collection: {collection_name}"}
+
+        
+        data = await crud.save_pdfs(file_path)
 
         # save the data to the database in chunks of ten documents
-        chunk_size = 10
+        chunk_size = 5
         for i in range(0, len(data), chunk_size):
             await crud.save_to_db(data[i:i+chunk_size])
 
@@ -161,4 +174,4 @@ async def load_course_materials():
         return {"message": "Failed to load PDFs."}
 
 if __name__ == '__main__':
-    uvicorn.run(app, host='0.0.0.0', port=8000)
+    uvicorn.run(app, host='0.0.0.0', port=8080)
