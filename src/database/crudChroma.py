@@ -5,7 +5,6 @@ import chromadb, uuid, os, urllib.parse, asyncio
 import os
 from pathlib import Path
 
-
 from utlis.config import DB_PATH
 from database.modelsChroma import generate_embedding
 from services.getPdfs import read_hyperlinks, match_filenames_to_urls
@@ -92,17 +91,16 @@ class CRUD():
             collection = self.client.get_collection(collection_name)
             results = collection.get(where=metadata_query)
             return results
+        
         except Exception as e:
             print(f"Error with retrieving data by metadata: {e}")
             return []
 
     async def save_pdfs(self, pdfs_file_path, category_prefix="course_materials"):
-        #pass in directory with pdf folders, and the prefix relates to type.
-        print(f"Scanning for PDFs from {pdfs_file_path} ... ")
 
         data_to_save = []  
 
-         # Check if pdf_files contains subdirectories so course_materials (Wei’s requested structure) Return: BOOL.
+        # Check if pdf_files contains subdirectories so course_materials (Wei’s requested structure) Return: BOOL.
         has_subdirectories = any(p.is_dir() for p in Path(pdfs_file_path).iterdir())
 
         # If pdf_files has direct PDFs, process them under `course_materials`
@@ -112,9 +110,7 @@ class CRUD():
             data_to_save.extend(await self.process_pdfs(Path(pdfs_file_path), category_prefix))
 
 
-        #Missing checks for subdirectories --> as of 3/28/25 should be fixed 
-
-        #If pdf_files has subdirectories, process them under their respective categories
+        # If pdf_files has subdirectories, process them under their respective categories
         if has_subdirectories:
             for category_folder in Path(pdfs_file_path).iterdir():
                 # Assuming Wei structure, load pdfs from each sub directroy in pdf directory.
