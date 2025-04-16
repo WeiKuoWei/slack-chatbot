@@ -2,8 +2,6 @@ import requests, os, asyncio, logging, csv
 import sys
 import asyncio 
 import traceback
-#from aspose.slides import Presentation
-#from aspose.slides.export import SaveFormat
 import pdfkit
 from pyppeteer import launch
 from bs4 import BeautifulSoup
@@ -11,10 +9,6 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 #SEPERATE SCRAPING FROM DOWNLOADING
 #SEPERATE DOWNLOADING FROM CONVERTING
-#Wei wants more modularity.
-#Get rid of abs routes to allow others to use the code.
-
-#Helping Edward: Using DFS to scrape mental health resources as those sites aren't anything but text nested deeper and deeper links. 
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
@@ -188,10 +182,6 @@ async def process_all_links(pdf_links, pptx_links, webpage_links):
 
 async def main():
 
-    # crud = CRUD()  # Initialize CRUD for saving PDFs
-    # await crud.save_pdfs(PDF_FOLDER, "course_materials")
-
-
     url = 'https://manual.eg.poly.edu/index.php/Main_Page'
     base_link = 'https://manual.eg.poly.edu'
 
@@ -204,12 +194,10 @@ async def main():
     webpage_links = [link for link in hyperlinks if not link.endswith('.pdf') and not link.endswith('.pptx')]
     pptx_links = [link for link in hyperlinks if link.endswith('.pptx')]
 
-    print(f"{len(pdf_links) + len(webpage_links) + len(pptx_links)} links found.") # Should be 60 total links.
-    print(f"PDFs: {len(pdf_links)} | Webpages: {len(webpage_links)} | PPTX: {len(pptx_links)}") # Should be 20 each.
+    print(f"{len(pdf_links) + len(webpage_links) + len(pptx_links)} links found.") 
+    print(f"PDFs: {len(pdf_links)} | Webpages: {len(webpage_links)} | PPTX: {len(pptx_links)}") 
     
     process_all_links(pdf_links, pptx_links, webpage_links)
-
-    # create_folders(PPTX_FOLDER, PDF_FOLDER, PDF_FOLDER)
 
 if __name__ == "__main__":
     asyncio.run(main())
